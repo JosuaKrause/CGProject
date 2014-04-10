@@ -57,6 +57,33 @@ public final class Vec4 {
   /**
    * Getter.
    * 
+   * @return The x coordinate.
+   */
+  public double getX() {
+    return x;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The y coordinate.
+   */
+  public double getY() {
+    return y;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The z coordinate.
+   */
+  public double getZ() {
+    return z;
+  }
+
+  /**
+   * Getter.
+   * 
    * @return Whether the vector is a point.
    */
   public boolean isPoint() {
@@ -153,7 +180,7 @@ public final class Vec4 {
    * 
    * @return The normalized vector.
    */
-  public Vec4 getNormalized() {
+  public Vec4 normalized() {
     if(norm == null) {
       final double sq = getLengthSq();
       if(sq == 1) {
@@ -164,6 +191,41 @@ public final class Vec4 {
       }
     }
     return norm;
+  }
+
+  /**
+   * Computes the cross product with the given vector. Both vectors are assumed
+   * to be directions.
+   * 
+   * @param o The other vector.
+   * @return The cross product vector.
+   */
+  public Vec4 cross(final Vec4 o) {
+    return new Vec4(
+        y * o.z - z * o.y,
+        z * o.x - x * o.z,
+        x * o.y - y * o.x,
+        0);
+  }
+
+  /**
+   * Computes the scalar product of the vectors.
+   * 
+   * @param o The other vector.
+   * @return The scalar product.
+   */
+  public double prod(final Vec4 o) {
+    return x * o.x + y * o.y + z * o.z + w * o.w;
+  }
+
+  /**
+   * Computes the angle enclosed by both vectors.
+   * 
+   * @param o The other vector.
+   * @return The angle in radians.
+   */
+  public double angle(final Vec4 o) {
+    return Math.asin(Math.sqrt(normalized().cross(o.normalized()).getLengthSq()));
   }
 
   @Override

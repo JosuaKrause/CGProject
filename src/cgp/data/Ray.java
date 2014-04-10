@@ -20,7 +20,25 @@ public class Ray {
    */
   public Ray(final Vec4 origin, final Vec4 dir) {
     this.origin = origin.expectPoint();
-    this.dir = dir.expectDirection().getNormalized();
+    this.dir = dir.expectDirection().normalized();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The view direction.
+   */
+  public Vec4 getDirection() {
+    return dir;
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The origin.
+   */
+  public Vec4 getOrigin() {
+    return origin;
   }
 
   /**

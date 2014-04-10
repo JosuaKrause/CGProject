@@ -11,51 +11,54 @@ import cgp.data.Vec4;
 public class SimpleRayProducer implements RayProducer {
 
   /** The camera origin. */
-  private final Vec4 origin;
+  private final Vec4 eye;
   /** The viewing direction. */
-  private final Vec4 center;
+  private final Vec4 view;
   /** The direction which is up for the camera. */
   private final Vec4 up;
   /** The direction which is left for the camera. */
   private final Vec4 left;
-  /** The horizontal view angle in degrees. */
-  private final double hAngle;
-  /** The vertical view angle in degrees. */
-  private final double vAngle;
+  /** The field of view in degrees. */
+  private final double fov;
   /** The width. */
   private final int w;
   /** The height. */
   private final int h;
+  /** The camera depth. */
+  private final double depth;
 
   /**
    * Creates a simple ray producer.
    * 
-   * @param origin The camera origin.
-   * @param center The viewing direction.
+   * @param eye The camera origin.
+   * @param view The viewing direction.
    * @param up The direction which is up for the camera.
    * @param left The direction which is left for the camera.
    * @param w The width.
    * @param h The height.
-   * @param hAngle The horizontal view angle in degrees.
-   * @param vAngle The vertical view angle in degrees.
+   * @param fov The field of view in degrees.
+   * @param depth The camera depth.
    */
-  public SimpleRayProducer(final Vec4 origin, final Vec4 center,
-      final Vec4 up, final Vec4 left, final int w, final int h,
-      final double hAngle, final double vAngle) {
+  public SimpleRayProducer(final Vec4 eye, final Vec4 view, final Vec4 up,
+      final Vec4 left, final int w, final int h, final double fov, final double depth) {
     this.w = w;
     this.h = h;
-    this.origin = origin.expectPoint();
-    this.center = center.expectDirection();
+    this.eye = eye.expectPoint();
+    this.view = view.expectDirection();
     this.up = up.expectDirection();
     this.left = left.expectDirection();
-    this.hAngle = hAngle;
-    this.vAngle = vAngle;
+    this.fov = fov;
+    this.depth = depth;
   }
 
   @Override
   public Ray getFor(final int x, final int y) {
-    // TODO Auto-generated method stub
-    return new Ray(origin, center);
+    final double angleX = fov * 0.5 * (2.0 * x / w - 1.0);
+    final double angleY = fov * 0.5 * h / w * (2.0 * y / h - 1.0);
+    final double lenLeft = Math.tan(Math.toRadians(angleX)) * depth;
+    final double lenUp = Math.tan(Math.toRadians(angleY)) * depth;
+    final Vec4 dir = view.mul(depth).addMul(left, lenLeft).addMul(up, lenUp).normalized();
+    return new Ray(eye, dir);
   }
 
   @Override
