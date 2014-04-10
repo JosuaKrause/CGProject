@@ -23,7 +23,8 @@ public class Triangle {
   private final Vec4 nc;
 
   /**
-   * Creates a triangle and computes the normals accordingly.
+   * Creates a triangle and computes the normals accordingly. The points need to
+   * be in counter clock-wise order.
    * 
    * @param a The first corner.
    * @param b The second corner.

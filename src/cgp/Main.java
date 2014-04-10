@@ -51,11 +51,11 @@ public class Main {
     final Vec4 lbb = new Vec4(0, 0, 10, true);
     final Vec4 rmm = new Vec4(10, 5, 5, true);
     final TriangleStorage ts = new SimpleStorage();
-    // simple tetraeder
-    ts.addTriangle(new Triangle(ltf, ltb, rmm));
-    ts.addTriangle(new Triangle(ltb, lbb, rmm));
-    ts.addTriangle(new Triangle(lbb, lbf, rmm));
-    ts.addTriangle(new Triangle(lbf, ltf, rmm));
+    // simple tetrahedron
+    ts.addTriangle(new Triangle(ltf, rmm, ltb));
+    ts.addTriangle(new Triangle(ltb, rmm, lbb));
+    ts.addTriangle(new Triangle(lbb, rmm, lbf));
+    ts.addTriangle(new Triangle(lbf, rmm, ltf));
     // camera
     final Dimension dim = new Dimension(800, 600);
     final Vec4 origin = new Vec4(5, 5, -50, true);
