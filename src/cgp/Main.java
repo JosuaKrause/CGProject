@@ -11,11 +11,11 @@ import javax.swing.WindowConstants;
 import cgp.algos.SimpleStorage;
 import cgp.algos.TriangleStorage;
 import cgp.consume.TestCountConsumer;
-import cgp.data.Ray;
 import cgp.data.Triangle;
 import cgp.data.Vec4;
 import cgp.tracer.RayProducer;
 import cgp.tracer.RayShooter;
+import cgp.tracer.SimpleRayProducer;
 
 /**
  * The entry point for the application.
@@ -63,26 +63,9 @@ public class Main {
     // camera
     final Dimension dim = new Dimension(800, 600);
     final Vec4 origin = new Vec4(0.5, 0.5, -2, true);
-    final Vec4 dir = Vec4.Z_AXIS;
-    final RayProducer rp = new RayProducer() {
-
-      @Override
-      public int getWidth() {
-        return dim.width;
-      }
-
-      @Override
-      public int getHeight() {
-        return dim.height;
-      }
-
-      @Override
-      public Ray getFor(final int x, final int y) {
-        // TODO
-        return new Ray(origin, dir);
-      }
-
-    };
+    final RayProducer rp = new SimpleRayProducer(
+        origin, Vec4.Z_AXIS, Vec4.Y_AXIS, nx,
+        dim.width, dim.height, 60.0, 45.0);
     // setup frame
     final TestCountConsumer hc = new TestCountConsumer();
     final JFrame frame = new JFrame("Raytracer");
