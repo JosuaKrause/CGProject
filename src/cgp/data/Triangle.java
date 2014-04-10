@@ -53,6 +53,7 @@ public class Triangle {
    *         direction.
    */
   public double hit(final Ray r, final TestCounter c) {
+    c.addCheck();
     // TODO
     return -1;
   }

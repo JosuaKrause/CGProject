@@ -1,4 +1,6 @@
-package cgp.tracer;
+package cgp.consume;
+
+import cgp.tracer.Hit;
 
 /**
  * Consumes hits.

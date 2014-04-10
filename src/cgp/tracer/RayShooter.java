@@ -7,6 +7,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 
 import cgp.algos.TriangleStorage;
+import cgp.consume.HitConsumer;
 import cgp.data.Ray;
 
 /**
@@ -76,8 +77,8 @@ public class RayShooter {
      * @param yFrom The lowest inclusive y coordinate.
      * @param yTo The highest exclusive y coordinate.
      */
-    public ShootingAction(final Hit[][] hits, final int xFrom, final int xTo,
-        final int yFrom, final int yTo) {
+    public ShootingAction(final Hit[][] hits,
+        final int xFrom, final int xTo, final int yFrom, final int yTo) {
       this.hits = hits;
       this.xFrom = xFrom;
       this.xTo = xTo;
@@ -90,7 +91,7 @@ public class RayShooter {
     private void doCompute() {
       for(int x = xFrom; x < xTo; ++x) {
         final Hit[] col = hits[x];
-        for(final int y = yFrom; y < yTo; ++x) {
+        for(int y = yFrom; y < yTo; ++y) {
           shootRay(col, x, y, counter);
         }
       }

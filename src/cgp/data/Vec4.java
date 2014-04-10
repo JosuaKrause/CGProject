@@ -106,6 +106,15 @@ public final class Vec4 {
   }
 
   /**
+   * Getter.
+   * 
+   * @return The negated vector.
+   */
+  public Vec4 negate() {
+    return new Vec4(-x, -y, -z, -w);
+  }
+
+  /**
    * Scales the vector.
    * 
    * @param s The factor.
