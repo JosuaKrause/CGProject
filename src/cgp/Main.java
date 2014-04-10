@@ -58,21 +58,28 @@ public class Main {
     final Vec4 rbb = new Vec4(10, 0, 10, true);
     final TriangleStorage ts = new SimpleStorage();
     // simple cube
-    ts.addTriangle(new Triangle(ltf, ltb, rtb, Vec4.Y_AXIS, Vec4.Y_AXIS, Vec4.Y_AXIS));
-    ts.addTriangle(new Triangle(rtb, rtf, ltf, Vec4.Y_AXIS, Vec4.Y_AXIS, Vec4.Y_AXIS));
-    ts.addTriangle(new Triangle(lbf, lbb, rbb, ny, ny, ny));
-    ts.addTriangle(new Triangle(rbb, rbf, lbf, ny, ny, ny));
-    ts.addTriangle(new Triangle(rtf, rtb, rbb, Vec4.X_AXIS, Vec4.X_AXIS, Vec4.X_AXIS));
-    ts.addTriangle(new Triangle(rbb, rbf, rtf, Vec4.X_AXIS, Vec4.X_AXIS, Vec4.X_AXIS));
-    ts.addTriangle(new Triangle(ltf, ltb, lbb, nx, nx, nx));
-    ts.addTriangle(new Triangle(lbb, lbf, ltf, nx, nx, nx));
-    ts.addTriangle(new Triangle(ltf, rtf, lbf, Vec4.Z_AXIS, Vec4.Z_AXIS, Vec4.Z_AXIS));
-    ts.addTriangle(new Triangle(lbf, rtf, rbf, Vec4.Z_AXIS, Vec4.Z_AXIS, Vec4.Z_AXIS));
-    ts.addTriangle(new Triangle(ltb, rtb, lbb, nz, nz, nz));
-    ts.addTriangle(new Triangle(lbb, rtb, rbb, nz, nz, nz));
+    // ts.addTriangle(new Triangle(ltf, ltb, rtb, Vec4.Y_AXIS, Vec4.Y_AXIS,
+    // Vec4.Y_AXIS));
+    // ts.addTriangle(new Triangle(rtb, rtf, ltf, Vec4.Y_AXIS, Vec4.Y_AXIS,
+    // Vec4.Y_AXIS));
+    // ts.addTriangle(new Triangle(lbf, lbb, rbb, ny, ny, ny));
+    // ts.addTriangle(new Triangle(rbb, rbf, lbf, ny, ny, ny));
+    // ts.addTriangle(new Triangle(rtf, rtb, rbb, Vec4.X_AXIS, Vec4.X_AXIS,
+    // Vec4.X_AXIS));
+    // ts.addTriangle(new Triangle(rbb, rbf, rtf, Vec4.X_AXIS, Vec4.X_AXIS,
+    // Vec4.X_AXIS));
+    // ts.addTriangle(new Triangle(ltf, ltb, lbb, nx, nx, nx));
+    // ts.addTriangle(new Triangle(lbb, lbf, ltf, nx, nx, nx));
+    // ts.addTriangle(new Triangle(ltf, rtf, lbf, Vec4.Z_AXIS, Vec4.Z_AXIS,
+    // Vec4.Z_AXIS));
+    // ts.addTriangle(new Triangle(lbf, rtf, rbf, Vec4.Z_AXIS, Vec4.Z_AXIS,
+    // Vec4.Z_AXIS));
+    // ts.addTriangle(new Triangle(ltb, rtb, lbb, nz, nz, nz));
+    // ts.addTriangle(new Triangle(lbb, rtb, rbb, nz, nz, nz));
+    ts.addTriangle(new Triangle(ltf, lbf, ltb, nz, nz, nz));
     // camera
     final Dimension dim = new Dimension(800, 600);
-    final Vec4 origin = new Vec4(5, 5, -20, true);
+    final Vec4 origin = new Vec4(5, 5, -50, true);
     final RayProducer rp = new SimpleRayProducer(
         origin, Vec4.Z_AXIS, Vec4.Y_AXIS, nx,
         dim.width, dim.height, 45.0, 1);

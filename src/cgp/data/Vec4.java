@@ -162,6 +162,16 @@ public final class Vec4 {
   }
 
   /**
+   * Subtracts another vector.
+   * 
+   * @param o The other vector.
+   * @return The difference vector.
+   */
+  public Vec4 sub(final Vec4 o) {
+    return new Vec4(x - o.x, y - o.y, z - o.z, w - o.w);
+  }
+
+  /**
    * Adds another vector that is scaled.
    * 
    * @param o The other vector.

@@ -57,20 +57,22 @@ public class Triangle {
    */
   public double hit(final Ray r, final TestCounter tc) {
     tc.addCheck();
-    final Vec4 negA = a.negate();
-    final Vec4 edge1 = b.add(negA);
-    final Vec4 edge2 = c.add(negA);
+    final Vec4 edge1 = b.sub(a);
+    final Vec4 edge2 = c.sub(a);
+    final Vec4 norm = edge1.cross(edge2);
     final Vec4 dir = r.getDirection();
-    final Vec4 p = dir.cross(edge2);
-    final double det = edge1.prod(p);
+    final double det = dir.prod(norm);
     if(det > -EPS && det < EPS) return -1;
-    final Vec4 t = r.getOrigin().add(negA);
-    final double u = t.prod(p) / det;
+    final Vec4 t = r.getOrigin().sub(a);
+    final double pos = -t.prod(norm) / det;
+    if(pos <= 0) return -1;
+    final Vec4 p = r.getPosition(pos);
+    final double total = Math.sqrt(norm.getLengthSq());
+    final double u = Math.sqrt(b.sub(p).cross(c.sub(p)).getLengthSq()) / total;
     if(u < 0 || u > 1) return -1;
-    final Vec4 q = t.cross(edge1);
-    final double v = dir.prod(q) / det;
+    final double v = Math.sqrt(a.sub(p).cross(c.sub(p)).getLengthSq()) / total;
     if(v < 0 || v > 1) return -1;
-    return edge2.prod(q) / det;
+    return pos;
   }
 
   /**
@@ -80,13 +82,11 @@ public class Triangle {
    * @return The normal.
    */
   public Vec4 getNormalAt(final Vec4 pos) {
-    // TODO correct calculation
-    final double distA = Math.sqrt(pos.getDistanceSq(a));
-    final double distB = Math.sqrt(pos.getDistanceSq(b));
-    final double distC = Math.sqrt(pos.getDistanceSq(c));
-    final double totalDist = distA + distB + distC;
-    return na.mul(1.0 - distA / totalDist).addMul(nb, 1.0 - distB / totalDist)
-        .addMul(nc, 1.0 - distC / totalDist).normalized();
+    final double total = Math.sqrt(b.sub(a).cross(c.sub(a)).getLengthSq());
+    final double da = Math.sqrt(b.sub(pos).cross(c.sub(pos)).getLengthSq()) / total;
+    final double db = Math.sqrt(a.sub(pos).cross(c.sub(pos)).getLengthSq()) / total;
+    final double dc = 1.0 - da - db;
+    return na.mul(1.0 - da).addMul(nb, 1.0 - db).addMul(nc, 1.0 - dc).normalized();
   }
 
 }
