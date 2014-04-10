@@ -23,6 +23,20 @@ public class Triangle {
   private final Vec4 nc;
 
   /**
+   * Creates a triangle and computes the normals accordingly.
+   * 
+   * @param a The first corner.
+   * @param b The second corner.
+   * @param c The third corner.
+   */
+  public Triangle(final Vec4 a, final Vec4 b, final Vec4 c) {
+    this.a = a.expectPoint();
+    this.b = b.expectPoint();
+    this.c = c.expectPoint();
+    nc = nb = na = b.sub(a).cross(c.sub(a)).normalized();
+  }
+
+  /**
    * Creates a triangle.
    * 
    * @param a The first corner.
@@ -67,11 +81,13 @@ public class Triangle {
     final double pos = -t.prod(norm) / det;
     if(pos <= 0) return -1;
     final Vec4 p = r.getPosition(pos);
-    final double total = Math.sqrt(norm.getLengthSq());
-    final double u = Math.sqrt(b.sub(p).cross(c.sub(p)).getLengthSq()) / total;
+    final double total = norm.getLengthSq();
+    final double u = b.sub(p).cross(c.sub(p)).getLengthSq() / total;
     if(u < 0 || u > 1) return -1;
-    final double v = Math.sqrt(a.sub(p).cross(c.sub(p)).getLengthSq()) / total;
+    final double v = a.sub(p).cross(c.sub(p)).getLengthSq() / total;
     if(v < 0 || v > 1) return -1;
+    final double w = a.sub(p).cross(b.sub(p)).getLengthSq() / total;
+    if(w < 0 || w > 1) return -1;
     return pos;
   }
 
@@ -82,9 +98,9 @@ public class Triangle {
    * @return The normal.
    */
   public Vec4 getNormalAt(final Vec4 pos) {
-    final double total = Math.sqrt(b.sub(a).cross(c.sub(a)).getLengthSq());
-    final double da = Math.sqrt(b.sub(pos).cross(c.sub(pos)).getLengthSq()) / total;
-    final double db = Math.sqrt(a.sub(pos).cross(c.sub(pos)).getLengthSq()) / total;
+    final double total = b.sub(a).cross(c.sub(a)).getLengthSq();
+    final double da = Math.sqrt(b.sub(pos).cross(c.sub(pos)).getLengthSq() / total);
+    final double db = Math.sqrt(a.sub(pos).cross(c.sub(pos)).getLengthSq() / total);
     final double dc = 1.0 - da - db;
     return na.mul(1.0 - da).addMul(nb, 1.0 - db).addMul(nc, 1.0 - dc).normalized();
   }

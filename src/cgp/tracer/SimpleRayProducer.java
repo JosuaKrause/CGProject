@@ -53,7 +53,7 @@ public class SimpleRayProducer implements RayProducer {
 
   @Override
   public Ray getFor(final int x, final int y) {
-    final double angleX = -fov * ((double) x / w - 0.5);
+    final double angleX = fov * ((double) x / w - 0.5);
     final double angleY = -fov * h / w * ((double) y / h - 0.5);
     final double lenLeft = Math.tan(Math.toRadians(angleX)) * depth;
     final double lenUp = Math.tan(Math.toRadians(angleY)) * depth;
