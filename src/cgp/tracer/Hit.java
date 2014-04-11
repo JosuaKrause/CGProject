@@ -2,6 +2,7 @@ package cgp.tracer;
 
 import java.util.Objects;
 
+import cgp.data.BarycentricCoordinates;
 import cgp.data.Ray;
 import cgp.data.Triangle;
 
@@ -62,13 +63,20 @@ public class Hit {
     return tri != null;
   }
 
+  /** The cache for the barycentric coordinate. */
+  private BarycentricCoordinates bary;
+
   /**
    * Getter.
    * 
-   * @return The triangle or <code>null</code>.
+   * @return The barycentric coordinate of the hit.
    */
-  public Triangle getTriangle() {
-    return tri;
+  public BarycentricCoordinates getBarycentric() {
+    if(bary == null) {
+      if(!hasHit()) throw new IllegalStateException("no hit");
+      bary = tri.getAt(ray.getPosition(distance));
+    }
+    return bary;
   }
 
   /**

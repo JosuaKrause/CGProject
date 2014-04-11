@@ -98,18 +98,30 @@ public class Triangle {
   }
 
   /**
-   * Computes the normal of the triangle at the given position.
+   * Getter.
    * 
-   * @param p The position.
-   * @return The normal.
+   * @param p The position on the triangle.
+   * @return The barycentric coordinate.
    */
-  public Vec4 getNormalAt(final Vec4 p) {
+  public BarycentricCoordinates getAt(final Vec4 p) {
     final double total = b.sub(a).cross(c.sub(a)).lengthSq();
     final double da = Math.sqrt(b.sub(p).cross(c.sub(p)).lengthSq() / total);
     final double db = Math.sqrt(a.sub(p).cross(c.sub(p)).lengthSq() / total);
-    // final double dc = Math.sqrt(a.sub(p).cross(b.sub(p)).lengthSq() / total);
-    final double dc = 1 - da - db;
-    return na.mul(1.0 - da).addMul(nb, 1.0 - db).addMul(nc, 1.0 - dc).normalized();
+    // final double w = Math.sqrt(a.sub(p).cross(b.sub(p)).lengthSq() / total);
+    final double u = Math.max(Math.min(da, 1), 0);
+    final double v = Math.max(Math.min(db, 1), 0);
+    final double w = Math.max(Math.min(1 - u - v, 1), 0);
+    return new BarycentricCoordinates(this, p, u, v, w);
+  }
+
+  /**
+   * Computes the normal of the triangle at the given position.
+   * 
+   * @param b The barycentric position.
+   * @return The normal.
+   */
+  public Vec4 getNormalAt(final BarycentricCoordinates b) {
+    return na.mul(1.0 - b.getU()).addMul(nb, 1.0 - b.getV()).addMul(nc, 1.0 - b.getW()).normalized();
   }
 
   @Override

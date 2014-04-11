@@ -17,6 +17,7 @@ import javax.swing.WindowConstants;
 
 import cgp.algos.SimpleStorage;
 import cgp.algos.TriangleStorage;
+import cgp.consume.BaryConsumer;
 import cgp.consume.DepthConsumer;
 import cgp.consume.ImageConsumer;
 import cgp.consume.NormalConsumer;
@@ -70,6 +71,7 @@ public class Main {
     final ImageConsumer[] consumer = {
         new ViewConsumer(),
         new NormalConsumer(),
+        new BaryConsumer(),
         new DepthConsumer(15, 30),
         new TestCountConsumer(),
     };

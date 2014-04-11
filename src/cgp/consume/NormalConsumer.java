@@ -1,6 +1,6 @@
 package cgp.consume;
 
-import cgp.data.Ray;
+import cgp.data.BarycentricCoordinates;
 import cgp.data.Triangle;
 import cgp.data.Vec4;
 import cgp.tracer.Hit;
@@ -20,9 +20,9 @@ public class NormalConsumer extends ImageConsumer {
   @Override
   protected int getRGB(final Hit hit) {
     if(!hit.hasHit()) return 0x0;
-    final Triangle t = hit.getTriangle();
-    final Ray ray = hit.getRay();
-    final Vec4 norm = t.getNormalAt(ray.getPosition(hit.getDistance()));
+    final BarycentricCoordinates b = hit.getBarycentric();
+    final Triangle t = b.getTriangle();
+    final Vec4 norm = t.getNormalAt(b);
     final int red = (int) (0xff * (norm.getX() * 0.5 + 0.5));
     final int green = (int) (0xff * (norm.getY() * 0.5 + 0.5));
     final int blue = (int) (0xff * (norm.getZ() * 0.5 + 0.5));
