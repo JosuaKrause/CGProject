@@ -104,15 +104,11 @@ public class Triangle {
    * @return The normal.
    */
   public Vec4 getNormalAt(final Vec4 p) {
-    final Vec4 edge1 = b.sub(a);
-    final Vec4 edge2 = c.sub(a);
-    final Vec4 norm = edge1.cross(edge2);
-    final double len = norm.lengthSq();
-    final double u = norm.prod(c.sub(b).cross(p.sub(b)));
-    final double v = norm.prod(a.sub(c).cross(p.sub(c)));
-    final double da = u / len;
-    final double db = v / len;
-    final double dc = 1.0 - da - db;
+    final double total = b.sub(a).cross(c.sub(a)).lengthSq();
+    final double da = Math.sqrt(b.sub(p).cross(c.sub(p)).lengthSq() / total);
+    final double db = Math.sqrt(a.sub(p).cross(c.sub(p)).lengthSq() / total);
+    // final double dc = Math.sqrt(a.sub(p).cross(b.sub(p)).lengthSq() / total);
+    final double dc = 1 - da - db;
     return na.mul(1.0 - da).addMul(nb, 1.0 - db).addMul(nc, 1.0 - dc).normalized();
   }
 
