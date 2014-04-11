@@ -115,7 +115,7 @@ public final class Vec4 {
    * 
    * @return The squared length of the vector.
    */
-  public double getLengthSq() {
+  public double lengthSq() {
     return x * x + y * y + z * z + w * w;
   }
 
@@ -192,7 +192,7 @@ public final class Vec4 {
    */
   public Vec4 normalized() {
     if(norm == null) {
-      final double sq = getLengthSq();
+      final double sq = lengthSq();
       if(sq == 1) {
         norm = this;
       } else {
@@ -211,6 +211,8 @@ public final class Vec4 {
    * @return The cross product vector.
    */
   public Vec4 cross(final Vec4 o) {
+    expectDirection();
+    o.expectDirection();
     return new Vec4(
         y * o.z - z * o.y,
         z * o.x - x * o.z,
@@ -225,7 +227,9 @@ public final class Vec4 {
    * @return The scalar product.
    */
   public double prod(final Vec4 o) {
-    return x * o.x + y * o.y + z * o.z + w * o.w;
+    expectDirection();
+    o.expectDirection();
+    return x * o.x + y * o.y + z * o.z;
   }
 
   /**
@@ -235,7 +239,7 @@ public final class Vec4 {
    * @return The angle in radians.
    */
   public double angle(final Vec4 o) {
-    return Math.asin(Math.sqrt(normalized().cross(o.normalized()).getLengthSq()));
+    return Math.asin(Math.sqrt(normalized().cross(o.normalized()).lengthSq()));
   }
 
   @Override

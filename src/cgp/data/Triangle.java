@@ -74,36 +74,51 @@ public class Triangle {
     tc.addCheck();
     final Vec4 edge1 = b.sub(a);
     final Vec4 edge2 = c.sub(a);
+    edge1.expectDirection();
+    edge2.expectDirection();
     final Vec4 norm = edge1.cross(edge2);
+    norm.expectDirection();
     final Vec4 dir = r.getDirection();
+    dir.expectDirection();
     final double det = dir.prod(norm);
     if(det > -EPS && det < EPS) return -1;
-    final Vec4 t = r.getOrigin().sub(a);
-    final double pos = -t.prod(norm) / det;
+    final Vec4 oa = a.sub(r.getOrigin());
+    oa.expectDirection();
+    final double pos = oa.prod(norm) / det;
     if(pos <= 0) return -1;
     final Vec4 p = r.getPosition(pos);
-    final double total = norm.getLengthSq();
-    final double u = b.sub(p).cross(c.sub(p)).getLengthSq() / total;
-    if(u < 0 || u > 1) return -1;
-    final double v = a.sub(p).cross(c.sub(p)).getLengthSq() / total;
-    if(v < 0 || v > 1) return -1;
-    final double w = a.sub(p).cross(b.sub(p)).getLengthSq() / total;
-    if(w < 0 || w > 1) return -1;
+    p.expectPoint();
+    final double u = norm.prod(c.sub(b).cross(p.sub(b)));
+    if(u < 0) return -1;
+    final double v = norm.prod(a.sub(c).cross(p.sub(c)));
+    if(v < 0) return -1;
+    final double w = norm.prod(edge1.cross(p.sub(a)));
+    if(w < 0) return -1;
     return pos;
   }
 
   /**
    * Computes the normal of the triangle at the given position.
    * 
-   * @param pos The position.
+   * @param p The position.
    * @return The normal.
    */
-  public Vec4 getNormalAt(final Vec4 pos) {
-    final double total = b.sub(a).cross(c.sub(a)).getLengthSq();
-    final double da = Math.sqrt(b.sub(pos).cross(c.sub(pos)).getLengthSq() / total);
-    final double db = Math.sqrt(a.sub(pos).cross(c.sub(pos)).getLengthSq() / total);
+  public Vec4 getNormalAt(final Vec4 p) {
+    final Vec4 edge1 = b.sub(a);
+    final Vec4 edge2 = c.sub(a);
+    final Vec4 norm = edge1.cross(edge2);
+    final double len = norm.lengthSq();
+    final double u = norm.prod(c.sub(b).cross(p.sub(b)));
+    final double v = norm.prod(a.sub(c).cross(p.sub(c)));
+    final double da = u / len;
+    final double db = v / len;
     final double dc = 1.0 - da - db;
     return na.mul(1.0 - da).addMul(nb, 1.0 - db).addMul(nc, 1.0 - dc).normalized();
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + "[a: " + a + " b: " + b + " c: " + c + "]";
   }
 
 }

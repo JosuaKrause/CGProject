@@ -10,6 +10,11 @@ import cgp.tracer.Hit;
 public class TestCountConsumer extends ImageConsumer {
 
   @Override
+  public String name() {
+    return "checks";
+  }
+
+  @Override
   protected int getRGB(final Hit hit) {
     final int sub = (int) (hit.getTestCount() * 0xff);
     final int red = 0xff;

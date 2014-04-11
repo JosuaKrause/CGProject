@@ -13,6 +13,11 @@ import cgp.tracer.Hit;
 public class NormalConsumer extends ImageConsumer {
 
   @Override
+  public String name() {
+    return "normal";
+  }
+
+  @Override
   protected int getRGB(final Hit hit) {
     if(!hit.hasHit()) return 0x0;
     final Triangle t = hit.getTriangle();

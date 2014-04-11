@@ -27,6 +27,13 @@ public abstract class ImageConsumer implements HitConsumer {
   }
 
   /**
+   * Getter.
+   * 
+   * @return The UI name of this consumer.
+   */
+  public abstract String name();
+
+  /**
    * Computes the color.
    * 
    * @param hit The hit.

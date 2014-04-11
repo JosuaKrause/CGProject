@@ -36,7 +36,7 @@ public class SimpleStorage implements TriangleStorage {
       }
     }
     if(curBest == null) return new Hit(r, null, -1, c, triangleCount());
-    return new Hit(r, curBest, Math.sqrt(minDist), c, triangleCount());
+    return new Hit(r, curBest, minDist, c, triangleCount());
   }
 
   @Override

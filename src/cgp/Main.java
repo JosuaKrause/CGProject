@@ -17,6 +17,7 @@ import javax.swing.WindowConstants;
 
 import cgp.algos.SimpleStorage;
 import cgp.algos.TriangleStorage;
+import cgp.consume.DepthConsumer;
 import cgp.consume.ImageConsumer;
 import cgp.consume.NormalConsumer;
 import cgp.consume.TestCountConsumer;
@@ -45,31 +46,44 @@ public class Main {
    * @param args No arguments.
    */
   public static void main(final String[] args) {
-    final Vec4 ltf = new Vec4(0, 10, 0, true);
-    final Vec4 lbf = new Vec4(0, 0, 0, true);
-    final Vec4 ltb = new Vec4(0, 10, 10, true);
-    final Vec4 lbb = new Vec4(0, 0, 10, true);
-    final Vec4 rmm = new Vec4(10, 5, 5, true);
+    final Vec4 lbb = new Vec4(0, 0, 0, true);
+    final Vec4 lbf = new Vec4(0, 0, 5, true);
+    final Vec4 ltb = new Vec4(0, 5, 0, true);
+    final Vec4 ltf = new Vec4(0, 5, 5, true);
+    final Vec4 rbb = new Vec4(5, 0, 0, true);
+    final Vec4 rbf = new Vec4(5, 0, 5, true);
+    final Vec4 rtb = new Vec4(5, 5, 0, true);
+    final Vec4 rtf = new Vec4(5, 5, 5, true);
     final TriangleStorage ts = new SimpleStorage();
-    // simple tetrahedron
-    ts.addTriangle(new Triangle(ltf, rmm, ltb));
-    ts.addTriangle(new Triangle(ltb, rmm, lbb));
-    ts.addTriangle(new Triangle(lbb, rmm, lbf));
-    ts.addTriangle(new Triangle(lbf, rmm, ltf));
+    // test object
+    ts.addTriangle(new Triangle(lbf, rbb, ltb));
+    ts.addTriangle(new Triangle(lbb, rbb, rtf));
+    ts.addTriangle(new Triangle(ltf, rbb, rtb));
+    ts.addTriangle(new Triangle(rtb, rbf, ltb));
     // camera
     final Dimension dim = new Dimension(800, 600);
-    final Vec4 origin = new Vec4(5, 5, -50, true);
+    final Vec4 origin = new Vec4(2.5, 2.5, 20, true);
     final RayProducer rp = new SimpleRayProducer(
-        origin, Vec4.Z_AXIS, Vec4.Y_AXIS, Vec4.X_AXIS.negate(),
-        dim.width, dim.height, 45.0, 1);
+        origin, Vec4.Z_AXIS.negate(), Vec4.Y_AXIS, Vec4.X_AXIS,
+        dim.width, dim.height, 45, 1);
     // setup frame
     final ImageConsumer[] consumer = {
         new ViewConsumer(),
         new NormalConsumer(),
+        new DepthConsumer(15, 30),
         new TestCountConsumer(),
     };
-    final JFrame frame = new JFrame("Raytracer");
     final AtomicInteger showNorm = new AtomicInteger(0);
+    final JFrame frame = new JFrame();
+    final AbstractAction setTitle = new AbstractAction() {
+
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        frame.setTitle("Raytracer - " + consumer[showNorm.get()].name());
+      }
+
+    };
+    setTitle.actionPerformed(null);
     final JComponent comp = new JComponent() {
 
       @Override
@@ -94,6 +108,7 @@ public class Main {
         if(showNorm.incrementAndGet() >= consumer.length) {
           showNorm.set(0);
         }
+        setTitle.actionPerformed(null);
         comp.repaint();
       }
 

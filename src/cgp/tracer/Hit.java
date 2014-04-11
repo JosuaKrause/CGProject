@@ -30,7 +30,7 @@ public class Hit {
    * @param ray The ray.
    * @param tri The triangle that got hit or <code>null</code>.
    * @param distance The travel distance or a negative value if no triangle got
-   *          hit.
+   *          hit. The travel distance is measured in direction vectors.
    * @param testCount The test count.
    * @param maxCount The total number of triangles.
    */
