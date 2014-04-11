@@ -25,6 +25,7 @@ import cgp.consume.TestCountConsumer;
 import cgp.consume.ViewConsumer;
 import cgp.data.Triangle;
 import cgp.data.Vec4;
+import cgp.ogl.OpenGLView;
 import cgp.tracer.RayProducer;
 import cgp.tracer.RayShooter;
 import cgp.tracer.SimpleRayProducer;
@@ -65,8 +66,10 @@ public class Main {
     final Dimension dim = new Dimension(800, 600);
     final Vec4 origin = new Vec4(2.5, 2.5, 20, true);
     final RayProducer rp = new SimpleRayProducer(
-        origin, Vec4.Z_AXIS.negate(), Vec4.Y_AXIS, Vec4.X_AXIS,
+        origin, Vec4.Z_AXIS.negate(), Vec4.Y_AXIS,
         dim.width, dim.height, 45, 1);
+    // open Gl
+    final OpenGLView ogl = new OpenGLView(rp, ts);
     // setup frame
     final ImageConsumer[] consumer = {
         new ViewConsumer(),
@@ -76,7 +79,15 @@ public class Main {
         new TestCountConsumer(),
     };
     final AtomicInteger showNorm = new AtomicInteger(0);
-    final JFrame frame = new JFrame();
+    final JFrame frame = new JFrame() {
+
+      @Override
+      public void dispose() {
+        ogl.dispose();
+        super.dispose();
+      }
+
+    };
     final AbstractAction setTitle = new AbstractAction() {
 
       @Override

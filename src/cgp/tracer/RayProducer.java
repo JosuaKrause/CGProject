@@ -1,13 +1,14 @@
 package cgp.tracer;
 
 import cgp.data.Ray;
+import cgp.ogl.Camera;
 
 /**
  * Produces a grid of rays.
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public interface RayProducer {
+public interface RayProducer extends Camera {
 
   /**
    * Getter.
@@ -17,19 +18,5 @@ public interface RayProducer {
    * @return The ray for the given position.
    */
   Ray getFor(int x, int y);
-
-  /**
-   * Getter.
-   * 
-   * @return The width of the grid.
-   */
-  int getWidth();
-
-  /**
-   * Getter.
-   * 
-   * @return The height of the grid.
-   */
-  int getHeight();
 
 }

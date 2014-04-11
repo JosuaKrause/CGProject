@@ -1,6 +1,7 @@
 package cgp.algos;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,6 +38,11 @@ public class SimpleStorage implements TriangleStorage {
     }
     if(curBest == null) return new Hit(r, null, -1, c, triangleCount());
     return new Hit(r, curBest, minDist, c, triangleCount());
+  }
+
+  @Override
+  public Iterable<Triangle> getSoup() {
+    return Collections.unmodifiableCollection(triangles);
   }
 
   @Override

@@ -124,6 +124,30 @@ public class Triangle {
     return na.mul(1.0 - b.getU()).addMul(nb, 1.0 - b.getV()).addMul(nc, 1.0 - b.getW()).normalized();
   }
 
+  public Vec4 getA() {
+    return a;
+  }
+
+  public Vec4 getB() {
+    return b;
+  }
+
+  public Vec4 getC() {
+    return c;
+  }
+
+  public Vec4 getANormal() {
+    return na;
+  }
+
+  public Vec4 getBNormal() {
+    return nb;
+  }
+
+  public Vec4 getCNormal() {
+    return nc;
+  }
+
   @Override
   public String toString() {
     return getClass().getSimpleName() + "[a: " + a + " b: " + b + " c: " + c + "]";

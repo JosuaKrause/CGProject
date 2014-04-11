@@ -35,4 +35,11 @@ public interface TriangleStorage {
    */
   int triangleCount();
 
+  /**
+   * Getter.
+   * 
+   * @return Iterates over all triangles.
+   */
+  Iterable<Triangle> getSoup();
+
 }
