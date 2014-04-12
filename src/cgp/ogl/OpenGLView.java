@@ -14,14 +14,26 @@ import cgp.algos.TriangleStorage;
 import cgp.data.Triangle;
 import cgp.data.Vec4;
 
+/**
+ * Shows the triangle soup rendered with Open-GL.
+ * 
+ * @author Joschi <josua.krause@gmail.com>
+ */
 public class OpenGLView {
 
+  /** The triangle storage. */
   private final TriangleStorage storage;
-
+  /** The camera. */
   private final Camera cam;
-
+  /** Whether to destroy the frame. */
   private AtomicBoolean kill;
 
+  /**
+   * Creates an Open-GL view.
+   * 
+   * @param cam The camera.
+   * @param storage The triangle storage.
+   */
   public OpenGLView(final Camera cam, final TriangleStorage storage) {
     this.cam = Objects.requireNonNull(cam);
     this.storage = Objects.requireNonNull(storage);
@@ -34,6 +46,9 @@ public class OpenGLView {
           Display.setDisplayMode(new DisplayMode(cam.getWidth(), cam.getHeight()));
           Display.setTitle("Navigation View");
           Display.create();
+          glDisable(GL_CULL_FACE);
+          glEnable(GL_DEPTH_TEST);
+          glDepthFunc(GL_LESS);
         } catch(final LWJGLException e) {
           e.printStackTrace();
           Display.destroy();
@@ -55,15 +70,14 @@ public class OpenGLView {
     t.start();
   }
 
+  /** Draws the triangles. */
   void draw() {
     // we are lazy and use immediate mode
-    glDisable(GL_CULL_FACE);
-    // glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     GLU.gluPerspective((float) cam.getFov(),
-        (float) cam.getWidth() / cam.getHeight(), 0, 1000);
+        (float) cam.getWidth() / cam.getHeight(),
+        (float) cam.getNear(), (float) cam.getFar());
     glMatrixMode(GL_MODELVIEW);
     glClearDepth(1f);
     glClearColor(0f, 0f, 0f, 0f);
@@ -82,27 +96,41 @@ public class OpenGLView {
     }
   }
 
+  /**
+   * Sets the color according to relative facing of the normal.
+   * 
+   * @param p The position.
+   * @param n The normal at the position.
+   */
   private void viewColor(final Vec4 p, final Vec4 n) {
     final double angle = 1 - cam.getEye().sub(p).angle(n) / Math.PI * 2;
     glColor3d(angle, angle, angle);
   }
 
-  private void look(final Vec4 eye, final Vec4 view, final Vec4 up) {
+  /**
+   * Looks at a given direction.
+   * 
+   * @param eye The eye.
+   * @param view The view direction.
+   * @param up The upwards direction.
+   */
+  private static void look(final Vec4 eye, final Vec4 view, final Vec4 up) {
     GLU.gluLookAt((float) eye.getX(), (float) eye.getY(), (float) eye.getZ(),
         (float) view.getX(), (float) view.getY(), (float) view.getZ(),
         (float) up.getX(), (float) up.getY(), (float) up.getZ());
   }
 
-  private void vertex(final Vec4 vec) {
+  /**
+   * Sets a vertex.
+   * 
+   * @param vec The vector.
+   */
+  private static void vertex(final Vec4 vec) {
     vec.expectPoint();
     glVertex3d(vec.getX(), vec.getY(), vec.getZ());
   }
 
-  private void color(final Vec4 c) {
-    c.expectDirection();
-    glColor3d(c.getX(), c.getY(), c.getZ());
-  }
-
+  /** Disposes of the window. */
   public void dispose() {
     kill.set(true);
   }

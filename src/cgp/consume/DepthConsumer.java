@@ -1,5 +1,6 @@
 package cgp.consume;
 
+import cgp.ogl.Camera;
 import cgp.tracer.Hit;
 
 /**
@@ -9,27 +10,23 @@ import cgp.tracer.Hit;
  */
 public class DepthConsumer extends ImageConsumer {
 
-  /** The maximal depth. */
-  private final double maxDepth;
-  /** The minimal depth. */
-  private final double minDepth;
+  /** The camera. */
+  private final Camera cam;
 
   /**
    * Creates a depth consumer.
    * 
-   * @param minDepth The minimal depth.
-   * @param maxDepth The maximal depth.
+   * @param cam The camera.
    */
-  public DepthConsumer(final double minDepth, final double maxDepth) {
-    this.minDepth = minDepth;
-    this.maxDepth = maxDepth;
+  public DepthConsumer(final Camera cam) {
+    this.cam = cam;
   }
 
   @Override
   protected int getRGB(final Hit hit) {
     if(!hit.hasHit()) return 0;
     final double dist = hit.getDistance();
-    final double d = (dist - minDepth) / (maxDepth - minDepth);
+    final double d = (dist - cam.getNear()) / (cam.getFar() - cam.getNear());
     final int grey = 255 - (int) (255 * Math.min(Math.max(d, 0), 1));
     return grey << 16 | grey << 8 | grey;
   }

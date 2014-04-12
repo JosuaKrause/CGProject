@@ -67,7 +67,7 @@ public class Main {
     final Vec4 origin = new Vec4(2.5, 2.5, 20, true);
     final RayProducer rp = new SimpleRayProducer(
         origin, Vec4.Z_AXIS.negate(), Vec4.Y_AXIS,
-        dim.width, dim.height, 45, 1);
+        dim.width, dim.height, 45, 1, 30);
     // open Gl
     final OpenGLView ogl = new OpenGLView(rp, ts);
     // setup frame
@@ -75,7 +75,7 @@ public class Main {
         new ViewConsumer(),
         new NormalConsumer(),
         new BaryConsumer(),
-        new DepthConsumer(15, 30),
+        new DepthConsumer(rp),
         new TestCountConsumer(),
     };
     final AtomicInteger showNorm = new AtomicInteger(0);

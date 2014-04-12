@@ -40,9 +40,14 @@ public class Hit {
     if((tri != null) != (distance > 0)) throw new IllegalArgumentException(
         "inconsistent input: " + tri + " " + distance);
     this.ray = Objects.requireNonNull(ray);
-    this.tri = tri;
-    this.distance = distance;
     this.testCount = (double) testCount.getCount() / maxCount;
+    if(distance > ray.getFar()) {
+      this.tri = null;
+      this.distance = -1;
+    } else {
+      this.tri = tri;
+      this.distance = distance;
+    }
   }
 
   /**

@@ -124,26 +124,56 @@ public class Triangle {
     return na.mul(1.0 - b.getU()).addMul(nb, 1.0 - b.getV()).addMul(nc, 1.0 - b.getW()).normalized();
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The first corner.
+   */
   public Vec4 getA() {
     return a;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The second corner.
+   */
   public Vec4 getB() {
     return b;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The third corner.
+   */
   public Vec4 getC() {
     return c;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The normal at the first corner.
+   */
   public Vec4 getANormal() {
     return na;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The normal at the second corner.
+   */
   public Vec4 getBNormal() {
     return nb;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The normal at the third corner.
+   */
   public Vec4 getCNormal() {
     return nc;
   }
