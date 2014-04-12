@@ -53,9 +53,9 @@ public class SimpleRayProducer implements RayProducer {
   }
 
   @Override
-  public void move(final boolean forward, final boolean ortho) {
+  public void move(final boolean forward, final boolean ortho, final double amount) {
     final Vec4 move = ortho ? view.cross(up).negate() : view;
-    eye = eye.addMul(move, forward ? 1 : -1);
+    eye = eye.addMul(move, forward ? amount : -amount);
   }
 
   /** The rotation step angle. */

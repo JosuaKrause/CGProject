@@ -70,8 +70,9 @@ public interface Camera {
    * 
    * @param forward Whether to move forward.
    * @param ortho Whether to move orthogonal to the view vector, ie. left.
+   * @param amount The amount to move.
    */
-  void move(boolean forward, boolean ortho);
+  void move(boolean forward, boolean ortho, double amount);
 
   /**
    * Rotates the view by the given mouse movement.

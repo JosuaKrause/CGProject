@@ -72,16 +72,16 @@ public class OpenGLView {
               moving = false;
             }
             if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
-              cam.move(true, false);
+              cam.move(true, false, 1.0 / 20.0);
             }
             if(Keyboard.isKeyDown(Keyboard.KEY_S)) {
-              cam.move(false, false);
+              cam.move(false, false, 1.0 / 20.0);
             }
             if(Keyboard.isKeyDown(Keyboard.KEY_A)) {
-              cam.move(true, true);
+              cam.move(true, true, 1.0 / 20.0);
             }
             if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
-              cam.move(false, true);
+              cam.move(false, true, 1.0 / 20.0);
             }
             if(Keyboard.isKeyDown(Keyboard.KEY_Q)) {
               cam.rotateViewByTicks(-4);
