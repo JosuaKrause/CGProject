@@ -5,6 +5,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.AbstractAction;
@@ -103,6 +105,7 @@ public class Main {
     };
     final ActionMap am = comp.getActionMap();
     final InputMap im = comp.getInputMap();
+    // image key
     final Object keyI = new Object();
     am.put(keyI, new AbstractAction() {
 
@@ -140,6 +143,7 @@ public class Main {
       }
 
     };
+    // render key
     final Object keyR = new Object();
     am.put(keyR, new AbstractAction() {
 
@@ -152,6 +156,37 @@ public class Main {
 
     });
     im.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, 0), keyR);
+    // photo key
+    final Object keyP = new Object();
+    am.put(keyP, new AbstractAction() {
+
+      @Override
+      public void actionPerformed(final ActionEvent ae) {
+        final File dir = new File("pics/");
+        if(!dir.exists()) {
+          dir.mkdirs();
+        }
+        for(final ImageConsumer ic : consumer) {
+          int num = 0;
+          File out;
+          do {
+            out = new File(dir, ic.name() + "-" + num + ".png");
+            ++num;
+          } while(out.exists());
+          try {
+            System.out.print("saving " + out + "...");
+            ic.saveImage(out);
+            System.out.println(" done");
+          } catch(final IOException e) {
+            System.out.println(" failed:");
+            e.printStackTrace();
+          }
+        }
+      }
+
+    });
+    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_P, 0), keyP);
+    // quit key
     final Object keyESC = new Object();
     am.put(keyESC, new AbstractAction() {
 
@@ -162,6 +197,7 @@ public class Main {
 
     });
     im.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), keyESC);
+    // setting up frame
     comp.setFocusable(true);
     comp.grabFocus();
     frame.add(comp);

@@ -55,7 +55,10 @@ public abstract class ImageConsumer implements HitConsumer {
     if(img == null) {
       g.setColor(Color.BLACK);
       g.fill(new Rectangle2D.Double(10, 10, 10, 10));
-      g.drawString("Press R to render", 25, 25 + g.getFont().getSize());
+      final int size = g.getFont().getSize();
+      g.drawString("R: render", 25, 25 + size);
+      g.drawString("I: change image", 25, 25 + size * 2);
+      g.drawString("P: take photo", 25, 25 + size * 3);
     } else {
       g.drawImage(img, 0, 0, null);
     }

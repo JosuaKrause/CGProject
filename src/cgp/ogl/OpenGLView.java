@@ -149,8 +149,9 @@ public class OpenGLView {
    * @param up The upwards direction.
    */
   private static void look(final Vec4 eye, final Vec4 view, final Vec4 up) {
+    final Vec4 center = eye.addMul(view, 1);
     GLU.gluLookAt((float) eye.getX(), (float) eye.getY(), (float) eye.getZ(),
-        (float) view.getX(), (float) view.getY(), (float) view.getZ(),
+        (float) center.getX(), (float) center.getY(), (float) center.getZ(),
         (float) up.getX(), (float) up.getY(), (float) up.getZ());
   }
 

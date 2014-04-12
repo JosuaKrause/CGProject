@@ -54,7 +54,7 @@ public class SimpleRayProducer implements RayProducer {
 
   @Override
   public void move(final boolean forward, final boolean ortho) {
-    final Vec4 move = ortho ? view.cross(up) : view;
+    final Vec4 move = ortho ? view.cross(up).negate() : view;
     eye = eye.addMul(move, forward ? 1 : -1);
   }
 
@@ -64,7 +64,7 @@ public class SimpleRayProducer implements RayProducer {
   @Override
   public void rotateByTicks(final int dx, final int dy) {
     final double angleX = -dx * ROT_STEP;
-    final double angleY = dy * ROT_STEP;
+    final double angleY = -dy * ROT_STEP;
     rotate(angleX, angleY);
   }
 
@@ -77,12 +77,12 @@ public class SimpleRayProducer implements RayProducer {
   public void rotate(final double angleX, final double angleY) {
     final Quaternion qX = Quaternion.normQuaternion(angleX, up);
     final Quaternion pX = qX.negate();
-    final Vec4 left = view.cross(up);
+    final Vec4 left = view.cross(up).negate();
     final Quaternion qY = Quaternion.normQuaternion(angleY, left);
     final Quaternion pY = qY.negate();
     final Quaternion v = new Quaternion(view, 0);
     view = qY.mul(qX.mul(v).mul(pX)).mul(pY).getVec().normalized();
-    up = view.cross(left.rotateY(angleX).normalized()).negate();
+    up = view.cross(left.rotateY(angleX).normalized());
   }
 
   @Override
@@ -104,11 +104,11 @@ public class SimpleRayProducer implements RayProducer {
 
   @Override
   public Ray getFor(final int x, final int y) {
-    final double angleX = fov * ((double) x / w - 0.5);
+    final double angleX = -fov * ((double) x / w - 0.5);
     final double angleY = -fov * h / w * ((double) y / h - 0.5);
     final double lenLeft = Math.tan(Math.toRadians(angleX));
     final double lenUp = Math.tan(Math.toRadians(angleY));
-    final Vec4 left = view.cross(up);
+    final Vec4 left = view.cross(up).negate();
     final Vec4 dir = view.addMul(left, lenLeft).addMul(up, lenUp).normalized();
     return new Ray(eye.addMul(dir, near), dir, far - near);
   }
