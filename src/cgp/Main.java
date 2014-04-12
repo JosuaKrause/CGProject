@@ -23,8 +23,9 @@ import cgp.consume.ImageConsumer;
 import cgp.consume.NormalConsumer;
 import cgp.consume.TestCountConsumer;
 import cgp.consume.ViewConsumer;
-import cgp.data.Triangle;
 import cgp.data.Vec4;
+import cgp.io.ExampleMesh;
+import cgp.io.MeshLoader;
 import cgp.ogl.OpenGLView;
 import cgp.tracer.RayProducer;
 import cgp.tracer.RayShooter;
@@ -48,20 +49,9 @@ public class Main {
    * @param args No arguments.
    */
   public static void main(final String[] args) {
-    final Vec4 lbb = new Vec4(0, 0, 0, true);
-    final Vec4 lbf = new Vec4(0, 0, 5, true);
-    final Vec4 ltb = new Vec4(0, 5, 0, true);
-    final Vec4 ltf = new Vec4(0, 5, 5, true);
-    final Vec4 rbb = new Vec4(5, 0, 0, true);
-    final Vec4 rbf = new Vec4(5, 0, 5, true);
-    final Vec4 rtb = new Vec4(5, 5, 0, true);
-    final Vec4 rtf = new Vec4(5, 5, 5, true);
     final TriangleStorage ts = new SimpleStorage();
-    // test object
-    ts.addTriangle(new Triangle(lbf, rbb, ltb));
-    ts.addTriangle(new Triangle(lbb, rbb, rtf));
-    ts.addTriangle(new Triangle(ltf, rbb, rtb));
-    ts.addTriangle(new Triangle(rtb, rbf, ltb));
+    final MeshLoader loader = new ExampleMesh();
+    loader.loadMesh(ts);
     // camera
     final Dimension dim = new Dimension(800, 600);
     final Vec4 origin = new Vec4(2.5, 2.5, 20, true);
