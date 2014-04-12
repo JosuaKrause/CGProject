@@ -65,4 +65,27 @@ public interface Camera {
    */
   Vec4 getUp();
 
+  /**
+   * Moves the eye position.
+   * 
+   * @param forward Whether to move forward.
+   * @param ortho Whether to move orthogonal to the view vector, ie. left.
+   */
+  void move(boolean forward, boolean ortho);
+
+  /**
+   * Rotates the view by the given mouse movement.
+   * 
+   * @param dx The x movement.
+   * @param dy The y movement.
+   */
+  void rotateByTicks(int dx, int dy);
+
+  /**
+   * Rotates the up vector around the view vector.
+   * 
+   * @param ticks The number of ticks.
+   */
+  void rotateViewByTicks(int ticks);
+
 }

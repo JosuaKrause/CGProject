@@ -5,7 +5,7 @@ package cgp.data;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public final class Vec4 {
+public class Vec4 {
 
   /** The origin. */
   public static final Vec4 ORIGIN = new Vec4(0, 0, 0, 1);
@@ -25,7 +25,7 @@ public final class Vec4 {
   /** The z coordinate. */
   private final double z;
   /** The w coordinate. */
-  private final double w;
+  protected final double w;
 
   /**
    * Creates a vector.
@@ -47,7 +47,7 @@ public final class Vec4 {
    * @param z The z coordinate.
    * @param w The w coordinate.
    */
-  private Vec4(final double x, final double y, final double z, final double w) {
+  protected Vec4(final double x, final double y, final double z, final double w) {
     this.x = x;
     this.y = y;
     this.z = z;
@@ -117,19 +117,6 @@ public final class Vec4 {
    */
   public double lengthSq() {
     return x * x + y * y + z * z + w * w;
-  }
-
-  /**
-   * Computes the distance between two vectors.
-   * 
-   * @param o The other vector.
-   * @return The distance between the vectors. Note that the value does not
-   *         really make any sense if the distance between a point and a
-   *         direction is computed.
-   */
-  public double getDistanceSq(final Vec4 o) {
-    return (x - o.x) * (x - o.x) + (y - o.y) * (y - o.y)
-        + (z - o.z) * (z - o.z) + (w - o.w) * (w - o.w);
   }
 
   /**
@@ -221,15 +208,54 @@ public final class Vec4 {
   }
 
   /**
-   * Computes the scalar product of the vectors.
+   * Computes the dot product of the vectors.
    * 
    * @param o The other vector.
-   * @return The scalar product.
+   * @return The dot product.
    */
-  public double prod(final Vec4 o) {
+  public double dot(final Vec4 o) {
     expectDirection();
     o.expectDirection();
     return x * o.x + y * o.y + z * o.z;
+  }
+
+  /**
+   * Rotates the direction around the x axis.
+   * 
+   * @param alpha The angle to rotate in radians.
+   * @return The rotated vector.
+   */
+  public Vec4 rotateX(final double alpha) {
+    expectDirection();
+    final double sin = Math.sin(alpha);
+    final double cos = Math.cos(alpha);
+    return new Vec4(x, cos * y - sin * z, sin * y + cos * z, false);
+  }
+
+  /**
+   * Rotates the direction around the y axis.
+   * 
+   * @param alpha The angle to rotate in radians.
+   * @return The rotated vector.
+   */
+  public Vec4 rotateY(final double alpha) {
+    expectDirection();
+    final double sin = Math.sin(alpha);
+    final double cos = Math.cos(alpha);
+    return new Vec4(cos * x + sin * z, y, -sin * x + cos * z, false);
+  }
+
+  /**
+   * Rotates the direction around the z axis.
+   * 
+   * @param alpha The angle to rotate in radians.
+   * @return The rotated vector.
+   */
+  public Vec4 rotateZ(final double alpha) {
+    expectDirection();
+    final double sin = Math.sin(alpha);
+    final double cos = Math.cos(alpha);
+    return new Vec4(cos * x - sin * y, sin * x + cos * y, z, false);
   }
 
   /**

@@ -127,8 +127,43 @@ public class Main {
 
     });
     im.put(KeyStroke.getKeyStroke(KeyEvent.VK_I, 0), keyI);
-    final Object keyQ = new Object();
-    am.put(keyQ, new AbstractAction() {
+    // ray shooting
+    final RayShooter rs = new RayShooter(rp, ts);
+    for(final ImageConsumer ic : consumer) {
+      rs.addConsumer(ic);
+    }
+    final Runnable run = new Runnable() {
+
+      private volatile boolean isRunning = false;
+
+      @Override
+      public void run() {
+        if(isRunning) return;
+        isRunning = true;
+        System.out.println("start");
+        final long nano = System.nanoTime();
+        final double tests = rs.shootRays();
+        System.out.println("end: took " + ((System.nanoTime() - nano) * 1e-6) + "ms");
+        comp.repaint();
+        System.out.println("tests: " + tests);
+        isRunning = false;
+      }
+
+    };
+    final Object keyR = new Object();
+    am.put(keyR, new AbstractAction() {
+
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        final Thread t = new Thread(run);
+        t.setDaemon(true);
+        t.start();
+      }
+
+    });
+    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, 0), keyR);
+    final Object keyESC = new Object();
+    am.put(keyESC, new AbstractAction() {
 
       @Override
       public void actionPerformed(final ActionEvent e) {
@@ -136,8 +171,7 @@ public class Main {
       }
 
     });
-    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_Q, 0), keyQ);
-    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), keyQ);
+    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), keyESC);
     comp.setFocusable(true);
     comp.grabFocus();
     frame.add(comp);
@@ -145,26 +179,6 @@ public class Main {
     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     frame.setLocationRelativeTo(null);
     frame.setVisible(true);
-    // ray shooting
-    final RayShooter rs = new RayShooter(rp, ts);
-    for(final ImageConsumer ic : consumer) {
-      rs.addConsumer(ic);
-    }
-    final Thread t = new Thread(new Runnable() {
-
-      @Override
-      public void run() {
-        System.out.println("start");
-        final long nano = System.nanoTime();
-        final double tests = rs.shootRays();
-        System.out.println("end: took " + ((System.nanoTime() - nano) * 1e-6) + "ms");
-        comp.repaint();
-        System.out.println("tests: " + tests);
-      }
-
-    });
-    t.setDaemon(true);
-    t.start();
   }
 
 }

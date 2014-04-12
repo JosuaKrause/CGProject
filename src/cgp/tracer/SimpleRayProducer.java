@@ -1,5 +1,6 @@
 package cgp.tracer;
 
+import cgp.data.Quaternion;
 import cgp.data.Ray;
 import cgp.data.Vec4;
 
@@ -10,12 +11,6 @@ import cgp.data.Vec4;
  */
 public class SimpleRayProducer implements RayProducer {
 
-  /** The camera origin. */
-  private final Vec4 eye;
-  /** The viewing direction. */
-  private final Vec4 view;
-  /** The direction which is up for the camera. */
-  private final Vec4 up;
   /** The field of view in degrees. */
   private final double fov;
   /** The width. */
@@ -26,6 +21,12 @@ public class SimpleRayProducer implements RayProducer {
   private final double near;
   /** The farthest distance. */
   private final double far;
+  /** The camera origin. */
+  private Vec4 eye;
+  /** The viewing direction. */
+  private Vec4 view;
+  /** The direction which is up for the camera. */
+  private Vec4 up;
 
   /**
    * Creates a simple ray producer.
@@ -49,6 +50,56 @@ public class SimpleRayProducer implements RayProducer {
     this.fov = fov;
     this.near = near;
     this.far = far;
+  }
+
+  @Override
+  public void move(final boolean forward, final boolean ortho) {
+    final Vec4 move = ortho ? view.cross(up) : view;
+    eye = eye.addMul(move, forward ? 1 : -1);
+  }
+
+  /** The rotation step angle. */
+  private static final double ROT_STEP = Math.PI / 512.0;
+
+  @Override
+  public void rotateByTicks(final int dx, final int dy) {
+    final double angleX = -dx * ROT_STEP;
+    final double angleY = dy * ROT_STEP;
+    rotate(angleX, angleY);
+  }
+
+  /**
+   * Rotates the view using quaternions.
+   * 
+   * @param angleX The angle in x direction.
+   * @param angleY The angle in y direction.
+   */
+  public void rotate(final double angleX, final double angleY) {
+    final Quaternion qX = Quaternion.normQuaternion(angleX, up);
+    final Quaternion pX = qX.negate();
+    final Vec4 left = view.cross(up);
+    final Quaternion qY = Quaternion.normQuaternion(angleY, left);
+    final Quaternion pY = qY.negate();
+    final Quaternion v = new Quaternion(view, 0);
+    view = qY.mul(qX.mul(v).mul(pX)).mul(pY).getVec().normalized();
+    up = view.cross(left.rotateY(angleX).normalized()).negate();
+  }
+
+  @Override
+  public void rotateViewByTicks(final int ticks) {
+    rotateView(ticks * ROT_STEP);
+  }
+
+  /**
+   * Rotates around the view direction.
+   * 
+   * @param angle The angle.
+   */
+  public void rotateView(final double angle) {
+    final Quaternion qV = Quaternion.normQuaternion(angle, view);
+    final Quaternion pV = qV.negate();
+    final Quaternion u = new Quaternion(up, 0);
+    up = qV.mul(u).mul(pV).getVec().normalized();
   }
 
   @Override

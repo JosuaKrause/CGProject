@@ -80,19 +80,19 @@ public class Triangle {
     norm.expectDirection();
     final Vec4 dir = r.getDirection();
     dir.expectDirection();
-    final double det = dir.prod(norm);
+    final double det = dir.dot(norm);
     if(det > -EPS && det < EPS) return -1;
     final Vec4 oa = a.sub(r.getOrigin());
     oa.expectDirection();
-    final double pos = oa.prod(norm) / det;
+    final double pos = oa.dot(norm) / det;
     if(pos <= 0) return -1;
     final Vec4 p = r.getPosition(pos);
     p.expectPoint();
-    final double u = norm.prod(c.sub(b).cross(p.sub(b)));
+    final double u = norm.dot(c.sub(b).cross(p.sub(b)));
     if(u < 0) return -1;
-    final double v = norm.prod(a.sub(c).cross(p.sub(c)));
+    final double v = norm.dot(a.sub(c).cross(p.sub(c)));
     if(v < 0) return -1;
-    final double w = norm.prod(edge1.cross(p.sub(a)));
+    final double w = norm.dot(edge1.cross(p.sub(a)));
     if(w < 0) return -1;
     return pos;
   }

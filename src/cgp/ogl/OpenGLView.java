@@ -6,6 +6,8 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.util.glu.GLU;
@@ -55,7 +57,39 @@ public class OpenGLView {
           return;
         }
         try {
+          boolean moving = false;
           while(!Display.isCloseRequested() && !k.get()) {
+            // interaction
+            if(Mouse.isButtonDown(0)) {
+              final int dx = Mouse.getDX();
+              final int dy = Mouse.getDY();
+              if(moving) {
+                cam.rotateByTicks(dx, dy);
+              } else {
+                moving = true;
+              }
+            } else {
+              moving = false;
+            }
+            if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
+              cam.move(true, false);
+            }
+            if(Keyboard.isKeyDown(Keyboard.KEY_S)) {
+              cam.move(false, false);
+            }
+            if(Keyboard.isKeyDown(Keyboard.KEY_A)) {
+              cam.move(true, true);
+            }
+            if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
+              cam.move(false, true);
+            }
+            if(Keyboard.isKeyDown(Keyboard.KEY_Q)) {
+              cam.rotateViewByTicks(-4);
+            }
+            if(Keyboard.isKeyDown(Keyboard.KEY_E)) {
+              cam.rotateViewByTicks(4);
+            }
+            // draw stuff
             draw();
             Display.update();
             Display.sync(60);
