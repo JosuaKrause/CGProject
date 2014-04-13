@@ -124,6 +124,26 @@ public class Triangle {
     return na.mul(1.0 - b.getU()).addMul(nb, 1.0 - b.getV()).addMul(nc, 1.0 - b.getW()).normalized();
   }
 
+  /** The normal cache. */
+  private Vec4 normal;
+
+  /**
+   * Getter.
+   * 
+   * @return Computes the actual normal of the triangle. The point order is
+   *         assumed to be counter-clockwise.
+   */
+  public Vec4 getActualNormal() {
+    if(normal == null) {
+      final Vec4 edge1 = b.sub(a);
+      final Vec4 edge2 = c.sub(a);
+      edge1.expectDirection();
+      edge2.expectDirection();
+      normal = edge1.cross(edge2).normalized();
+    }
+    return normal;
+  }
+
   /**
    * Getter.
    * 
