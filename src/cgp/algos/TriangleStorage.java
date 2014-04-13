@@ -20,6 +20,11 @@ public interface TriangleStorage {
   void addTriangle(Triangle tri);
 
   /**
+   * This method is called after all triangles were added to the data structure.
+   */
+  void finishLoading();
+
+  /**
    * Checks whether the ray hits a triangle.
    * 
    * @param r The ray.

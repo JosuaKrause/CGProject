@@ -54,6 +54,7 @@ public class Main {
     final TriangleStorage ts = new SimpleStorage();
     final MeshLoader loader = new ExampleMesh();
     loader.loadMesh(ts);
+    ts.finishLoading();
     // camera
     final Dimension dim = new Dimension(800, 600);
     final Vec4 origin = new Vec4(2.5, 2.5, 20, true);

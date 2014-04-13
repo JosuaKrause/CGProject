@@ -26,6 +26,11 @@ public class SimpleStorage implements TriangleStorage {
   }
 
   @Override
+  public void finishLoading() {
+    // nothing to do
+  }
+
+  @Override
   public Hit getHit(final Ray r, final TestCounter c) {
     double minDist = Double.POSITIVE_INFINITY;
     Triangle curBest = null;
