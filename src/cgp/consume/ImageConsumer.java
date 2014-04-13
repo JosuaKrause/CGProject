@@ -59,6 +59,7 @@ public abstract class ImageConsumer implements HitConsumer {
       g.drawString("R: render", 25, 25 + size);
       g.drawString("I: change image", 25, 25 + size * 2);
       g.drawString("P: take photo", 25, 25 + size * 3);
+      g.drawString("C: camera coordinates", 25, 25 + size * 4);
     } else {
       g.drawImage(img, 0, 0, null);
     }

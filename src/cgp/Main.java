@@ -186,6 +186,17 @@ public class Main {
 
     });
     im.put(KeyStroke.getKeyStroke(KeyEvent.VK_P, 0), keyP);
+    // coordinates key
+    final Object keyC = new Object();
+    am.put(keyC, new AbstractAction() {
+
+      @Override
+      public void actionPerformed(final ActionEvent ae) {
+        System.out.println(rp);
+      }
+
+    });
+    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, 0), keyC);
     // quit key
     final Object keyESC = new Object();
     am.put(keyESC, new AbstractAction() {

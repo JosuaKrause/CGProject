@@ -153,4 +153,11 @@ public class SimpleRayProducer implements RayProducer {
     return far;
   }
 
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + "[fov: " + getFov() + " width: " + getWidth()
+        + " height: " + getHeight() + " near: " + getNear() + " far: " + getFar()
+        + "\neye: " + getEye() + "\nview: " + getView() + "\nup: " + getUp() + "]";
+  }
+
 }
