@@ -31,12 +31,11 @@ public class SimpleStorage implements TriangleStorage {
     Triangle curBest = null;
     for(final Triangle t : triangles) {
       final double dist = t.hit(r, c);
-      if(dist > 0 && dist < minDist) {
+      if(r.isValidDistance(dist) && dist < minDist) {
         minDist = dist;
         curBest = t;
       }
     }
-    if(curBest == null) return new Hit(r, null, -1, c, triangleCount());
     return new Hit(r, curBest, minDist, c, triangleCount());
   }
 

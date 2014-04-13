@@ -31,22 +31,22 @@ public class Hit {
    * @param ray The ray.
    * @param tri The triangle that got hit or <code>null</code>.
    * @param distance The travel distance or a negative value if no triangle got
-   *          hit. The travel distance is measured in direction vectors.
+   *          hit. The travel distance is measured in direction vectors. If the
+   *          triangle is <code>null</code> the distance is automatically set to
+   *          a negative value.
    * @param testCount The test count.
    * @param maxCount The total number of triangles.
    */
   public Hit(final Ray ray, final Triangle tri,
       final double distance, final TestCounter testCount, final int maxCount) {
-    if((tri != null) != (distance > 0)) throw new IllegalArgumentException(
-        "inconsistent input: " + tri + " " + distance);
     this.ray = Objects.requireNonNull(ray);
     this.testCount = (double) testCount.getCount() / maxCount;
-    if(distance > ray.getFar()) {
-      this.tri = null;
-      this.distance = -1;
-    } else {
+    if(tri != null) {
       this.tri = tri;
       this.distance = distance;
+    } else {
+      this.tri = null;
+      this.distance = -1;
     }
   }
 

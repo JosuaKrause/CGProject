@@ -110,7 +110,7 @@ public class SimpleRayProducer implements RayProducer {
     final double lenUp = Math.tan(Math.toRadians(angleY));
     final Vec4 left = view.cross(up).negate();
     final Vec4 dir = view.addMul(left, lenLeft).addMul(up, lenUp).normalized();
-    return new Ray(eye.addMul(dir, near), dir, far - near);
+    return new Ray(eye, dir, near, far);
   }
 
   @Override

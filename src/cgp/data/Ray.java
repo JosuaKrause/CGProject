@@ -11,6 +11,8 @@ public class Ray {
   private final Vec4 origin;
   /** The normalized direction of the ray. */
   private final Vec4 dir;
+  /** The minimal distance the ray needs to travel. */
+  private final double min;
   /** The maximal distance the ray can travel. */
   private final double max;
 
@@ -19,11 +21,13 @@ public class Ray {
    * 
    * @param origin The origin.
    * @param dir The direction.
+   * @param min The minimal distance the ray needs to travel.
    * @param max The maximal distance the ray can travel.
    */
-  public Ray(final Vec4 origin, final Vec4 dir, final double max) {
+  public Ray(final Vec4 origin, final Vec4 dir, final double min, final double max) {
     this.origin = origin.expectPoint();
     this.dir = dir.expectDirection().normalized();
+    this.min = min;
     this.max = max;
   }
 
@@ -58,10 +62,29 @@ public class Ray {
   /**
    * Getter.
    * 
+   * @return The minimal distance the ray needs to travel.
+   */
+  public double getNear() {
+    return min;
+  }
+
+  /**
+   * Getter.
+   * 
    * @return The maximal distance the ray can travel.
    */
   public double getFar() {
     return max;
+  }
+
+  /**
+   * Tests whether the given distance is valid.
+   * 
+   * @param d The distance.
+   * @return Whether the distance is in the correct range.
+   */
+  public boolean isValidDistance(final double d) {
+    return d > min && d < max;
   }
 
 }
