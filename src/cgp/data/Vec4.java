@@ -2,7 +2,7 @@ package cgp.data;
 
 /**
  * A three dimensional vector using homogeneous coordinates.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class Vec4 {
@@ -29,7 +29,7 @@ public class Vec4 {
 
   /**
    * Creates a vector.
-   * 
+   *
    * @param x The x coordinate.
    * @param y The y coordinate.
    * @param z The z coordinate.
@@ -41,7 +41,7 @@ public class Vec4 {
 
   /**
    * Creates a vector.
-   * 
+   *
    * @param x The x coordinate.
    * @param y The y coordinate.
    * @param z The z coordinate.
@@ -56,7 +56,7 @@ public class Vec4 {
 
   /**
    * Getter.
-   * 
+   *
    * @return The x coordinate.
    */
   public double getX() {
@@ -65,7 +65,7 @@ public class Vec4 {
 
   /**
    * Getter.
-   * 
+   *
    * @return The y coordinate.
    */
   public double getY() {
@@ -74,7 +74,7 @@ public class Vec4 {
 
   /**
    * Getter.
-   * 
+   *
    * @return The z coordinate.
    */
   public double getZ() {
@@ -84,6 +84,15 @@ public class Vec4 {
   /**
    * Getter.
    * 
+   * @return The w coordinate.
+   */
+  double getW() {
+    return w;
+  }
+
+  /**
+   * Getter.
+   *
    * @return Whether the vector is a point.
    */
   public boolean isPoint() {
@@ -92,7 +101,7 @@ public class Vec4 {
 
   /**
    * Expects the vector to be a point.
-   * 
+   *
    * @return The vector.
    */
   public Vec4 expectPoint() {
@@ -102,7 +111,7 @@ public class Vec4 {
 
   /**
    * Expects the vector to be a direction.
-   * 
+   *
    * @return The vector.
    */
   public Vec4 expectDirection() {
@@ -112,7 +121,7 @@ public class Vec4 {
 
   /**
    * Getter.
-   * 
+   *
    * @return The squared length of the vector.
    */
   public double lengthSq() {
@@ -121,7 +130,7 @@ public class Vec4 {
 
   /**
    * Getter.
-   * 
+   *
    * @return The negated vector.
    */
   public Vec4 negate() {
@@ -130,7 +139,7 @@ public class Vec4 {
 
   /**
    * Scales the vector.
-   * 
+   *
    * @param s The factor.
    * @return The scaled vector.
    */
@@ -140,7 +149,7 @@ public class Vec4 {
 
   /**
    * Adds another vector.
-   * 
+   *
    * @param o The other vector.
    * @return The sum vector.
    */
@@ -150,7 +159,7 @@ public class Vec4 {
 
   /**
    * Subtracts another vector.
-   * 
+   *
    * @param o The other vector.
    * @return The difference vector.
    */
@@ -160,7 +169,7 @@ public class Vec4 {
 
   /**
    * Adds another vector that is scaled.
-   * 
+   *
    * @param o The other vector.
    * @param s The scaling of the other vector.
    * @return The vector representing <code>this + o*s</code>.
@@ -174,7 +183,7 @@ public class Vec4 {
 
   /**
    * Getter.
-   * 
+   *
    * @return The normalized vector.
    */
   public Vec4 normalized() {
@@ -193,7 +202,7 @@ public class Vec4 {
   /**
    * Computes the cross product with the given vector. Both vectors are assumed
    * to be directions.
-   * 
+   *
    * @param o The other vector.
    * @return The cross product vector.
    */
@@ -209,7 +218,7 @@ public class Vec4 {
 
   /**
    * Computes the dot product of the vectors.
-   * 
+   *
    * @param o The other vector.
    * @return The dot product.
    */
@@ -221,7 +230,7 @@ public class Vec4 {
 
   /**
    * Rotates the direction around the x axis.
-   * 
+   *
    * @param alpha The angle to rotate in radians.
    * @return The rotated vector.
    */
@@ -234,7 +243,7 @@ public class Vec4 {
 
   /**
    * Rotates the direction around the y axis.
-   * 
+   *
    * @param alpha The angle to rotate in radians.
    * @return The rotated vector.
    */
@@ -247,7 +256,7 @@ public class Vec4 {
 
   /**
    * Rotates the direction around the z axis.
-   * 
+   *
    * @param alpha The angle to rotate in radians.
    * @return The rotated vector.
    */
@@ -260,7 +269,7 @@ public class Vec4 {
 
   /**
    * Computes the angle enclosed by both vectors.
-   * 
+   *
    * @param o The other vector.
    * @return The angle in radians.
    */

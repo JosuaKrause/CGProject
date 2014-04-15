@@ -25,6 +25,7 @@ import cgp.consume.ImageConsumer;
 import cgp.consume.NormalConsumer;
 import cgp.consume.TestCountConsumer;
 import cgp.consume.ViewConsumer;
+import cgp.data.AffineTransform4;
 import cgp.data.Vec4;
 import cgp.io.ExampleMesh;
 import cgp.io.MeshLoader;
@@ -35,7 +36,7 @@ import cgp.tracer.SimpleRayProducer;
 
 /**
  * The entry point for the application.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class Main {
@@ -47,13 +48,14 @@ public class Main {
 
   /**
    * Starts the application.
-   * 
+   *
    * @param args No arguments.
    */
   public static void main(final String[] args) {
+    final AffineTransform4 aff = AffineTransform4.IDENTITY;
     final TriangleStorage ts = new SimpleStorage();
     final MeshLoader loader = new ExampleMesh();
-    loader.loadMesh(ts);
+    loader.loadMesh(ts, aff);
     ts.finishLoading();
     // camera
     final Dimension dim = new Dimension(800, 600);
