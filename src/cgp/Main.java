@@ -52,20 +52,14 @@ public class Main {
    * @param args No arguments.
    */
   public static void main(final String[] args) {
-    final AffineTransform4 aff = AffineTransform4.scale(0.1, 0.1, 0.1);
     final TriangleStorage ts = new SimpleStorage();
-    final MeshLoader loader = new OBJReader("teapot.obj");
-    loader.loadMesh(ts, aff);
-    ts.finishLoading();
     // camera
     final Dimension dim = new Dimension(800, 600);
-    final Vec4 origin = new Vec4(10, 10, 15, true);
-    final RayProducer rp = new SimpleRayProducer(
-        origin, new Vec4(-0.43, -0.50, -0.75, false),
-        new Vec4(-0.22, 0.86, -0.45, false),
-        dim.width, dim.height, 45, 1, 50);
+    final String name = args.length == 1 ? args[0] : "teapot";
+    final RayProducer rp = loadPreset(name, dim, ts);
+    System.out.println(ts.triangleCount() + " triangles loaded");
     // open Gl
-    final OpenGLView ogl = new OpenGLView(rp, ts);
+    final OpenGLView ogl = new OpenGLView(name, rp, ts);
     // setup frame
     final ImageConsumer[] consumer = {
         new ViewConsumer(),
@@ -88,7 +82,7 @@ public class Main {
 
       @Override
       public void actionPerformed(final ActionEvent e) {
-        frame.setTitle("Raytracer - " + consumer[showNorm.get()].name());
+        frame.setTitle("Raytracer - " + name + " - " + consumer[showNorm.get()].name());
       }
 
     };
@@ -220,6 +214,52 @@ public class Main {
     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     frame.setLocationRelativeTo(null);
     frame.setVisible(true);
+  }
+
+  /**
+   * Loads a model from a preset.
+   * 
+   * @param preset The preset name.
+   * @param dim The dimensions of the windows.
+   * @param ts The triangle storage.
+   * @return The ray producer.
+   */
+  public static final RayProducer loadPreset(
+      final String preset, final Dimension dim, final TriangleStorage ts) {
+    final AffineTransform4 aff;
+    final String file;
+    final Vec4 origin;
+    final Vec4 view;
+    final Vec4 up;
+    switch(preset) {
+      case "bunny":
+        aff = AffineTransform4.scale(5, 5, 5);
+        file = "objs/bunny.obj";
+        origin = new Vec4(7, 9, 15, true);
+        view = new Vec4(-0.39, -0.50, -0.77, false);
+        up = new Vec4(-0.20, 0.86, -0.46, false);
+        break;
+      case "teapot":
+        aff = AffineTransform4.scale(0.1, 0.1, 0.1);
+        file = "objs/teapot.obj";
+        origin = new Vec4(10, 10, 15, true);
+        view = new Vec4(-0.43, -0.50, -0.75, false);
+        up = new Vec4(-0.22, 0.86, -0.45, false);
+        break;
+      case "lamp":
+        aff = AffineTransform4.IDENTITY;
+        file = "objs/lamp.obj";
+        origin = new Vec4(-3.32, 9.75, 16.29, true);
+        view = new Vec4(0.18, -0.37, -0.91, false);
+        up = new Vec4(0.07, 0.93, -0.36, false);
+        break;
+      default:
+        throw new IllegalArgumentException(preset);
+    }
+    final MeshLoader loader = new OBJReader(file);
+    loader.loadMesh(ts, aff);
+    ts.finishLoading();
+    return new SimpleRayProducer(origin, view, up, dim.width, dim.height, 45, 1, 50);
   }
 
 }

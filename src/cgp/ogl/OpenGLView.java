@@ -18,7 +18,7 @@ import cgp.data.Vec4;
 
 /**
  * Shows the triangle soup rendered with Open-GL.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class OpenGLView {
@@ -32,11 +32,12 @@ public class OpenGLView {
 
   /**
    * Creates an Open-GL view.
-   * 
+   *
+   * @param name The name of the model.
    * @param cam The camera.
    * @param storage The triangle storage.
    */
-  public OpenGLView(final Camera cam, final TriangleStorage storage) {
+  public OpenGLView(final String name, final Camera cam, final TriangleStorage storage) {
     this.cam = Objects.requireNonNull(cam);
     this.storage = Objects.requireNonNull(storage);
     final AtomicBoolean k = kill = new AtomicBoolean(false);
@@ -46,7 +47,7 @@ public class OpenGLView {
       public void run() {
         try {
           Display.setDisplayMode(new DisplayMode(cam.getWidth(), cam.getHeight()));
-          Display.setTitle("Navigation View");
+          Display.setTitle("Navigation View - " + name);
           Display.create();
           glDisable(GL_CULL_FACE);
           glEnable(GL_DEPTH_TEST);
@@ -132,7 +133,7 @@ public class OpenGLView {
 
   /**
    * Sets the color according to relative facing of the normal.
-   * 
+   *
    * @param p The position.
    * @param n The normal at the position.
    */
@@ -143,7 +144,7 @@ public class OpenGLView {
 
   /**
    * Looks at a given direction.
-   * 
+   *
    * @param eye The eye.
    * @param view The view direction.
    * @param up The upwards direction.
@@ -157,7 +158,7 @@ public class OpenGLView {
 
   /**
    * Sets a vertex.
-   * 
+   *
    * @param vec The vector.
    */
   private static void vertex(final Vec4 vec) {
