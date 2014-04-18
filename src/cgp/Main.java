@@ -27,8 +27,8 @@ import cgp.consume.TestCountConsumer;
 import cgp.consume.ViewConsumer;
 import cgp.data.AffineTransform4;
 import cgp.data.Vec4;
-import cgp.io.ExampleMesh;
 import cgp.io.MeshLoader;
+import cgp.io.OBJReader;
 import cgp.ogl.OpenGLView;
 import cgp.tracer.RayProducer;
 import cgp.tracer.RayShooter;
@@ -52,17 +52,18 @@ public class Main {
    * @param args No arguments.
    */
   public static void main(final String[] args) {
-    final AffineTransform4 aff = AffineTransform4.IDENTITY;
+    final AffineTransform4 aff = AffineTransform4.scale(0.1, 0.1, 0.1);
     final TriangleStorage ts = new SimpleStorage();
-    final MeshLoader loader = new ExampleMesh();
+    final MeshLoader loader = new OBJReader("teapot.obj");
     loader.loadMesh(ts, aff);
     ts.finishLoading();
     // camera
     final Dimension dim = new Dimension(800, 600);
-    final Vec4 origin = new Vec4(2.5, 2.5, 20, true);
+    final Vec4 origin = new Vec4(10, 10, 15, true);
     final RayProducer rp = new SimpleRayProducer(
-        origin, Vec4.Z_AXIS.negate(), Vec4.Y_AXIS,
-        dim.width, dim.height, 45, 1, 30);
+        origin, new Vec4(-0.43, -0.50, -0.75, false),
+        new Vec4(-0.22, 0.86, -0.45, false),
+        dim.width, dim.height, 45, 1, 50);
     // open Gl
     final OpenGLView ogl = new OpenGLView(rp, ts);
     // setup frame

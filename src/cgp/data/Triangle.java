@@ -4,7 +4,7 @@ import cgp.tracer.TestCounter;
 
 /**
  * A triangle. It has three corners and three corresponding normal vectors.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class Triangle {
@@ -25,7 +25,7 @@ public class Triangle {
   /**
    * Creates a triangle and computes the normals accordingly. The points need to
    * be in counter clock-wise order.
-   * 
+   *
    * @param a The first corner.
    * @param b The second corner.
    * @param c The third corner.
@@ -39,7 +39,7 @@ public class Triangle {
 
   /**
    * Creates a triangle.
-   * 
+   *
    * @param a The first corner.
    * @param b The second corner.
    * @param c The third corner.
@@ -63,7 +63,7 @@ public class Triangle {
   /**
    * Computes the traveled distance of the ray until it hit the triangle. The
    * test counter gets increased.
-   * 
+   *
    * @param r The ray.
    * @param tc The test counter.
    * @return The squared traveled distance of the ray at the hit position or a
@@ -99,7 +99,7 @@ public class Triangle {
 
   /**
    * Getter.
-   * 
+   *
    * @param p The position on the triangle.
    * @return The barycentric coordinate.
    */
@@ -116,12 +116,12 @@ public class Triangle {
 
   /**
    * Computes the normal of the triangle at the given position.
-   * 
+   *
    * @param b The barycentric position.
    * @return The normal.
    */
   public Vec4 getNormalAt(final BarycentricCoordinates b) {
-    return na.mul(1.0 - b.getU()).addMul(nb, 1.0 - b.getV()).addMul(nc, 1.0 - b.getW()).normalized();
+    return na.mul(b.getU()).addMul(nb, b.getV()).addMul(nc, b.getW()).normalized();
   }
 
   /** The normal cache. */
@@ -129,7 +129,7 @@ public class Triangle {
 
   /**
    * Getter.
-   * 
+   *
    * @return Computes the actual normal of the triangle. The point order is
    *         assumed to be counter-clockwise.
    */
@@ -146,7 +146,7 @@ public class Triangle {
 
   /**
    * Getter.
-   * 
+   *
    * @return The first corner.
    */
   public Vec4 getA() {
@@ -155,7 +155,7 @@ public class Triangle {
 
   /**
    * Getter.
-   * 
+   *
    * @return The second corner.
    */
   public Vec4 getB() {
@@ -164,7 +164,7 @@ public class Triangle {
 
   /**
    * Getter.
-   * 
+   *
    * @return The third corner.
    */
   public Vec4 getC() {
@@ -173,7 +173,7 @@ public class Triangle {
 
   /**
    * Getter.
-   * 
+   *
    * @return The normal at the first corner.
    */
   public Vec4 getANormal() {
@@ -182,7 +182,7 @@ public class Triangle {
 
   /**
    * Getter.
-   * 
+   *
    * @return The normal at the second corner.
    */
   public Vec4 getBNormal() {
@@ -191,7 +191,7 @@ public class Triangle {
 
   /**
    * Getter.
-   * 
+   *
    * @return The normal at the third corner.
    */
   public Vec4 getCNormal() {
