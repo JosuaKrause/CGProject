@@ -12,7 +12,7 @@ import cgp.data.Ray;
 
 /**
  * The ray shooter.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class RayShooter {
@@ -26,18 +26,19 @@ public class RayShooter {
 
   /**
    * Creates a new ray shooter.
-   * 
+   *
    * @param prod The ray producer.
    * @param storage The triangle storage.
    */
   public RayShooter(final RayProducer prod, final TriangleStorage storage) {
     this.storage = Objects.requireNonNull(storage);
     this.prod = Objects.requireNonNull(prod);
+    System.out.println("using " + fjp.getParallelism() + " cores");
   }
 
   /**
    * Adds a consumer.
-   * 
+   *
    * @param hc A hit consumer.
    */
   public void addConsumer(final HitConsumer hc) {
@@ -50,7 +51,7 @@ public class RayShooter {
   /**
    * A ray shooting action. The action is divided until the number of rays to
    * shoot is under a given threshold.
-   * 
+   *
    * @author Joschi <josua.krause@gmail.com>
    */
   private class ShootingAction extends RecursiveAction {
@@ -70,7 +71,7 @@ public class RayShooter {
 
     /**
      * Creates a shooting action.
-     * 
+     *
      * @param hits The hit array.
      * @param xFrom The lowest inclusive x coordinate.
      * @param xTo The highest exclusive x coordinate.
@@ -102,7 +103,7 @@ public class RayShooter {
 
     /**
      * Getter.
-     * 
+     *
      * @return Whether the number of rays is below the threshold.
      */
     private boolean isSmallTask() {
@@ -136,10 +137,10 @@ public class RayShooter {
 
     /**
      * Getter.
-     * 
+     *
      * @return The total number of triangle tests.
      */
-    public int getTotalTestCount() {
+    public long getTotalTestCount() {
       return counter.getCount();
     }
 
@@ -148,7 +149,7 @@ public class RayShooter {
   /**
    * Shoots all rays. The consumers get notified after the shooting is
    * completed.
-   * 
+   *
    * @return The relative number of triangle checks.
    */
   public double shootRays() {
@@ -164,7 +165,7 @@ public class RayShooter {
 
   /**
    * Shoots a single ray.
-   * 
+   *
    * @param hits A column of the hit array.
    * @param x The x coordinate.
    * @param y The y coordinate.
@@ -180,7 +181,7 @@ public class RayShooter {
 
   /**
    * Notifies the consumers of the result.
-   * 
+   *
    * @param hits The filled hit array.
    */
   private void finish(final Hit[][] hits) {

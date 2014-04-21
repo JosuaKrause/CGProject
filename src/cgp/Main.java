@@ -132,12 +132,15 @@ public class Main {
       @Override
       public void run() {
         if(!isRunning.compareAndSet(false, true)) return;
+        final String title = frame.getTitle();
+        frame.setTitle(title + "*");
         System.out.println("start");
         final long nano = System.nanoTime();
         final double tests = rs.shootRays();
         System.out.println("end: took " + ((System.nanoTime() - nano) * 1e-6) + "ms");
         comp.repaint();
         System.out.println("tests: " + tests);
+        frame.setTitle(title);
         isRunning.set(false);
         synchronized(isRunning) {
           isRunning.notifyAll();

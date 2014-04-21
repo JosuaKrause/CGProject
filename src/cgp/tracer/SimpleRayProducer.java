@@ -6,7 +6,7 @@ import cgp.data.Vec4;
 
 /**
  * A simple ray producer.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class SimpleRayProducer implements RayProducer {
@@ -30,7 +30,7 @@ public class SimpleRayProducer implements RayProducer {
 
   /**
    * Creates a simple ray producer.
-   * 
+   *
    * @param eye The camera origin.
    * @param view The viewing direction.
    * @param up The direction which is up for the camera.
@@ -70,7 +70,7 @@ public class SimpleRayProducer implements RayProducer {
 
   /**
    * Rotates the view using quaternions.
-   * 
+   *
    * @param angleX The angle in x direction.
    * @param angleY The angle in y direction.
    */
@@ -92,7 +92,7 @@ public class SimpleRayProducer implements RayProducer {
 
   /**
    * Rotates around the view direction.
-   * 
+   *
    * @param angle The angle.
    */
   public void rotateView(final double angle) {

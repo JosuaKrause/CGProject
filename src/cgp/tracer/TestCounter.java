@@ -8,9 +8,9 @@ package cgp.tracer;
 public class TestCounter {
 
   /** The number of triangle checks. */
-  private int count;
+  private long count;
   /** The number of bounding box checks. */
-  private int bboxCount;
+  private long bboxCount;
 
   /** Creates an empty counter. */
   public TestCounter() {
@@ -43,16 +43,16 @@ public class TestCounter {
    *
    * @return The number of triangle checks.
    */
-  public int getCount() {
+  public long getCount() {
     return count;
   }
 
   /**
    * Getter.
-   * 
+   *
    * @return The number of bounding box checks.
    */
-  public int getBBoxCount() {
+  public long getBBoxCount() {
     return bboxCount;
   }
 

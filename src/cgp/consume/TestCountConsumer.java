@@ -14,7 +14,7 @@ public class TestCountConsumer extends ImageConsumer {
 
   /**
    * Creates a test count consumer.
-   * 
+   *
    * @param triangles Whether to show triangle checks.
    */
   public TestCountConsumer(final boolean triangles) {
@@ -29,9 +29,9 @@ public class TestCountConsumer extends ImageConsumer {
   @Override
   protected int getRGB(final Hit hit) {
     final int sub = (int) ((triangles ? hit.getTestCount() : hit.getBBoxCount()) * 0xff);
-    final int red = 0xff;
-    final int green = 0xff - sub;
-    final int blue = 0xff - sub;
+    final int red = triangles ? 0xff : 0;
+    final int green = triangles ? 0xff - sub : sub;
+    final int blue = triangles ? 0xff - sub : 0;
     return red << 16 | green << 8 | blue;
   }
 
