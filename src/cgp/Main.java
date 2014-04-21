@@ -51,9 +51,11 @@ public class Main {
   /**
    * Starts the application.
    *
-   * @param args No arguments.
+   * @param args The model to load. No argument defaults to "teapot". Valid
+   *          values are "teapot", "lamp", "bunny", and "test".
+   * @throws IOException I/O Exception.
    */
-  public static void main(final String[] args) {
+  public static void main(final String[] args) throws IOException {
     final TriangleStorage ts = new Octree();
     // camera
     final Dimension dim = new Dimension(800, 600);
@@ -230,9 +232,10 @@ public class Main {
    * @param dim The dimensions of the windows.
    * @param ts The triangle storage.
    * @return The ray producer.
+   * @throws IOException I/O Exception.
    */
-  public static final RayProducer loadPreset(
-      final String preset, final Dimension dim, final TriangleStorage ts) {
+  public static final RayProducer loadPreset(final String preset,
+      final Dimension dim, final TriangleStorage ts) throws IOException {
     final AffineTransform4 aff;
     final String file;
     final Vec4 origin;

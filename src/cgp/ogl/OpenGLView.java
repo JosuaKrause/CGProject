@@ -119,12 +119,13 @@ public class OpenGLView {
 
   /**
    * Generates the triangle list.
-   * 
+   *
    * @return The list index.
    */
   int init() {
     final int list = glGenLists(1);
     glNewList(list, GL_COMPILE);
+    // TODO computes camera dependent values...
     for(final Triangle t : storage.getSoup()) {
       glBegin(GL_TRIANGLES);
       viewColor(t.getA(), t.getANormal());
