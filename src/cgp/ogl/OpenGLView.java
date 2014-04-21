@@ -36,8 +36,10 @@ public class OpenGLView {
    * @param name The name of the model.
    * @param cam The camera.
    * @param storage The triangle storage.
+   * @param isRunning Whether a ray-tracing computation is currently running.
    */
-  public OpenGLView(final String name, final Camera cam, final TriangleStorage storage) {
+  public OpenGLView(final String name, final Camera cam,
+      final TriangleStorage storage, final AtomicBoolean isRunning) {
     this.cam = Objects.requireNonNull(cam);
     this.storage = Objects.requireNonNull(storage);
     final AtomicBoolean k = kill = new AtomicBoolean(false);
@@ -60,6 +62,12 @@ public class OpenGLView {
         try {
           boolean moving = false;
           while(!Display.isCloseRequested() && !k.get()) {
+            if(isRunning.get()) {
+              synchronized(isRunning) {
+                isRunning.wait(1000);
+              }
+              continue;
+            }
             // interaction
             if(Mouse.isButtonDown(0)) {
               final int dx = Mouse.getDX();
@@ -95,6 +103,8 @@ public class OpenGLView {
             Display.update();
             Display.sync(60);
           }
+        } catch(final InterruptedException e) {
+          interrupt();
         } finally {
           Display.destroy();
         }

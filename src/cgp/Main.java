@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.AbstractAction;
@@ -60,7 +61,8 @@ public class Main {
     final RayProducer rp = loadPreset(name, dim, ts);
     System.out.println(ts.triangleCount() + " triangles loaded");
     // open Gl
-    final OpenGLView ogl = new OpenGLView(name, rp, ts);
+    final AtomicBoolean isRunning = new AtomicBoolean();
+    final OpenGLView ogl = new OpenGLView(name, rp, ts, isRunning);
     // setup frame
     final ImageConsumer[] consumer = {
         new ViewConsumer(),
@@ -127,19 +129,19 @@ public class Main {
     }
     final Runnable run = new Runnable() {
 
-      private volatile boolean isRunning = false;
-
       @Override
       public void run() {
-        if(isRunning) return;
-        isRunning = true;
+        if(!isRunning.compareAndSet(false, true)) return;
         System.out.println("start");
         final long nano = System.nanoTime();
         final double tests = rs.shootRays();
         System.out.println("end: took " + ((System.nanoTime() - nano) * 1e-6) + "ms");
         comp.repaint();
         System.out.println("tests: " + tests);
-        isRunning = false;
+        isRunning.set(false);
+        synchronized(isRunning) {
+          isRunning.notifyAll();
+        }
       }
 
     };
