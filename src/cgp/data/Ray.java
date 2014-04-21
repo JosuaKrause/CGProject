@@ -59,11 +59,27 @@ public class Ray {
     return origin.addMul(dir, at);
   }
 
+  /**
+   * Computes the position when the ray takes the value of the given vector in
+   * the specified coordinate.
+   *
+   * @param vec The vector.
+   * @param coord The coordinate.
+   * @return The position.
+   */
   public double hitCoord(final Vec4 vec, final int coord) {
     return hitCoord(vec.get(coord), coord);
   }
 
-  public double hitCoord(final double value, final int coord) {
+  /**
+   * Computes the position when the ray takes the given value in the specified
+   * coordinate.
+   *
+   * @param value The value.
+   * @param coord The coordinate.
+   * @return The position.
+   */
+  private double hitCoord(final double value, final int coord) {
     final double o = origin.get(coord);
     final double d = dir.get(coord);
     return (value - o) / d; // for d == 0 result is +/-Inf

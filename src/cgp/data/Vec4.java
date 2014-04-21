@@ -18,9 +18,13 @@ public class Vec4 {
   /** The z axis direction. */
   public static final Vec4 Z_AXIS = new Vec4(0, 0, 1, 0);
 
+  /** The index of the x coordinate. */
   public static final int X = 0;
+  /** The index of the y coordinate. */
   public static final int Y = 1;
+  /** The index of the z coordinate. */
   public static final int Z = 2;
+  /** The index of the w coordinate. */
   public static final int W = 3;
 
   /** The x coordinate. */
@@ -95,6 +99,16 @@ public class Vec4 {
     return w;
   }
 
+  /**
+   * Getter.
+   *
+   * @param coord The coordinate.
+   * @return The value of the coordinate.
+   * @see #X
+   * @see #Y
+   * @see #Z
+   * @see #W
+   */
   public double get(final int coord) {
     switch(coord) {
       case 0:

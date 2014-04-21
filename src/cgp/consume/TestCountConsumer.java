@@ -9,8 +9,14 @@ import cgp.tracer.Hit;
  */
 public class TestCountConsumer extends ImageConsumer {
 
+  /** Whether to show triangle checks. */
   private final boolean triangles;
 
+  /**
+   * Creates a test count consumer.
+   * 
+   * @param triangles Whether to show triangle checks.
+   */
   public TestCountConsumer(final boolean triangles) {
     this.triangles = triangles;
   }

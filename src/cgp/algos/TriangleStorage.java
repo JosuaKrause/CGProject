@@ -40,6 +40,11 @@ public interface TriangleStorage {
    */
   int triangleCount();
 
+  /**
+   * Getter.
+   *
+   * @return The total number of bounding boxes or volume separators.
+   */
   int bboxCount();
 
   /**

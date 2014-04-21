@@ -23,6 +23,7 @@ public class TestCounter {
     ++count;
   }
 
+  /** Increases the bounding box check count. */
   public void addBBoxCheck() {
     ++bboxCount;
   }
@@ -46,6 +47,11 @@ public class TestCounter {
     return count;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The number of bounding box checks.
+   */
   public int getBBoxCount() {
     return bboxCount;
   }

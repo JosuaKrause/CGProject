@@ -25,7 +25,7 @@ public class Hit {
   private final double distance;
   /** The relative triangle test count. */
   private final double testCount;
-
+  /** The relative bounding box test count. */
   private final double bboxCount;
 
   /**
@@ -107,6 +107,11 @@ public class Hit {
     return testCount;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The relative number of bounding box checks.
+   */
   public double getBBoxCount() {
     return bboxCount;
   }

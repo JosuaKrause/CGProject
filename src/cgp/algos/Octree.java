@@ -11,11 +11,16 @@ import cgp.data.Triangle;
 import cgp.tracer.Hit;
 import cgp.tracer.TestCounter;
 
+/**
+ * An Octree.
+ *
+ * @author Joschi <josua.krause@gmail.com>
+ */
 public class Octree implements TriangleStorage {
 
   /** The list of triangles. */
   private final List<Triangle> triangles = new ArrayList<>();
-
+  /** The bounding box of the scene. */
   private BoundingBox bbox = new BoundingBox();
 
   @Override
