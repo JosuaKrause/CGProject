@@ -47,6 +47,7 @@ public class OpenGLView {
 
       @Override
       public void run() {
+        final int list;
         try {
           Display.setDisplayMode(new DisplayMode(cam.getWidth(), cam.getHeight()));
           Display.setTitle(name + " - Navigation View");
@@ -54,6 +55,7 @@ public class OpenGLView {
           glDisable(GL_CULL_FACE);
           glEnable(GL_DEPTH_TEST);
           glDepthFunc(GL_LESS);
+          list = init();
         } catch(final LWJGLException e) {
           e.printStackTrace();
           Display.destroy();
@@ -99,7 +101,7 @@ public class OpenGLView {
               cam.rotateViewByTicks(4);
             }
             // draw stuff
-            draw();
+            draw(list);
             Display.update();
             Display.sync(60);
           }
@@ -115,8 +117,34 @@ public class OpenGLView {
     t.start();
   }
 
-  /** Draws the triangles. */
-  void draw() {
+  /**
+   * Generates the triangle list.
+   * 
+   * @return The list index.
+   */
+  int init() {
+    final int list = glGenLists(1);
+    glNewList(list, GL_COMPILE);
+    for(final Triangle t : storage.getSoup()) {
+      glBegin(GL_TRIANGLES);
+      viewColor(t.getA(), t.getANormal());
+      vertex(t.getA());
+      viewColor(t.getB(), t.getBNormal());
+      vertex(t.getB());
+      viewColor(t.getC(), t.getCNormal());
+      vertex(t.getC());
+      glEnd();
+    }
+    glEndList();
+    return list;
+  }
+
+  /**
+   * Draws the triangles.
+   *
+   * @param list The list to draw.
+   */
+  void draw(final int list) {
     // we are lazy and use immediate mode
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -129,16 +157,7 @@ public class OpenGLView {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
     look(cam.getEye(), cam.getView(), cam.getUp());
-    for(final Triangle t : storage.getSoup()) {
-      glBegin(GL_TRIANGLES);
-      viewColor(t.getA(), t.getANormal());
-      vertex(t.getA());
-      viewColor(t.getB(), t.getBNormal());
-      vertex(t.getB());
-      viewColor(t.getC(), t.getCNormal());
-      vertex(t.getC());
-      glEnd();
-    }
+    glCallList(list);
   }
 
   /**
