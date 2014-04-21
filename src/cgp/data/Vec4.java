@@ -18,6 +18,11 @@ public class Vec4 {
   /** The z axis direction. */
   public static final Vec4 Z_AXIS = new Vec4(0, 0, 1, 0);
 
+  public static final int X = 0;
+  public static final int Y = 1;
+  public static final int Z = 2;
+  public static final int W = 3;
+
   /** The x coordinate. */
   private final double x;
   /** The y coordinate. */
@@ -83,11 +88,26 @@ public class Vec4 {
 
   /**
    * Getter.
-   * 
+   *
    * @return The w coordinate.
    */
   double getW() {
     return w;
+  }
+
+  public double get(final int coord) {
+    switch(coord) {
+      case 0:
+        return getX();
+      case 1:
+        return getY();
+      case 2:
+        return getZ();
+      case 3:
+        return getW();
+      default:
+        throw new IndexOutOfBoundsException("" + coord);
+    }
   }
 
   /**

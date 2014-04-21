@@ -7,14 +7,14 @@ import cgp.tracer.TestCounter;
 
 /**
  * A triangle storage data structure.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public interface TriangleStorage {
 
   /**
    * Adds a triangle.
-   * 
+   *
    * @param tri The triangle.
    */
   void addTriangle(Triangle tri);
@@ -26,7 +26,7 @@ public interface TriangleStorage {
 
   /**
    * Checks whether the ray hits a triangle.
-   * 
+   *
    * @param r The ray.
    * @param counter The check counter.
    * @return The hit.
@@ -35,14 +35,16 @@ public interface TriangleStorage {
 
   /**
    * Getter.
-   * 
+   *
    * @return The total number of triangles.
    */
   int triangleCount();
 
+  int bboxCount();
+
   /**
    * Getter.
-   * 
+   *
    * @return Iterates over all triangles.
    */
   Iterable<Triangle> getSoup();

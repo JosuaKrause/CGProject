@@ -17,7 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
-import cgp.algos.SimpleStorage;
+import cgp.algos.Octree;
 import cgp.algos.TriangleStorage;
 import cgp.consume.BaryConsumer;
 import cgp.consume.DepthConsumer;
@@ -27,6 +27,7 @@ import cgp.consume.TestCountConsumer;
 import cgp.consume.ViewConsumer;
 import cgp.data.AffineTransform4;
 import cgp.data.Vec4;
+import cgp.io.ExampleMesh;
 import cgp.io.MeshLoader;
 import cgp.io.OBJReader;
 import cgp.ogl.OpenGLView;
@@ -52,7 +53,7 @@ public class Main {
    * @param args No arguments.
    */
   public static void main(final String[] args) {
-    final TriangleStorage ts = new SimpleStorage();
+    final TriangleStorage ts = new Octree();
     // camera
     final Dimension dim = new Dimension(800, 600);
     final String name = args.length == 1 ? args[0] : "teapot";
@@ -66,7 +67,8 @@ public class Main {
         new NormalConsumer(),
         new BaryConsumer(),
         new DepthConsumer(rp),
-        new TestCountConsumer(),
+        new TestCountConsumer(true),
+        new TestCountConsumer(false),
     };
     final AtomicInteger showNorm = new AtomicInteger(0);
     final JFrame frame = new JFrame() {
@@ -82,7 +84,7 @@ public class Main {
 
       @Override
       public void actionPerformed(final ActionEvent e) {
-        frame.setTitle("Raytracer - " + name + " - " + consumer[showNorm.get()].name());
+        frame.setTitle(name + " - Raytracer - " + consumer[showNorm.get()].name());
       }
 
     };
@@ -218,7 +220,7 @@ public class Main {
 
   /**
    * Loads a model from a preset.
-   * 
+   *
    * @param preset The preset name.
    * @param dim The dimensions of the windows.
    * @param ts The triangle storage.
@@ -253,10 +255,17 @@ public class Main {
         view = new Vec4(0.18, -0.37, -0.91, false);
         up = new Vec4(0.07, 0.93, -0.36, false);
         break;
+      case "test":
+        aff = AffineTransform4.scale(2, 2, 2);
+        file = null;
+        origin = new Vec4(5, 5, 40, true);
+        view = Vec4.Z_AXIS.negate();
+        up = Vec4.Y_AXIS;
+        break;
       default:
         throw new IllegalArgumentException(preset);
     }
-    final MeshLoader loader = new OBJReader(file);
+    final MeshLoader loader = file == null ? new ExampleMesh() : new OBJReader(file);
     loader.loadMesh(ts, aff);
     ts.finishLoading();
     return new SimpleRayProducer(origin, view, up, dim.width, dim.height, 45, 1, 50);

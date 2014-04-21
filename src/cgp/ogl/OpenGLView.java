@@ -47,7 +47,7 @@ public class OpenGLView {
       public void run() {
         try {
           Display.setDisplayMode(new DisplayMode(cam.getWidth(), cam.getHeight()));
-          Display.setTitle("Navigation View - " + name);
+          Display.setTitle(name + " - Navigation View");
           Display.create();
           glDisable(GL_CULL_FACE);
           glEnable(GL_DEPTH_TEST);

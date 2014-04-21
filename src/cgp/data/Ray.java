@@ -2,7 +2,7 @@ package cgp.data;
 
 /**
  * A ray.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class Ray {
@@ -18,7 +18,7 @@ public class Ray {
 
   /**
    * Creates a new ray.
-   * 
+   *
    * @param origin The origin.
    * @param dir The direction.
    * @param min The minimal distance the ray needs to travel.
@@ -33,7 +33,7 @@ public class Ray {
 
   /**
    * Getter.
-   * 
+   *
    * @return The view direction.
    */
   public Vec4 getDirection() {
@@ -42,7 +42,7 @@ public class Ray {
 
   /**
    * Getter.
-   * 
+   *
    * @return The origin.
    */
   public Vec4 getOrigin() {
@@ -51,7 +51,7 @@ public class Ray {
 
   /**
    * Getter.
-   * 
+   *
    * @param at The traveled distance.
    * @return The position at the traveled distance.
    */
@@ -59,9 +59,19 @@ public class Ray {
     return origin.addMul(dir, at);
   }
 
+  public double hitCoord(final Vec4 vec, final int coord) {
+    return hitCoord(vec.get(coord), coord);
+  }
+
+  public double hitCoord(final double value, final int coord) {
+    final double o = origin.get(coord);
+    final double d = dir.get(coord);
+    return (value - o) / d; // for d == 0 result is +/-Inf
+  }
+
   /**
    * Getter.
-   * 
+   *
    * @return The minimal distance the ray needs to travel.
    */
   public double getNear() {
@@ -70,7 +80,7 @@ public class Ray {
 
   /**
    * Getter.
-   * 
+   *
    * @return The maximal distance the ray can travel.
    */
   public double getFar() {
@@ -79,7 +89,7 @@ public class Ray {
 
   /**
    * Tests whether the given distance is valid.
-   * 
+   *
    * @param d The distance.
    * @return Whether the distance is in the correct range.
    */

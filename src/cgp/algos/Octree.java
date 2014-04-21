@@ -5,24 +5,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import cgp.data.BoundingBox;
 import cgp.data.Ray;
 import cgp.data.Triangle;
 import cgp.tracer.Hit;
 import cgp.tracer.TestCounter;
 
-/**
- * A simple triangle storage strategy. Every triangle gets tested for every ray.
- *
- * @author Joschi <josua.krause@gmail.com>
- */
-public class SimpleStorage implements TriangleStorage {
+public class Octree implements TriangleStorage {
 
   /** The list of triangles. */
   private final List<Triangle> triangles = new ArrayList<>();
 
+  private BoundingBox bbox = new BoundingBox();
+
   @Override
   public void addTriangle(final Triangle tri) {
     triangles.add(Objects.requireNonNull(tri));
+    bbox = bbox.add(new BoundingBox(tri));
   }
 
   @Override
@@ -32,6 +31,7 @@ public class SimpleStorage implements TriangleStorage {
 
   @Override
   public Hit getHit(final Ray r, final TestCounter c) {
+    if(!bbox.intersects(r, c)) return new Hit(r, null, -1, c, this);
     double minDist = Double.POSITIVE_INFINITY;
     Triangle curBest = null;
     for(final Triangle t : triangles) {

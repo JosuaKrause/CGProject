@@ -2,13 +2,14 @@ package cgp.tracer;
 
 import java.util.Objects;
 
+import cgp.algos.TriangleStorage;
 import cgp.data.BarycentricCoordinates;
 import cgp.data.Ray;
 import cgp.data.Triangle;
 
 /**
  * A triangle hit.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class Hit {
@@ -25,9 +26,11 @@ public class Hit {
   /** The relative triangle test count. */
   private final double testCount;
 
+  private final double bboxCount;
+
   /**
    * Creates a new hit.
-   * 
+   *
    * @param ray The ray.
    * @param tri The triangle that got hit or <code>null</code>.
    * @param distance The travel distance or a negative value if no triangle got
@@ -35,12 +38,13 @@ public class Hit {
    *          triangle is <code>null</code> the distance is automatically set to
    *          a negative value.
    * @param testCount The test count.
-   * @param maxCount The total number of triangles.
+   * @param ts The triangle storage.
    */
   public Hit(final Ray ray, final Triangle tri,
-      final double distance, final TestCounter testCount, final int maxCount) {
+      final double distance, final TestCounter testCount, final TriangleStorage ts) {
     this.ray = Objects.requireNonNull(ray);
-    this.testCount = (double) testCount.getCount() / maxCount;
+    this.testCount = (double) testCount.getCount() / ts.triangleCount();
+    bboxCount = (double) testCount.getBBoxCount() / ts.bboxCount();
     if(tri != null) {
       this.tri = tri;
       this.distance = distance;
@@ -52,7 +56,7 @@ public class Hit {
 
   /**
    * Getter.
-   * 
+   *
    * @return The ray.
    */
   public Ray getRay() {
@@ -61,7 +65,7 @@ public class Hit {
 
   /**
    * Getter.
-   * 
+   *
    * @return Whether there was a triangle hit.
    */
   public boolean hasHit() {
@@ -73,7 +77,7 @@ public class Hit {
 
   /**
    * Getter.
-   * 
+   *
    * @return The barycentric coordinate of the hit.
    */
   public BarycentricCoordinates getBarycentric() {
@@ -86,7 +90,7 @@ public class Hit {
 
   /**
    * Getter.
-   * 
+   *
    * @return The travel distance. Note that the distance is positive iff a
    *         triangle was hit.
    */
@@ -96,11 +100,15 @@ public class Hit {
 
   /**
    * Getter.
-   * 
+   *
    * @return The relative number of performed tests.
    */
   public double getTestCount() {
     return testCount;
+  }
+
+  public double getBBoxCount() {
+    return bboxCount;
   }
 
 }
