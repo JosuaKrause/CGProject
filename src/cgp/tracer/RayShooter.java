@@ -150,17 +150,16 @@ public class RayShooter {
    * Shoots all rays. The consumers get notified after the shooting is
    * completed.
    *
-   * @return The relative number of triangle checks.
+   * @return The number of triangle checks.
    */
-  public double shootRays() {
+  public long shootRays() {
     final int w = prod.getWidth();
     final int h = prod.getHeight();
     final Hit[][] res = new Hit[w][h];
     final ShootingAction sa = new ShootingAction(res, 0, w, 0, h);
     fjp.invoke(sa);
     finish(res);
-    final double maxChecks = (double) storage.triangleCount() * w * h;
-    return sa.getTotalTestCount() / maxChecks;
+    return sa.getTotalTestCount();
   }
 
   /**

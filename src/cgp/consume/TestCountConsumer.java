@@ -27,18 +27,18 @@ public class TestCountConsumer extends ImageConsumer {
   }
 
   /** All values. */
-  private double[][] values;
+  private long[][] values;
   /** The minimal value. */
-  private double min;
+  private long min;
   /** The maximal value. */
-  private double max;
+  private long max;
 
   @Override
   public void setSize(final int width, final int height) {
     super.setSize(width, height);
-    values = new double[width][height];
-    min = Double.POSITIVE_INFINITY;
-    max = Double.NEGATIVE_INFINITY;
+    values = new long[width][height];
+    min = Long.MAX_VALUE;
+    max = Long.MIN_VALUE;
   }
 
   /**
@@ -47,7 +47,7 @@ public class TestCountConsumer extends ImageConsumer {
    * @param hit The hit.
    * @return The desired hit count between zero and one.
    */
-  private double getCount(final Hit hit) {
+  private long getCount(final Hit hit) {
     return triangles ? hit.getTestCount() : hit.getBBoxCount();
   }
 
@@ -63,7 +63,7 @@ public class TestCountConsumer extends ImageConsumer {
 
   @Override
   public void hitAt(final Hit hit, final int x, final int y) {
-    final double v = getCount(hit);
+    final long v = getCount(hit);
     values[x][y] = v;
     if(min > v) {
       min = v;
@@ -82,7 +82,7 @@ public class TestCountConsumer extends ImageConsumer {
   public void finished() {
     System.out.println(name() + "[min: " + min + " max: " + max + "]");
     for(int x = 0; x < values.length; ++x) {
-      final double[] row = values[x];
+      final long[] row = values[x];
       for(int y = 0; y < row.length; ++y) {
         final int sub = (int) (normalize(row[y]) * 0xff);
         final int red = triangles ? 0xff : 0;

@@ -61,7 +61,7 @@ public class Main {
     final Dimension dim = new Dimension(800, 600);
     final String name = args.length == 1 ? args[0] : "teapot";
     final RayProducer rp = loadPreset(name, dim, ts);
-    System.out.println(ts.triangleCount() + " triangles loaded");
+    System.out.println(ts.size() + " triangles loaded");
     // open Gl
     final AtomicBoolean isRunning = new AtomicBoolean();
     final OpenGLView ogl = new OpenGLView(name, rp, ts, isRunning);
@@ -138,7 +138,7 @@ public class Main {
         frame.setTitle(title + "*");
         System.out.println("start");
         final long nano = System.nanoTime();
-        final double tests = rs.shootRays();
+        final long tests = rs.shootRays();
         System.out.println("end: took " + ((System.nanoTime() - nano) * 1e-6) + "ms");
         comp.repaint();
         System.out.println("tests: " + tests);

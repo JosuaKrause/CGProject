@@ -41,7 +41,7 @@ public class SimpleStorage implements TriangleStorage {
         curBest = t;
       }
     }
-    return new Hit(r, curBest, minDist, c, this);
+    return new Hit(r, curBest, minDist, c);
   }
 
   @Override
@@ -49,14 +49,19 @@ public class SimpleStorage implements TriangleStorage {
     return Collections.unmodifiableCollection(triangles);
   }
 
-  @Override
-  public int triangleCount() {
-    return triangles.size();
+  /**
+   * Getter.
+   *
+   * @param index The index.
+   * @return The triangle at the given position.
+   */
+  protected Triangle getTriangle(final int index) {
+    return triangles.get(index);
   }
 
   @Override
-  public int bboxCount() {
-    return 1;
+  public int size() {
+    return triangles.size();
   }
 
 }

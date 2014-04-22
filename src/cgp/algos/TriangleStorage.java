@@ -36,22 +36,15 @@ public interface TriangleStorage {
   /**
    * Getter.
    *
-   * @return The total number of triangles.
-   */
-  int triangleCount();
-
-  /**
-   * Getter.
-   *
-   * @return The total number of bounding boxes or volume separators.
-   */
-  int bboxCount();
-
-  /**
-   * Getter.
-   *
    * @return Iterates over all triangles.
    */
   Iterable<Triangle> getSoup();
+
+  /**
+   * Getter.
+   *
+   * @return The number of triangles.
+   */
+  int size();
 
 }

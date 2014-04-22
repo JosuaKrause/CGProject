@@ -1,9 +1,6 @@
 package cgp.algos;
 
-import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 import cgp.data.BoundingBox;
@@ -18,7 +15,7 @@ import cgp.tracer.TestCounter;
  *
  * @author Joschi <josua.krause@gmail.com>
  */
-public class Octree implements TriangleStorage {
+public class Octree extends SimpleStorage {
 
   /**
    * An internal node of the Octree.
@@ -38,11 +35,10 @@ public class Octree implements TriangleStorage {
      * Creates a new node.
      *
      * @param box The bounding box.
-     * @param tLen The expected highest index plus one of triangles.
      */
-    public Node(final BoundingBox box, @SuppressWarnings("unused") final int tLen) {
+    public Node(final BoundingBox box) {
       this.box = Objects.requireNonNull(box);
-      ts = new BitSet(/* tLen */); // less memory usage
+      ts = new BitSet();
       children = null;
     }
 
@@ -97,7 +93,7 @@ public class Octree implements TriangleStorage {
       ts = null;
       split(box, boxes);
       for(int i = 0; i < children.length; ++i) {
-        final Node n = new Node(boxes[i], b.length());
+        final Node n = new Node(boxes[i]);
         for(int t = b.nextSetBit(0); t >= 0; t = b.nextSetBit(t + 1)) {
           n.addTriangle(t, getTriangle(t), true);
         }
@@ -113,7 +109,7 @@ public class Octree implements TriangleStorage {
      * @return The hit.
      */
     public Hit getHit(final Ray r, final TestCounter c) {
-      if(!box.intersects(r, c)) return new Hit(r, c, Octree.this);
+      if(!box.intersects(r, c)) return new Hit(r, c);
       if(ts != null) return getLevelHit(r, c);
       final Vec4 d = r.getDirection();
       boolean minX = d.getX() > 0;
@@ -134,7 +130,7 @@ public class Octree implements TriangleStorage {
           }
         }
       }
-      return new Hit(r, c, Octree.this);
+      return new Hit(r, c);
     }
 
     /**
@@ -155,27 +151,11 @@ public class Octree implements TriangleStorage {
           curBest = tri;
         }
       }
-      return new Hit(r, curBest, minDist, c, Octree.this);
-    }
-
-    /**
-     * Getter.
-     *
-     * @return The number of bounding boxes.
-     */
-    public int getBoxCount() {
-      if(ts != null) return 1;
-      int res = 0;
-      for(final Node n : children) {
-        res += n.getBoxCount();
-      }
-      return res;
+      return new Hit(r, curBest, minDist, c);
     }
 
   } // Node
 
-  /** The list of triangles. */
-  private final List<Triangle> triangles = new ArrayList<>();
   /** The threshold when boxes are not being split anymore. */
   protected final int threshold;
   /** The bounding box of the scene. */
@@ -196,27 +176,16 @@ public class Octree implements TriangleStorage {
 
   @Override
   public void addTriangle(final Triangle tri) {
-    triangles.add(Objects.requireNonNull(tri));
+    super.addTriangle(tri);
     bbox = bbox.add(new BoundingBox(tri));
   }
 
   @Override
   public void finishLoading() {
-    root = new Node(bbox, triangles.size());
-    for(int i = 0; i < triangles.size(); ++i) {
-      root.addTriangle(i, triangles.get(i));
+    root = new Node(bbox);
+    for(int i = 0; i < size(); ++i) {
+      root.addTriangle(i, getTriangle(i));
     }
-    boxCount = 0;
-  }
-
-  /**
-   * Getter.
-   *
-   * @param index The index.
-   * @return The triangle at the given position.
-   */
-  protected Triangle getTriangle(final int index) {
-    return triangles.get(index);
   }
 
   /**
@@ -262,27 +231,6 @@ public class Octree implements TriangleStorage {
   @Override
   public Hit getHit(final Ray r, final TestCounter c) {
     return root.getHit(r, c);
-  }
-
-  @Override
-  public Iterable<Triangle> getSoup() {
-    return Collections.unmodifiableCollection(triangles);
-  }
-
-  @Override
-  public int triangleCount() {
-    return triangles.size();
-  }
-
-  /** The cached box count. */
-  private int boxCount;
-
-  @Override
-  public int bboxCount() {
-    if(boxCount == 0) {
-      boxCount = root.getBoxCount();
-    }
-    return boxCount;
   }
 
 }

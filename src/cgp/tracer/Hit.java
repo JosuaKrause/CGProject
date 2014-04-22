@@ -2,7 +2,6 @@ package cgp.tracer;
 
 import java.util.Objects;
 
-import cgp.algos.TriangleStorage;
 import cgp.data.BarycentricCoordinates;
 import cgp.data.Ray;
 import cgp.data.Triangle;
@@ -23,20 +22,19 @@ public class Hit {
    * not <code>null</code>.
    */
   private final double distance;
-  /** The relative triangle test count. */
-  private final double testCount;
-  /** The relative bounding box test count. */
-  private final double bboxCount;
+  /** The triangle test count. */
+  private final long testCount;
+  /** The bounding box test count. */
+  private final long bboxCount;
 
   /**
    * Creates a failed hit.
-   * 
+   *
    * @param ray The ray.
    * @param testCount The test count.
-   * @param ts The triangle storage.
    */
-  public Hit(final Ray ray, final TestCounter testCount, final TriangleStorage ts) {
-    this(ray, null, -1, testCount, ts);
+  public Hit(final Ray ray, final TestCounter testCount) {
+    this(ray, null, -1, testCount);
   }
 
   /**
@@ -49,13 +47,12 @@ public class Hit {
    *          triangle is <code>null</code> the distance is automatically set to
    *          a negative value.
    * @param testCount The test count.
-   * @param ts The triangle storage.
    */
   public Hit(final Ray ray, final Triangle tri,
-      final double distance, final TestCounter testCount, final TriangleStorage ts) {
+      final double distance, final TestCounter testCount) {
     this.ray = Objects.requireNonNull(ray);
-    this.testCount = (double) testCount.getCount() / ts.triangleCount();
-    bboxCount = (double) testCount.getBBoxCount() / ts.bboxCount();
+    this.testCount = testCount.getCount();
+    bboxCount = testCount.getBBoxCount();
     if(tri != null) {
       this.tri = tri;
       this.distance = distance;
@@ -112,18 +109,18 @@ public class Hit {
   /**
    * Getter.
    *
-   * @return The relative number of performed tests.
+   * @return The number of performed tests.
    */
-  public double getTestCount() {
+  public long getTestCount() {
     return testCount;
   }
 
   /**
    * Getter.
    *
-   * @return The relative number of bounding box checks.
+   * @return The number of bounding box checks.
    */
-  public double getBBoxCount() {
+  public long getBBoxCount() {
     return bboxCount;
   }
 
