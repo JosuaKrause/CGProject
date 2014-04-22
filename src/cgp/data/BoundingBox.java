@@ -122,8 +122,9 @@ public class BoundingBox {
    * @return Whether the triangle intersects the bounding box.
    */
   public boolean intersects(final Triangle t) {
+    if(contains(t.getA()) || contains(t.getB()) || contains(t.getC())) return true;
     // FIXME naive implementation -- wrong!
-    return contains(t.getA()) || contains(t.getB()) || contains(t.getC());
+    return false;
   }
 
   /**
@@ -137,12 +138,12 @@ public class BoundingBox {
   public Vec4 get(final boolean minX, final boolean minY, final boolean minZ) {
     return new Vec4(minX ? mins.getX() : maxs.getX(),
         minY ? mins.getY() : maxs.getY(),
-        minZ ? mins.getZ() : maxs.getZ(), true);
+            minZ ? mins.getZ() : maxs.getZ(), true);
   }
 
   /**
    * Getter.
-   * 
+   *
    * @return The center of the bounding box.
    */
   public Vec4 getCenter() {
