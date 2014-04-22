@@ -1,5 +1,6 @@
 package cgp.data;
 
+import static cgp.data.Vec4.*;
 import cgp.tracer.TestCounter;
 
 /**
@@ -89,10 +90,10 @@ public class BoundingBox {
     final boolean sy = d.getY() > 0;
     final boolean vx = d.getX() != 0;
     final boolean vy = d.getY() != 0;
-    double tmin = r.hitCoord(sx ? mins : maxs, Vec4.X);
-    double tmax = r.hitCoord(!sx ? mins : maxs, Vec4.X);
-    final double tymin = r.hitCoord(sy ? mins : maxs, Vec4.Y);
-    final double tymax = r.hitCoord(!sy ? mins : maxs, Vec4.Y);
+    double tmin = r.hitCoord(sx ? mins : maxs, X);
+    double tmax = r.hitCoord(!sx ? mins : maxs, X);
+    final double tymin = r.hitCoord(sy ? mins : maxs, Y);
+    final double tymax = r.hitCoord(!sy ? mins : maxs, Y);
     if(vx && vy && (tmin > tymax || tymin > tmax)) return false;
     if(!vx || (vy && tymin > tmin)) {
       tmin = tymin;
@@ -102,8 +103,8 @@ public class BoundingBox {
     }
     final boolean sz = d.getZ() > 0;
     final boolean vz = d.getZ() != 0;
-    final double tzmin = r.hitCoord(sz ? mins : maxs, Vec4.Z);
-    final double tzmax = r.hitCoord(!sz ? mins : maxs, Vec4.Z);
+    final double tzmin = r.hitCoord(sz ? mins : maxs, Z);
+    final double tzmax = r.hitCoord(!sz ? mins : maxs, Z);
     if(vz && (vx || vy) && (tmin > tzmax || tzmin > tmax)) return false;
     if((!vx && !vy) || (vz && tzmin > tmin)) {
       tmin = tzmin;
@@ -112,6 +113,21 @@ public class BoundingBox {
       tmax = tzmax;
     }
     return tmin < r.getFar() && tmax > r.getNear();
+  }
+
+  public boolean intersects(final Triangle t) {
+    // FIXME naive implementation -- wrong!
+    return contains(t.getA()) || contains(t.getB()) || contains(t.getC());
+  }
+
+  public Vec4 get(final boolean minX, final boolean minY, final boolean minZ) {
+    return new Vec4(minX ? mins.getX() : maxs.getX(),
+        minY ? mins.getY() : maxs.getY(),
+            minZ ? mins.getZ() : maxs.getZ(), true);
+  }
+
+  public Vec4 getCenter() {
+    return maxs.add(mins).mul(0.5);
   }
 
   /**
@@ -125,36 +141,6 @@ public class BoundingBox {
     final Vec4 min = mins == null ? o.mins : o.mins == null ? mins : min(mins, o.mins);
     final Vec4 max = maxs == null ? o.maxs : o.maxs == null ? maxs : max(maxs, o.maxs);
     return new BoundingBox(min, max, true);
-  }
-
-  /**
-   * Computes the componnet maximum of the given vectors.
-   *
-   * @param a The first vector.
-   * @param b The second vector.
-   * @return The maximum for each component.
-   */
-  public static final Vec4 max(final Vec4 a, final Vec4 b) {
-    a.expectPoint();
-    b.expectPoint();
-    return new Vec4(Math.max(a.getX(), b.getX()),
-        Math.max(a.getY(), b.getY()),
-        Math.max(a.getZ(), b.getZ()), true);
-  }
-
-  /**
-   * Computes the componnet minimum of the given vectors.
-   *
-   * @param a The first vector.
-   * @param b The second vector.
-   * @return The minimum for each component.
-   */
-  public static final Vec4 min(final Vec4 a, final Vec4 b) {
-    a.expectPoint();
-    b.expectPoint();
-    return new Vec4(Math.min(a.getX(), b.getX()),
-        Math.min(a.getY(), b.getY()),
-        Math.min(a.getZ(), b.getZ()), true);
   }
 
 }

@@ -56,7 +56,7 @@ public class Main {
    * @throws IOException I/O Exception.
    */
   public static void main(final String[] args) throws IOException {
-    final TriangleStorage ts = new Octree();
+    final TriangleStorage ts = new Octree(50);
     // camera
     final Dimension dim = new Dimension(800, 600);
     final String name = args.length == 1 ? args[0] : "teapot";

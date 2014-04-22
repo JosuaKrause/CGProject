@@ -26,9 +26,14 @@ public class TestCountConsumer extends ImageConsumer {
     return (triangles ? "triangles" : "bboxes") + " checks";
   }
 
+  private double getCount(final Hit hit) {
+    final double v = triangles ? hit.getTestCount() : hit.getBBoxCount();
+    return Math.log(v * (Math.E - 1) + 1);
+  }
+
   @Override
   protected int getRGB(final Hit hit) {
-    final int sub = (int) ((triangles ? hit.getTestCount() : hit.getBBoxCount()) * 0xff);
+    final int sub = (int) (getCount(hit) * 0xff);
     final int red = triangles ? 0xff : 0;
     final int green = triangles ? 0xff - sub : sub;
     final int blue = triangles ? 0xff - sub : 0;

@@ -28,6 +28,10 @@ public class Hit {
   /** The relative bounding box test count. */
   private final double bboxCount;
 
+  public Hit(final Ray ray, final TestCounter testCount, final TriangleStorage ts) {
+    this(ray, null, -1, testCount, ts);
+  }
+
   /**
    * Creates a new hit.
    *
@@ -109,7 +113,7 @@ public class Hit {
 
   /**
    * Getter.
-   * 
+   *
    * @return The relative number of bounding box checks.
    */
   public double getBBoxCount() {

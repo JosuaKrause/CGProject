@@ -317,4 +317,34 @@ public class Vec4 {
         + "[x: " + x + " y: " + y + " z: " + z + " w: " + w + "]";
   }
 
+  /**
+   * Computes the componnet maximum of the given vectors.
+   *
+   * @param a The first vector.
+   * @param b The second vector.
+   * @return The maximum for each component.
+   */
+  public static final Vec4 max(final Vec4 a, final Vec4 b) {
+    a.expectPoint();
+    b.expectPoint();
+    return new Vec4(Math.max(a.getX(), b.getX()),
+        Math.max(a.getY(), b.getY()),
+        Math.max(a.getZ(), b.getZ()), true);
+  }
+
+  /**
+   * Computes the componnet minimum of the given vectors.
+   *
+   * @param a The first vector.
+   * @param b The second vector.
+   * @return The minimum for each component.
+   */
+  public static final Vec4 min(final Vec4 a, final Vec4 b) {
+    a.expectPoint();
+    b.expectPoint();
+    return new Vec4(Math.min(a.getX(), b.getX()),
+        Math.min(a.getY(), b.getY()),
+        Math.min(a.getZ(), b.getZ()), true);
+  }
+
 }
