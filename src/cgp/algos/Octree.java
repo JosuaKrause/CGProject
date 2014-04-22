@@ -112,22 +112,27 @@ public class Octree extends SimpleStorage {
       if(!box.intersects(r, c)) return new Hit(r, c);
       if(ts != null) return getLevelHit(r, c);
       final Vec4 d = r.getDirection();
-      boolean minX = d.getX() > 0;
-      boolean minY = d.getY() > 0;
-      boolean minZ = d.getZ() > 0;
-      for(;;) {
-        final Node n = children[index(minX, minY, minZ)];
+      final boolean[] mins = {
+          d.getX() > 0,
+          d.getY() > 0,
+          d.getZ() > 0
+      };
+      final double x = Math.abs(d.getX());
+      final double y = Math.abs(d.getY());
+      final double z = Math.abs(d.getZ());
+      final int first = x < y ? (x < z ? 0 : 2) : (y < z ? 1 : 2);
+      final int last = x > y ? (x > z ? 0 : 2) : (y > z ? 1 : 2);
+      final int mid = 3 - first - last;
+      for(int round = 0; round < 8; ++round) {
+        final Node n = children[index(mins[0], mins[1], mins[2])];
         final Hit hit = n.getHit(r, c);
         if(hit.hasHit()) return hit;
-        minX = !minX;
-        if(!minX) {
-          minY = !minY;
-          if(!minY) {
-            minZ = !minZ;
-            if(!minZ) {
-              break;
-            }
-          }
+        mins[first] = !mins[first];
+        if((round & 1) == 1) {
+          mins[mid] = !mins[mid];
+        }
+        if((round & 3) == 3) {
+          mins[last] = !mins[last];
         }
       }
       return new Hit(r, c);

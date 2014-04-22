@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 
+import cgp.Main;
 import cgp.algos.TriangleStorage;
 import cgp.consume.HitConsumer;
 import cgp.data.Ray;
@@ -33,6 +34,7 @@ public class RayShooter {
   public RayShooter(final RayProducer prod, final TriangleStorage storage) {
     this.storage = Objects.requireNonNull(storage);
     this.prod = Objects.requireNonNull(prod);
+    fjp = Main.SINGLE_THREAD ? new ForkJoinPool(1) : new ForkJoinPool();
     System.out.println("using " + fjp.getParallelism() + " cores");
   }
 
@@ -46,7 +48,7 @@ public class RayShooter {
   }
 
   /** The internal fork join pool. */
-  private final ForkJoinPool fjp = new ForkJoinPool();
+  private final ForkJoinPool fjp;
 
   /**
    * A ray shooting action. The action is divided until the number of rays to

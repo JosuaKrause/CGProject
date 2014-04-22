@@ -43,6 +43,9 @@ import cgp.tracer.SimpleRayProducer;
  */
 public class Main {
 
+  /** Forces the use of a single thread. */
+  public static final boolean SINGLE_THREAD = false;
+
   /** No constructor. */
   private Main() {
     throw new AssertionError();
