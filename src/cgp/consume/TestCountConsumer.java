@@ -26,6 +26,12 @@ public class TestCountConsumer extends ImageConsumer {
     return (triangles ? "triangles" : "bboxes") + " checks";
   }
 
+  /**
+   * Getter.
+   * 
+   * @param hit The hit.
+   * @return The desired hit count between zero and one.
+   */
   private double getCount(final Hit hit) {
     final double v = triangles ? hit.getTestCount() : hit.getBBoxCount();
     return Math.log(v * (Math.E - 1) + 1);

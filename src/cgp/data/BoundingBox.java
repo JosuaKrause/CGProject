@@ -115,17 +115,36 @@ public class BoundingBox {
     return tmin < r.getFar() && tmax > r.getNear();
   }
 
+  /**
+   * Checks whether a triangle intersects the bounding box.
+   *
+   * @param t The triangle.
+   * @return Whether the triangle intersects the bounding box.
+   */
   public boolean intersects(final Triangle t) {
     // FIXME naive implementation -- wrong!
     return contains(t.getA()) || contains(t.getB()) || contains(t.getC());
   }
 
+  /**
+   * Getter.
+   *
+   * @param minX The minimal x.
+   * @param minY The minimal y.
+   * @param minZ The minimal z.
+   * @return Gets the specified corner.
+   */
   public Vec4 get(final boolean minX, final boolean minY, final boolean minZ) {
     return new Vec4(minX ? mins.getX() : maxs.getX(),
         minY ? mins.getY() : maxs.getY(),
-            minZ ? mins.getZ() : maxs.getZ(), true);
+        minZ ? mins.getZ() : maxs.getZ(), true);
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The center of the bounding box.
+   */
   public Vec4 getCenter() {
     return maxs.add(mins).mul(0.5);
   }

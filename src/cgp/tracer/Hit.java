@@ -28,6 +28,13 @@ public class Hit {
   /** The relative bounding box test count. */
   private final double bboxCount;
 
+  /**
+   * Creates a failed hit.
+   * 
+   * @param ray The ray.
+   * @param testCount The test count.
+   * @param ts The triangle storage.
+   */
   public Hit(final Ray ray, final TestCounter testCount, final TriangleStorage ts) {
     this(ray, null, -1, testCount, ts);
   }

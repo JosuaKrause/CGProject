@@ -20,24 +20,49 @@ import cgp.tracer.TestCounter;
  */
 public class Octree implements TriangleStorage {
 
+  /**
+   * An internal node of the Octree.
+   *
+   * @author Joschi <josua.krause@gmail.com>
+   */
   private final class Node {
 
+    /** The bounding box. */
     private final BoundingBox box;
-
+    /** The set of triangles or <code>null</code> if inner node. */
     private BitSet ts;
-
+    /** The children or <code>null</code> if leaf. */
     private Node[] children;
 
+    /**
+     * Creates a new node.
+     *
+     * @param box The bounding box.
+     * @param tLen The expected highest index plus one of triangles.
+     */
     public Node(final BoundingBox box, final int tLen) {
       this.box = Objects.requireNonNull(box);
       ts = new BitSet(tLen);
       children = null;
     }
 
+    /**
+     * Adds a triangle.
+     *
+     * @param index The index.
+     * @param t The triangle.
+     */
     public void addTriangle(final int index, final Triangle t) {
       addTriangle(index, t, false);
     }
 
+    /**
+     * Adds a triangle.
+     *
+     * @param index The index.
+     * @param t The triangle.
+     * @param noSplit Whether splits are allowed.
+     */
     private void addTriangle(final int index, final Triangle t, final boolean noSplit) {
       if(!box.intersects(t)) return;
       if(ts != null) {
@@ -50,6 +75,12 @@ public class Octree implements TriangleStorage {
       }
     }
 
+    /**
+     * Actually adds the triangle.
+     *
+     * @param index The index.
+     * @param noSplit Whether splits are allowed.
+     */
     private void addTriangle(final int index, final boolean noSplit) {
       ts.set(index);
       if(noSplit) return;
@@ -58,7 +89,8 @@ public class Octree implements TriangleStorage {
       }
     }
 
-    public void splitNode() {
+    /** Splits the node. */
+    private void splitNode() {
       final BoundingBox[] boxes = new BoundingBox[8];
       children = new Node[8];
       final BitSet b = ts;
@@ -73,6 +105,13 @@ public class Octree implements TriangleStorage {
       }
     }
 
+    /**
+     * Tests for a hit.
+     *
+     * @param r The ray.
+     * @param c The test counter.
+     * @return The hit.
+     */
     public Hit getHit(final Ray r, final TestCounter c) {
       if(!box.intersects(r, c)) return new Hit(r, c, Octree.this);
       if(ts != null) return getLevelHit(r, c);
@@ -98,6 +137,13 @@ public class Octree implements TriangleStorage {
       return new Hit(r, c, Octree.this);
     }
 
+    /**
+     * Checks for a hit in a leaf node.
+     *
+     * @param r The ray.
+     * @param c The test counter.
+     * @return The hit.
+     */
     private Hit getLevelHit(final Ray r, final TestCounter c) {
       double minDist = Double.POSITIVE_INFINITY;
       Triangle curBest = null;
@@ -112,6 +158,11 @@ public class Octree implements TriangleStorage {
       return new Hit(r, curBest, minDist, c, Octree.this);
     }
 
+    /**
+     * Getter.
+     *
+     * @return The number of bounding boxes.
+     */
     public int getBoxCount() {
       if(ts != null) return 1;
       int res = 0;
@@ -125,13 +176,18 @@ public class Octree implements TriangleStorage {
 
   /** The list of triangles. */
   private final List<Triangle> triangles = new ArrayList<>();
-
+  /** The threshold when boxes are not being split anymore. */
   protected final int threshold;
   /** The bounding box of the scene. */
   private BoundingBox bbox = new BoundingBox();
-
+  /** The root node. */
   private Node root;
 
+  /**
+   * Creates an octree.
+   *
+   * @param threshold The threshold.
+   */
   public Octree(final int threshold) {
     if(threshold < 1) throw new IllegalArgumentException("" + threshold);
     this.threshold = threshold;
@@ -153,10 +209,22 @@ public class Octree implements TriangleStorage {
     boxCount = 0;
   }
 
+  /**
+   * Getter.
+   *
+   * @param index The index.
+   * @return The triangle at the given position.
+   */
   protected Triangle getTriangle(final int index) {
     return triangles.get(index);
   }
 
+  /**
+   * Splits the bounding box.
+   *
+   * @param box The bounding box.
+   * @param dest An array with length 8 that has the result after the call.
+   */
   protected static final void split(final BoundingBox box, final BoundingBox[] dest) {
     final Vec4 center = box.getCenter();
     boolean minX = false;
@@ -178,6 +246,14 @@ public class Octree implements TriangleStorage {
     }
   }
 
+  /**
+   * Getter.
+   *
+   * @param minX Minimal x.
+   * @param minY Minimal y.
+   * @param minZ Minimal z.
+   * @return Computes the index of the specified node.
+   */
   protected static final int index(
       final boolean minX, final boolean minY, final boolean minZ) {
     return (minX ? 1 : 0) | (minY ? 2 : 0) | (minZ ? 4 : 0);
@@ -198,6 +274,7 @@ public class Octree implements TriangleStorage {
     return triangles.size();
   }
 
+  /** The cached box count. */
   private int boxCount;
 
   @Override
