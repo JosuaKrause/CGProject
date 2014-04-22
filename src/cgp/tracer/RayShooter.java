@@ -195,6 +195,7 @@ public class RayShooter {
           hc.hitAt(col[y], x, y);
         }
       }
+      hc.finished();
     }
   }
 

@@ -13,7 +13,7 @@ import cgp.tracer.Hit;
 
 /**
  * Produces an image with the results.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public abstract class ImageConsumer implements HitConsumer {
@@ -28,14 +28,14 @@ public abstract class ImageConsumer implements HitConsumer {
 
   /**
    * Getter.
-   * 
+   *
    * @return The UI name of this consumer.
    */
   public abstract String name();
 
   /**
    * Computes the color.
-   * 
+   *
    * @param hit The hit.
    * @return The color.
    */
@@ -43,12 +43,23 @@ public abstract class ImageConsumer implements HitConsumer {
 
   @Override
   public void hitAt(final Hit hit, final int x, final int y) {
-    img.setRGB(x, y, 0xff000000 | getRGB(hit));
+    setRGB(getRGB(hit), x, y);
+  }
+
+  /**
+   * Sets a pixel.
+   * 
+   * @param rgb The color.
+   * @param x The x position.
+   * @param y The y position.
+   */
+  protected void setRGB(final int rgb, final int x, final int y) {
+    img.setRGB(x, y, 0xff000000 | rgb);
   }
 
   /**
    * Draws the image.
-   * 
+   *
    * @param g The graphics context.
    */
   public void draw(final Graphics2D g) {
@@ -67,7 +78,7 @@ public abstract class ImageConsumer implements HitConsumer {
 
   /**
    * Saves the image if it has been finished.
-   * 
+   *
    * @param dest The destination file.
    * @return Whether the image was ready.
    * @throws IOException I/O Exception.
@@ -76,6 +87,11 @@ public abstract class ImageConsumer implements HitConsumer {
     if(img == null) return false;
     ImageIO.write(img, "PNG", dest);
     return true;
+  }
+
+  @Override
+  public void finished() {
+    // nothing to do
   }
 
 }

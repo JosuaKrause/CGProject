@@ -26,24 +26,71 @@ public class TestCountConsumer extends ImageConsumer {
     return (triangles ? "triangles" : "bboxes") + " checks";
   }
 
+  /** All values. */
+  private double[][] values;
+  /** The minimal value. */
+  private double min;
+  /** The maximal value. */
+  private double max;
+
+  @Override
+  public void setSize(final int width, final int height) {
+    super.setSize(width, height);
+    values = new double[width][height];
+    min = Double.POSITIVE_INFINITY;
+    max = Double.NEGATIVE_INFINITY;
+  }
+
   /**
    * Getter.
-   * 
+   *
    * @param hit The hit.
    * @return The desired hit count between zero and one.
    */
   private double getCount(final Hit hit) {
-    final double v = triangles ? hit.getTestCount() : hit.getBBoxCount();
-    return Math.log(v * (Math.E - 1) + 1);
+    return triangles ? hit.getTestCount() : hit.getBBoxCount();
+  }
+
+  /**
+   * Normalizes the given value.
+   *
+   * @param v The value.
+   * @return The normalized value.
+   */
+  private double normalize(final double v) {
+    return (v - min) / (max - min);
+  }
+
+  @Override
+  public void hitAt(final Hit hit, final int x, final int y) {
+    final double v = getCount(hit);
+    values[x][y] = v;
+    if(min > v) {
+      min = v;
+    }
+    if(max < v) {
+      max = v;
+    }
   }
 
   @Override
   protected int getRGB(final Hit hit) {
-    final int sub = (int) (getCount(hit) * 0xff);
-    final int red = triangles ? 0xff : 0;
-    final int green = triangles ? 0xff - sub : sub;
-    final int blue = triangles ? 0xff - sub : 0;
-    return red << 16 | green << 8 | blue;
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void finished() {
+    System.out.println(name() + "[min: " + min + " max: " + max + "]");
+    for(int x = 0; x < values.length; ++x) {
+      final double[] row = values[x];
+      for(int y = 0; y < row.length; ++y) {
+        final int sub = (int) (normalize(row[y]) * 0xff);
+        final int red = triangles ? 0xff : 0;
+        final int green = triangles ? 0xff - sub : sub;
+        final int blue = triangles ? 0xff - sub : 0;
+        setRGB(red << 16 | green << 8 | blue, x, y);
+      }
+    }
   }
 
 }

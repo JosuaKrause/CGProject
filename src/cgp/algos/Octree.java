@@ -40,9 +40,9 @@ public class Octree implements TriangleStorage {
      * @param box The bounding box.
      * @param tLen The expected highest index plus one of triangles.
      */
-    public Node(final BoundingBox box, final int tLen) {
+    public Node(final BoundingBox box, @SuppressWarnings("unused") final int tLen) {
       this.box = Objects.requireNonNull(box);
-      ts = new BitSet(tLen);
+      ts = new BitSet(/* tLen */); // less memory usage
       children = null;
     }
 
