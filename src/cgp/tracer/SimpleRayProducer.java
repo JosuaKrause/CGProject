@@ -54,7 +54,7 @@ public class SimpleRayProducer implements RayProducer {
 
   @Override
   public void move(final boolean forward, final boolean ortho, final double amount) {
-    final Vec4 move = ortho ? view.cross(up).negate() : view;
+    final Vec4 move = ortho ? getLeft() : view;
     eye = eye.addMul(move, forward ? amount : -amount);
   }
 
@@ -77,12 +77,13 @@ public class SimpleRayProducer implements RayProducer {
   public void rotate(final double angleX, final double angleY) {
     final Quaternion qX = Quaternion.normQuaternion(angleX, up);
     final Quaternion pX = qX.negate();
-    final Vec4 left = view.cross(up).negate();
-    final Quaternion qY = Quaternion.normQuaternion(angleY, left);
+    final Quaternion qY = Quaternion.normQuaternion(angleY, getLeft());
     final Quaternion pY = qY.negate();
-    final Quaternion v = new Quaternion(view, 0);
-    view = qY.mul(qX.mul(v).mul(pX)).mul(pY).getVec().normalized();
-    up = view.cross(left.rotateY(angleX).normalized());
+    view = qY.mul(qX.mul(new Quaternion(view, 0)).mul(pX)).mul(pY).getVec().normalized();
+    leftCache = null;
+    final Vec4 left = getLeft();
+    up = view.cross(left.rotateY(angleX)).normalized();
+    leftCache = null;
   }
 
   @Override
@@ -100,6 +101,7 @@ public class SimpleRayProducer implements RayProducer {
     final Quaternion pV = qV.negate();
     final Quaternion u = new Quaternion(up, 0);
     up = qV.mul(u).mul(pV).getVec().normalized();
+    leftCache = null;
   }
 
   @Override
@@ -108,9 +110,24 @@ public class SimpleRayProducer implements RayProducer {
     final double angleY = -fov * ((double) y / h - 0.5);
     final double lenLeft = Math.tan(Math.toRadians(angleX));
     final double lenUp = Math.tan(Math.toRadians(angleY));
-    final Vec4 left = view.cross(up).negate();
+    final Vec4 left = getLeft();
     final Vec4 dir = view.addMul(left, lenLeft).addMul(up, lenUp).normalized();
     return new Ray(eye, dir, near, far);
+  }
+
+  /** The cached value. */
+  private Vec4 leftCache;
+
+  /**
+   * Getter.
+   *
+   * @return The direction to the left.
+   */
+  public Vec4 getLeft() {
+    if(leftCache == null) {
+      leftCache = up.cross(view).normalized();
+    }
+    return leftCache;
   }
 
   @Override
