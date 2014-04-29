@@ -80,9 +80,7 @@ public class SimpleRayProducer implements RayProducer {
     final Quaternion qY = Quaternion.normQuaternion(angleY, getLeft());
     final Quaternion pY = qY.negate();
     view = qY.mul(qX.mul(new Quaternion(view, 0)).mul(pX)).mul(pY).getVec().normalized();
-    leftCache = null;
-    final Vec4 left = getLeft();
-    up = view.cross(left.rotateY(angleX)).normalized();
+    up = view.cross(getLeft()).normalized();
     leftCache = null;
   }
 
