@@ -115,9 +115,8 @@ public class KdTree extends SimpleStorage {
           min2 = new Vec4(min.getX(), splitValue, min.getZ(), min.isPoint());
           break;
         case 2:
-          // TODO possible bug?
-          max1 = new Vec4(splitValue, max.getY(), splitValue, max.isPoint());
-          min2 = new Vec4(splitValue, min.getY(), splitValue, min.isPoint());
+          max1 = new Vec4(max.getX(), max.getY(), splitValue, max.isPoint());
+          min2 = new Vec4(min.getX(), min.getY(), splitValue, min.isPoint());
           break;
       }
       final BoundingBox b1 = new BoundingBox(min, max1);
