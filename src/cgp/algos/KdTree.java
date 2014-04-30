@@ -17,42 +17,18 @@ import cgp.tracer.TestCounter;
  * @author Timothy Chu
  */
 public class KdTree extends SimpleStorage {
-  private final class KdNode implements Comparator<Triangle> {
+  private final class KdNode {
     // 0 Near, 1 Far
-    KdNode children[];
+    private final KdNode children[];
     // 0 X-axis split, 1 Y-axis split, 2 Z-axis split
-    int splitType;
+    private final int splitType;
     // Split value along axis
-    int splitIndex;
-    double splitValue;
+    private int splitIndex;
+    private double splitValue;
     // Bounding box
     private final BoundingBox box;
     // triangles contained within node. Value is null if node is not a leaf
     private List<Triangle> tri;
-
-    // Triangles need to be sorted
-    @Override
-    public int compare(final Triangle t1, final Triangle t2) {
-      double comparison;
-      if(splitType == 0) {
-        comparison = Math.min(t1.getA().getX(),
-            Math.min(t1.getB().getX(), t1.getC().getX()))
-            - Math.min(t2.getA().getX(), Math.min(t2.getB().getX(), t2.getC().getX()));
-      }
-      else if(splitType == 1) {
-        comparison = Math.min(t1.getA().getY(),
-            Math.min(t1.getB().getY(), t1.getC().getY()))
-            - Math.min(t2.getA().getY(), Math.min(t2.getB().getY(), t2.getC().getY()));
-      }
-      else {
-        comparison = Math.min(t1.getA().getZ(),
-            Math.min(t1.getB().getZ(), t1.getC().getZ()))
-            - Math.min(t2.getA().getZ(), Math.min(t2.getB().getZ(), t2.getC().getZ()));
-      }
-      if(comparison < 0) return -1;
-      else if(comparison > 0) return 1;
-      else return 0;
-    }
 
     public KdNode(final BoundingBox box, final int splitType) {
       this.box = Objects.requireNonNull(box);
@@ -67,7 +43,34 @@ public class KdTree extends SimpleStorage {
         tri = triangles;
         return;
       }
-      Collections.sort(triangles, this);
+      final int splitType = this.splitType;
+      Collections.sort(triangles, new Comparator<Triangle>() {
+
+        // Triangles need to be sorted
+        @Override
+        public int compare(final Triangle t1, final Triangle t2) {
+          double comparison;
+          if(splitType == 0) {
+            comparison = Math.min(t1.getA().getX(),
+                Math.min(t1.getB().getX(), t1.getC().getX()))
+                - Math.min(t2.getA().getX(), Math.min(t2.getB().getX(), t2.getC().getX()));
+          }
+          else if(splitType == 1) {
+            comparison = Math.min(t1.getA().getY(),
+                Math.min(t1.getB().getY(), t1.getC().getY()))
+                - Math.min(t2.getA().getY(), Math.min(t2.getB().getY(), t2.getC().getY()));
+          }
+          else {
+            comparison = Math.min(t1.getA().getZ(),
+                Math.min(t1.getB().getZ(), t1.getC().getZ()))
+                - Math.min(t2.getA().getZ(), Math.min(t2.getB().getZ(), t2.getC().getZ()));
+          }
+          if(comparison < 0) return -1;
+          else if(comparison > 0) return 1;
+          else return 0;
+        }
+
+      });
       splitIndex = (triangles.size() - 1) / 2;
       switch(splitType) {
         case 0:
@@ -127,18 +130,19 @@ public class KdTree extends SimpleStorage {
           min2 = new Vec4(min.getX(), splitValue, min.getZ(), min.isPoint());
           break;
         case 2:
+          // TODO possible bug?
           max1 = new Vec4(splitValue, max.getY(), splitValue, max.isPoint());
           min2 = new Vec4(splitValue, min.getY(), splitValue, min.isPoint());
           break;
       }
-      BoundingBox b = new BoundingBox(min, max1);
-      children[0] = leftBottomNear.size() == 0 ? null : new KdNode(b,
-          (splitType + 1) % 3);
-      b = new BoundingBox(min2, max);
-      children[1] = rightTopFar.size() == 0 ? null : new KdNode(b, (splitType + 1) % 3);
+      final BoundingBox b1 = new BoundingBox(min, max1);
+      children[0] = leftBottomNear.isEmpty() ? null : new KdNode(b1, (splitType + 1) % 3);
+      final BoundingBox b2 = new BoundingBox(min2, max);
+      children[1] = rightTopFar.isEmpty() ? null : new KdNode(b2, (splitType + 1) % 3);
       if(leftBottomNear.size() == triangles.size()
           || rightTopFar.size() == triangles.size()) {
         tri = triangles;
+        // TODO children not used anymore -- can be freed
         return;
       }
       if(children[0] != null) {
@@ -151,7 +155,7 @@ public class KdTree extends SimpleStorage {
 
     /**
      * Tests for a hit.
-     * 
+     *
      * @param r The ray.
      * @param c The test counter.
      * @return The hit.
@@ -171,7 +175,7 @@ public class KdTree extends SimpleStorage {
 
     /**
      * Checks for a hit in a leaf node.
-     * 
+     *
      * @param r The ray.
      * @param c The test counter.
      * @return The hit.
@@ -188,9 +192,11 @@ public class KdTree extends SimpleStorage {
       }
       return new Hit(r, curBest, minDist, c);
     }
+
   } // Node
 
   private BoundingBox bbox = new BoundingBox();
+
   private KdNode root;
 
   public KdTree() {
@@ -207,11 +213,12 @@ public class KdTree extends SimpleStorage {
   public void finishLoading() {
     final int splitType = 0;
     root = new KdNode(bbox, splitType);
-    root.buildKdTree(triangles);
+    root.buildKdTree(getList());
   }
 
   @Override
   public Hit getHit(final Ray r, final TestCounter c) {
     return root.getHit(r, c);
   }
+
 }
