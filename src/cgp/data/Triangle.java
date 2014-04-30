@@ -198,6 +198,10 @@ public class Triangle {
     return nc;
   }
 
+  public Vec4 getMin() {
+    return Vec4.min(Vec4.min(a, b), c);
+  }
+
   @Override
   public String toString() {
     return getClass().getSimpleName() + "[a: " + a + " b: " + b + " c: " + c + "]";

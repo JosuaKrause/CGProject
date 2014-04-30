@@ -2,6 +2,7 @@ package cgp.algos;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -57,6 +58,10 @@ public class SimpleStorage implements TriangleStorage {
    */
   protected Triangle getTriangle(final int index) {
     return triangles.get(index);
+  }
+
+  protected void sort(final Comparator<Triangle> cmp) {
+    Collections.sort(triangles, cmp);
   }
 
   @Override

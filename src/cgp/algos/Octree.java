@@ -1,6 +1,7 @@
 package cgp.algos;
 
 import java.util.BitSet;
+import java.util.Comparator;
 import java.util.Objects;
 
 import cgp.data.BoundingBox;
@@ -173,7 +174,7 @@ public class Octree extends SimpleStorage {
       if(lowestIndex <= 0) return;
       final BitSet set = new BitSet(ts.length() - lowestIndex);
       for(int t = ts.nextSetBit(0); t >= 0; t = ts.nextSetBit(t + 1)) {
-        set.set(t = lowestIndex);
+        set.set(t - lowestIndex);
       }
       ts = set;
       offset += lowestIndex;
@@ -207,10 +208,25 @@ public class Octree extends SimpleStorage {
 
   @Override
   public void finishLoading() {
+    sort(new Comparator<Triangle>() {
+
+      @Override
+      public int compare(final Triangle o1, final Triangle o2) {
+        final Vec4 m1 = o1.getMin();
+        final Vec4 m2 = o2.getMin();
+        final int x = Double.compare(m1.getX(), m2.getX());
+        if(x != 0) return x;
+        final int y = Double.compare(m1.getY(), m2.getY());
+        if(y != 0) return y;
+        return Double.compare(m1.getZ(), m2.getZ());
+      }
+
+    });
     root = new Node(bbox);
     for(int i = 0; i < size(); ++i) {
       root.addTriangle(i, getTriangle(i));
     }
+    root.optimize();
   }
 
   /**
