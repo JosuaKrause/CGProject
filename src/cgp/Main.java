@@ -59,12 +59,14 @@ public class Main {
    * @throws IOException I/O Exception.
    */
   public static void main(final String[] args) throws IOException {
+    final long startLoading = System.nanoTime();
     final TriangleStorage ts = new Octree(50);
     // camera
     final Dimension dim = new Dimension(800, 600);
     final String name = args.length == 1 ? args[0] : "teapot";
     final RayProducer rp = loadPreset(name, dim, ts);
-    System.out.println(ts.size() + " triangles loaded");
+    System.out.println(ts.size() + " triangles loaded: took "
+        + ((System.nanoTime() - startLoading) * 1e-6) + "ms");
     // open Gl
     final AtomicBoolean isRunning = new AtomicBoolean();
     final OpenGLView ogl = new OpenGLView(name, rp, ts, isRunning);

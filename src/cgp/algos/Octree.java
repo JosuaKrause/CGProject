@@ -29,7 +29,7 @@ public class Octree extends SimpleStorage {
     private final BoundingBox box;
     /** The set of triangles or <code>null</code> if inner node. */
     private BitSet ts;
-
+    /** The offset of the bit set. */
     private int offset;
     /** The children or <code>null</code> if leaf. */
     private Node[] children;
@@ -163,6 +163,7 @@ public class Octree extends SimpleStorage {
       return new Hit(r, curBest, minDist, c);
     }
 
+    /** Optimizes the bitset storage by shifting it to its lowest set bit. */
     public void optimize() {
       if(ts == null) {
         for(final Node c : children) {

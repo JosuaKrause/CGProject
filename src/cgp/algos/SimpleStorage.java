@@ -60,6 +60,11 @@ public class SimpleStorage implements TriangleStorage {
     return triangles.get(index);
   }
 
+  /**
+   * Sorts the triangles.
+   * 
+   * @param cmp The comparison.
+   */
   protected void sort(final Comparator<Triangle> cmp) {
     Collections.sort(triangles, cmp);
   }

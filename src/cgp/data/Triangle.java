@@ -198,6 +198,11 @@ public class Triangle {
     return nc;
   }
 
+  /**
+   * Getter.
+   * 
+   * @return The minimal coordinate of the bounding box of the triangle.
+   */
   public Vec4 getMin() {
     return Vec4.min(Vec4.min(a, b), c);
   }
