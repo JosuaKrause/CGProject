@@ -126,7 +126,8 @@ public class KdTree extends SimpleStorage {
       if(leftBottomNear.size() == ts.size()
           || rightTopFar.size() == ts.size()) {
         tri = ts;
-        // TODO children not used anymore -- can be freed
+        children[0] = null;
+        children[1] = null;
         return;
       }
       if(children[0] != null) {
@@ -147,6 +148,8 @@ public class KdTree extends SimpleStorage {
     public Hit getHit(final Ray r, final TestCounter c) {
       if(!box.intersects(r, c)) return new Hit(r, c);
       if(tri != null) return getLevelHit(r, c);
+      // TODO you have to determine the order of the children here! it is
+      // dependent of the view direction
       for(final KdNode n : children) {
         if(n == null) {
           continue;
