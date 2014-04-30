@@ -43,56 +43,41 @@ public class KdTree extends SimpleStorage {
         tri = triangles;
         return;
       }
+      final List<Triangle> ts = new ArrayList<>(triangles);
       final int splitType = this.splitType;
-      Collections.sort(triangles, new Comparator<Triangle>() {
+      Collections.sort(ts, new Comparator<Triangle>() {
 
         // Triangles need to be sorted
         @Override
         public int compare(final Triangle t1, final Triangle t2) {
-          double comparison;
-          if(splitType == 0) {
-            comparison = Math.min(t1.getA().getX(),
-                Math.min(t1.getB().getX(), t1.getC().getX()))
-                - Math.min(t2.getA().getX(), Math.min(t2.getB().getX(), t2.getC().getX()));
-          }
-          else if(splitType == 1) {
-            comparison = Math.min(t1.getA().getY(),
-                Math.min(t1.getB().getY(), t1.getC().getY()))
-                - Math.min(t2.getA().getY(), Math.min(t2.getB().getY(), t2.getC().getY()));
-          }
-          else {
-            comparison = Math.min(t1.getA().getZ(),
-                Math.min(t1.getB().getZ(), t1.getC().getZ()))
-                - Math.min(t2.getA().getZ(), Math.min(t2.getB().getZ(), t2.getC().getZ()));
-          }
-          if(comparison < 0) return -1;
-          else if(comparison > 0) return 1;
-          else return 0;
+          final Vec4 min1 = t1.getMin();
+          final Vec4 min2 = t2.getMin();
+          return Double.compare(min1.get(splitType), min2.get(splitType));
         }
 
       });
-      splitIndex = (triangles.size() - 1) / 2;
+      splitIndex = (ts.size() - 1) / 2;
       switch(splitType) {
         case 0:
-          splitValue = Math.min(triangles.get(splitIndex).getA().getX(), Math.min(
-              triangles.get(splitIndex).getB().getX(),
-              triangles.get(splitIndex).getC().getX()));
+          splitValue = Math.min(ts.get(splitIndex).getA().getX(), Math.min(
+              ts.get(splitIndex).getB().getX(),
+              ts.get(splitIndex).getC().getX()));
           break;
         case 1:
-          splitValue = Math.min(triangles.get(splitIndex).getA().getY(), Math.min(
-              triangles.get(splitIndex).getB().getY(),
-              triangles.get(splitIndex).getC().getY()));
+          splitValue = Math.min(ts.get(splitIndex).getA().getY(), Math.min(
+              ts.get(splitIndex).getB().getY(),
+              ts.get(splitIndex).getC().getY()));
           break;
         case 2:
-          splitValue = Math.min(triangles.get(splitIndex).getA().getZ(), Math.min(
-              triangles.get(splitIndex).getB().getZ(),
-              triangles.get(splitIndex).getC().getZ()));
+          splitValue = Math.min(ts.get(splitIndex).getA().getZ(), Math.min(
+              ts.get(splitIndex).getB().getZ(),
+              ts.get(splitIndex).getC().getZ()));
           break;
       }
-      final List<Triangle> leftBottomNear = new ArrayList<>(triangles.subList(0,
+      final List<Triangle> leftBottomNear = new ArrayList<>(ts.subList(0,
           splitIndex));
-      final List<Triangle> rightTopFar = new ArrayList<>(triangles.subList(
-          splitIndex, triangles.size()));
+      final List<Triangle> rightTopFar = new ArrayList<>(ts.subList(
+          splitIndex, ts.size()));
       // Add any triangles that intersect the split line to both lists
       for(final Triangle t : leftBottomNear) {
         switch(splitType) {
@@ -139,9 +124,9 @@ public class KdTree extends SimpleStorage {
       children[0] = leftBottomNear.isEmpty() ? null : new KdNode(b1, (splitType + 1) % 3);
       final BoundingBox b2 = new BoundingBox(min2, max);
       children[1] = rightTopFar.isEmpty() ? null : new KdNode(b2, (splitType + 1) % 3);
-      if(leftBottomNear.size() == triangles.size()
-          || rightTopFar.size() == triangles.size()) {
-        tri = triangles;
+      if(leftBottomNear.size() == ts.size()
+          || rightTopFar.size() == ts.size()) {
+        tri = ts;
         // TODO children not used anymore -- can be freed
         return;
       }

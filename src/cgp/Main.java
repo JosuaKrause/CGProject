@@ -18,7 +18,7 @@ import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
-import cgp.algos.Octree;
+import cgp.algos.KdTree;
 import cgp.algos.TriangleStorage;
 import cgp.consume.BaryConsumer;
 import cgp.consume.DepthConsumer;
@@ -60,7 +60,7 @@ public class Main {
    */
   public static void main(final String[] args) throws IOException {
     final long startLoading = System.nanoTime();
-    final TriangleStorage ts = new Octree(50);
+    final TriangleStorage ts = new KdTree();// new Octree(50);
     // camera
     final Dimension dim = new Dimension(800, 600);
     final String name = args.length == 1 ? args[0] : "teapot";
