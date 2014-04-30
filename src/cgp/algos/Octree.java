@@ -28,6 +28,8 @@ public class Octree extends SimpleStorage {
     private final BoundingBox box;
     /** The set of triangles or <code>null</code> if inner node. */
     private BitSet ts;
+
+    private int offset;
     /** The children or <code>null</code> if leaf. */
     private Node[] children;
 
@@ -40,6 +42,7 @@ public class Octree extends SimpleStorage {
       this.box = Objects.requireNonNull(box);
       ts = new BitSet();
       children = null;
+      offset = 0;
     }
 
     /**
@@ -62,7 +65,7 @@ public class Octree extends SimpleStorage {
     private void addTriangle(final int index, final Triangle t, final boolean noSplit) {
       if(!box.intersects(t)) return;
       if(ts != null) {
-        if(ts.get(index)) return;
+        if(ts.get(index - offset)) return;
         addTriangle(index, noSplit);
         return;
       }
@@ -78,7 +81,7 @@ public class Octree extends SimpleStorage {
      * @param noSplit Whether splits are allowed.
      */
     private void addTriangle(final int index, final boolean noSplit) {
-      ts.set(index);
+      ts.set(index - offset);
       if(noSplit) return;
       if(ts.cardinality() > threshold) {
         splitNode();
@@ -95,7 +98,7 @@ public class Octree extends SimpleStorage {
       for(int i = 0; i < children.length; ++i) {
         final Node n = new Node(boxes[i]);
         for(int t = b.nextSetBit(0); t >= 0; t = b.nextSetBit(t + 1)) {
-          n.addTriangle(t, getTriangle(t), true);
+          n.addTriangle(t + offset, getTriangle(t + offset), true);
         }
         children[i] = n;
       }
@@ -149,7 +152,7 @@ public class Octree extends SimpleStorage {
       double minDist = Double.POSITIVE_INFINITY;
       Triangle curBest = null;
       for(int t = ts.nextSetBit(0); t >= 0; t = ts.nextSetBit(t + 1)) {
-        final Triangle tri = getTriangle(t);
+        final Triangle tri = getTriangle(t + offset);
         final double dist = tri.hit(r, c);
         if(r.isValidDistance(dist) && dist < minDist) {
           minDist = dist;
@@ -157,6 +160,23 @@ public class Octree extends SimpleStorage {
         }
       }
       return new Hit(r, curBest, minDist, c);
+    }
+
+    public void optimize() {
+      if(ts == null) {
+        for(final Node c : children) {
+          c.optimize();
+        }
+        return;
+      }
+      final int lowestIndex = ts.nextSetBit(0);
+      if(lowestIndex <= 0) return;
+      final BitSet set = new BitSet(ts.length() - lowestIndex);
+      for(int t = ts.nextSetBit(0); t >= 0; t = ts.nextSetBit(t + 1)) {
+        set.set(t = lowestIndex);
+      }
+      ts = set;
+      offset += lowestIndex;
     }
 
   } // Node
