@@ -14,22 +14,48 @@ import cgp.tracer.Hit;
 import cgp.tracer.TestCounter;
 
 /**
+ * A kd-tree
+ * 
  * @author Timothy Chu
  */
 public class KdTree extends SimpleStorage {
+  /**
+   * Internal node for the kd-tree
+   * 
+   * @author Timothy Chu
+   */
   private final class KdNode {
-    // 0 Near, 1 Far
+    /**
+     * 0 Left/Bottom/Near, 1 Right/Top/Far
+     */
     private final KdNode children[];
-    // 0 X-axis split, 1 Y-axis split, 2 Z-axis split
+    /**
+     * 0 X-axis split, 1 Y-axis split, 2 Z-axis split
+     */
     private final int splitType;
-    // Split value along axis
+    /**
+     * Index of the middle triangle to be split
+     */
     private int splitIndex;
+    /**
+     * Split value along axis
+     */
     private double splitValue;
-    // Bounding box
+    /**
+     * Bounding box
+     */
     private final BoundingBox box;
-    // triangles contained within node. Value is null if node is not a leaf
+    /**
+     * triangles contained within node. Value is null if node is not a leaf
+     */
     private List<Triangle> tri;
 
+    /**
+     * Constructor for a new KdNode
+     * 
+     * @param box The bounding box for this node
+     * @param splitType The axis that the bounding box is being split on
+     */
     public KdNode(final BoundingBox box, final int splitType) {
       this.box = Objects.requireNonNull(box);
       children = new KdNode[2];
@@ -37,6 +63,9 @@ public class KdTree extends SimpleStorage {
       tri = null;
     }
 
+    /**
+     * @param triangles The triangles present in the KdNode
+     */
     public void buildKdTree(final List<Triangle> triangles) {
       // Sort the list appropriately
       if(triangles.size() <= 1) {
@@ -152,10 +181,13 @@ public class KdTree extends SimpleStorage {
       switch(splitType) {
         case 0:
           firstCheck = r.getDirection().getX() > 0 ? 0 : 1;
+          break;
         case 1:
           firstCheck = r.getDirection().getY() > 0 ? 0 : 1;
+          break;
         case 2:
           firstCheck = r.getDirection().getZ() > 0 ? 0 : 1;
+          break;
       }
       for(int i = 0; i < 2; i++) {
         final int index = (firstCheck + i) % 2;
@@ -190,10 +222,19 @@ public class KdTree extends SimpleStorage {
 
   } // Node
 
+  /**
+   * The bounding box that encompasses all of the triangles
+   */
   private BoundingBox bbox = new BoundingBox();
 
+  /**
+   * The root node of the kd-tree
+   */
   private KdNode root;
 
+  /**
+   * Constructor for the KdTree
+   */
   public KdTree() {
     root = null;
   }
