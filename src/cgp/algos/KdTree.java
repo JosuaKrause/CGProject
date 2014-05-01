@@ -140,7 +140,7 @@ public class KdTree extends SimpleStorage {
 
     /**
      * Tests for a hit.
-     *
+     * 
      * @param r The ray.
      * @param c The test counter.
      * @return The hit.
@@ -148,13 +148,21 @@ public class KdTree extends SimpleStorage {
     public Hit getHit(final Ray r, final TestCounter c) {
       if(!box.intersects(r, c)) return new Hit(r, c);
       if(tri != null) return getLevelHit(r, c);
-      // TODO you have to determine the order of the children here! it is
-      // dependent of the view direction
-      for(final KdNode n : children) {
-        if(n == null) {
+      int firstCheck = 0;
+      switch(splitType) {
+        case 0:
+          firstCheck = r.getDirection().getX() > 0 ? 0 : 1;
+        case 1:
+          firstCheck = r.getDirection().getY() > 0 ? 0 : 1;
+        case 2:
+          firstCheck = r.getDirection().getZ() > 0 ? 0 : 1;
+      }
+      for(int i = 0; i < 2; i++) {
+        final int index = (firstCheck + i) % 2;
+        if(children[index] == null) {
           continue;
         }
-        final Hit hit = n.getHit(r, c);
+        final Hit hit = children[index].getHit(r, c);
         if(hit.hasHit()) return hit;
       }
       return new Hit(r, c);
@@ -162,7 +170,7 @@ public class KdTree extends SimpleStorage {
 
     /**
      * Checks for a hit in a leaf node.
-     *
+     * 
      * @param r The ray.
      * @param c The test counter.
      * @return The hit.

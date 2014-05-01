@@ -18,7 +18,7 @@ import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
-import cgp.algos.Octree;
+import cgp.algos.KdTree;
 import cgp.algos.TriangleStorage;
 import cgp.consume.BaryConsumer;
 import cgp.consume.DepthConsumer;
@@ -38,7 +38,7 @@ import cgp.tracer.SimpleRayProducer;
 
 /**
  * The entry point for the application.
- *
+ * 
  * @author Joschi <josua.krause@gmail.com>
  */
 public class Main {
@@ -53,14 +53,14 @@ public class Main {
 
   /**
    * Starts the application.
-   *
+   * 
    * @param args The model to load. No argument defaults to "teapot". Valid
    *          values are "teapot", "lamp", "bunny", and "test".
    * @throws IOException I/O Exception.
    */
   public static void main(final String[] args) throws IOException {
     final long startLoading = System.nanoTime();
-    final TriangleStorage ts = new Octree(1);
+    final TriangleStorage ts = new KdTree();
     System.out.println("algorithm is " + ts.getClass().getSimpleName());
     // camera
     final Dimension dim = new Dimension(800, 600);
@@ -233,7 +233,7 @@ public class Main {
 
   /**
    * Loads a model from a preset.
-   *
+   * 
    * @param preset The preset name.
    * @param dim The dimensions of the windows.
    * @param ts The triangle storage.
