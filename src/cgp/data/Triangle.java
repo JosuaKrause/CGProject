@@ -200,11 +200,31 @@ public class Triangle {
 
   /**
    * Getter.
-   * 
+   *
    * @return The minimal coordinate of the bounding box of the triangle.
    */
   public Vec4 getMin() {
     return Vec4.min(Vec4.min(a, b), c);
+  }
+
+  /**
+   * Returns the relation of this triangle towards the given plane.
+   * 
+   * @param value The value on the axis.
+   * @param axis The axis defining the plane. {@link Vec4#X}, {@link Vec4#Y}, or
+   *          {@link Vec4#Z}.
+   * @return The relation of the triangle. If the result is negative all points
+   *         of the triangle are on the lower side. If the result is positive
+   *         all points of the triangle are on the higher side. If the result is
+   *         zero the triangle is divided by the plane.
+   */
+  public int relToPlane(final double value, final int axis) {
+    final boolean lowerA = getA().get(axis) < value;
+    final boolean lowerB = getB().get(axis) < value;
+    if(lowerA != lowerB) return 0;
+    // lowerA == lowerB
+    final boolean lowerC = getC().get(axis) < value;
+    return lowerA != lowerC ? 0 : lowerA ? -1 : 1;
   }
 
   @Override

@@ -33,6 +33,8 @@ public class Octree extends SimpleStorage {
     /** The children or <code>null</code> if leaf. */
     private Node[] children;
 
+    private boolean noSplit;
+
     /**
      * Creates a new node.
      *
@@ -52,55 +54,63 @@ public class Octree extends SimpleStorage {
      * @param t The triangle.
      */
     public void addTriangle(final int index, final Triangle t) {
-      addTriangle(index, t, false);
+      addTriangle(index, t, 0, null);
     }
 
     /**
      * Adds a triangle.
      *
-     * @param index The index.
+     * @param index The triangle index.
      * @param t The triangle.
-     * @param noSplit Whether splits are allowed.
+     * @param boxIndex The index of the bounding box in the parent.
+     * @param mid The middle point of the parent bounding box.
+     * @return Whether the triangle was added.
      */
-    private void addTriangle(final int index, final Triangle t, final boolean noSplit) {
-      if(!box.intersects(t)) return;
+    private boolean addTriangle(final int index, final Triangle t, final int boxIndex,
+        final Vec4 mid) {
+      if(mid != null) {
+        for(int axis = 0; axis < 3; ++axis) {
+          final int rel = t.relToPlane(mid.get(axis), axis);
+          if(isMinNode(boxIndex, axis) ? rel > 0 : rel < 0) return false;
+        }
+      }
       if(ts != null) {
-        if(ts.get(index - offset)) return;
-        addTriangle(index, noSplit);
-        return;
+        ts.set(index - offset);
+        noSplit = false;
+        return true;
       }
-      for(final Node n : children) {
-        n.addTriangle(index, t, noSplit);
+      boolean wasAdded = false;
+      final Vec4 center = box.getCenter();
+      for(int i = 0; i < children.length; ++i) {
+        wasAdded = children[i].addTriangle(index, t, i, center) || wasAdded;
       }
-    }
-
-    /**
-     * Actually adds the triangle.
-     *
-     * @param index The index.
-     * @param noSplit Whether splits are allowed.
-     */
-    private void addTriangle(final int index, final boolean noSplit) {
-      ts.set(index - offset);
-      if(noSplit) return;
-      if(ts.cardinality() > threshold) {
-        splitNode();
-      }
+      return wasAdded;
     }
 
     /** Splits the node. */
-    private void splitNode() {
+    protected void splitNode() {
+      if(ts.cardinality() <= threshold || noSplit) return;
       final BoundingBox[] boxes = new BoundingBox[8];
       children = new Node[8];
       final BitSet b = ts;
       ts = null;
-      split(box, boxes);
+      final Vec4 mid = split(box, boxes);
+      boolean unsplit = true;
       for(int i = 0; i < children.length; ++i) {
         final Node n = new Node(boxes[i]);
         for(int t = b.nextSetBit(0); t >= 0; t = b.nextSetBit(t + 1)) {
-          n.addTriangle(t + offset, getTriangle(t + offset), true);
+          unsplit = n.addTriangle(t + offset, getTriangle(t + offset), i, mid) && unsplit;
         }
         children[i] = n;
+      }
+      if(unsplit) {
+        ts = b;
+        children = null;
+        noSplit = true;
+      } else {
+        for(final Node n : children) {
+          n.splitNode();
+        }
       }
     }
 
@@ -212,6 +222,7 @@ public class Octree extends SimpleStorage {
     for(int i = 0; i < size(); ++i) {
       root.addTriangle(i, getTriangle(i));
     }
+    root.splitNode();
     root.optimize();
   }
 
@@ -220,8 +231,9 @@ public class Octree extends SimpleStorage {
    *
    * @param box The bounding box.
    * @param dest An array with length 8 that has the result after the call.
+   * @return The center of the original bounding box.
    */
-  protected static final void split(final BoundingBox box, final BoundingBox[] dest) {
+  protected static final Vec4 split(final BoundingBox box, final BoundingBox[] dest) {
     final Vec4 center = box.getCenter();
     boolean minX = false;
     boolean minY = false;
@@ -240,6 +252,7 @@ public class Octree extends SimpleStorage {
         }
       }
     }
+    return center;
   }
 
   /**
@@ -253,6 +266,10 @@ public class Octree extends SimpleStorage {
   protected static final int index(
       final boolean minX, final boolean minY, final boolean minZ) {
     return (minX ? 1 : 0) | (minY ? 2 : 0) | (minZ ? 4 : 0);
+  }
+
+  protected static final boolean isMinNode(final int index, final int axis) {
+    return (index & (1 << axis)) != 0;
   }
 
   @Override
