@@ -126,7 +126,7 @@ public class BoundingBox {
   public Vec4 get(final boolean minX, final boolean minY, final boolean minZ) {
     return new Vec4(minX ? mins.getX() : maxs.getX(),
         minY ? mins.getY() : maxs.getY(),
-        minZ ? mins.getZ() : maxs.getZ(), true);
+            minZ ? mins.getZ() : maxs.getZ(), true);
   }
 
   /**
@@ -149,6 +149,38 @@ public class BoundingBox {
     final Vec4 min = mins == null ? o.mins : o.mins == null ? mins : min(mins, o.mins);
     final Vec4 max = maxs == null ? o.maxs : o.maxs == null ? maxs : max(maxs, o.maxs);
     return new BoundingBox(min, max, true);
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The width of the bounding box.
+   */
+  public double getWidth() {
+    return maxs.getX() - mins.getX();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The height of the bounding box.
+   */
+  public double getHeight() {
+    return maxs.getY() - mins.getY();
+  }
+
+  /**
+   * Getter.
+   * 
+   * @return The depth of the bounding box.
+   */
+  public double getDepth() {
+    return maxs.getZ() - mins.getZ();
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + "[min: " + mins + " max: " + maxs + "]";
   }
 
 }

@@ -32,7 +32,7 @@ public class Octree extends SimpleStorage {
     private int offset;
     /** The children or <code>null</code> if leaf. */
     private Node[] children;
-
+    /** Indicates that this node does not need to be split. */
     private boolean noSplit;
 
     /**
@@ -88,8 +88,10 @@ public class Octree extends SimpleStorage {
     }
 
     /** Splits the node. */
-    protected void splitNode() {
-      if(ts.cardinality() <= threshold || noSplit) return;
+    public void splitNode() {
+      if(ts.isEmpty() || ts.cardinality() <= threshold || noSplit) return;
+      if(box.getWidth() <= minDist || box.getHeight() <= minDist
+          || box.getDepth() <= minDist) return;
       final BoundingBox[] boxes = new BoundingBox[8];
       children = new Node[8];
       final BitSet b = ts;
@@ -99,14 +101,17 @@ public class Octree extends SimpleStorage {
       for(int i = 0; i < children.length; ++i) {
         final Node n = new Node(boxes[i]);
         for(int t = b.nextSetBit(0); t >= 0; t = b.nextSetBit(t + 1)) {
-          unsplit = n.addTriangle(t + offset, getTriangle(t + offset), i, mid) && unsplit;
+          final int index = t + offset;
+          unsplit = n.addTriangle(index, getTriangle(index), i, mid) && unsplit;
         }
         children[i] = n;
+        n.optimize();
       }
       if(unsplit) {
         ts = b;
         children = null;
         noSplit = true;
+        optimize();
       } else {
         for(final Node n : children) {
           n.splitNode();
@@ -198,6 +203,8 @@ public class Octree extends SimpleStorage {
   private BoundingBox bbox = new BoundingBox();
   /** The root node. */
   private Node root;
+  /** The minimal distance between triangle end-points. */
+  protected double minDist;
 
   /**
    * Creates an octree.
@@ -208,12 +215,17 @@ public class Octree extends SimpleStorage {
     if(threshold < 1) throw new IllegalArgumentException("" + threshold);
     this.threshold = threshold;
     root = null;
+    minDist = Double.POSITIVE_INFINITY;
   }
 
   @Override
   public void addTriangle(final Triangle tri) {
     super.addTriangle(tri);
-    bbox = bbox.add(new BoundingBox(tri));
+    final BoundingBox cur = new BoundingBox(tri);
+    minDist = Math.min(
+        Math.max(Math.max(cur.getWidth(), cur.getHeight()),
+            Math.max(cur.getDepth(), 1e-9)), minDist);
+    bbox = bbox.add(cur);
   }
 
   @Override
@@ -268,6 +280,13 @@ public class Octree extends SimpleStorage {
     return (minX ? 1 : 0) | (minY ? 2 : 0) | (minZ ? 4 : 0);
   }
 
+  /**
+   * Whether this node has the lower coordinates.
+   *
+   * @param index The index of the node.
+   * @param axis The axis.
+   * @return Whether this node has the lower coordinates.
+   */
   protected static final boolean isMinNode(final int index, final int axis) {
     return (index & (1 << axis)) != 0;
   }

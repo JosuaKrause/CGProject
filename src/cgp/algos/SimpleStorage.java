@@ -45,8 +45,8 @@ public class SimpleStorage implements TriangleStorage {
   }
 
   @Override
-  public Iterable<Triangle> getSoup() {
-    return Collections.unmodifiableCollection(triangles);
+  public List<Triangle> getSoup() {
+    return Collections.unmodifiableList(triangles);
   }
 
   /**
@@ -57,10 +57,6 @@ public class SimpleStorage implements TriangleStorage {
    */
   protected Triangle getTriangle(final int index) {
     return triangles.get(index);
-  }
-
-  protected List<Triangle> getList() {
-    return Collections.unmodifiableList(triangles);
   }
 
   @Override

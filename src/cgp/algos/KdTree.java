@@ -200,7 +200,7 @@ public class KdTree extends SimpleStorage {
   public void finishLoading() {
     final int splitType = 0;
     root = new KdNode(bbox, splitType);
-    root.buildKdTree(getList());
+    root.buildKdTree(getSoup());
   }
 
   @Override
