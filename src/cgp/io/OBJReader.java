@@ -15,11 +15,28 @@ import cgp.data.Vec4;
  * @author Timothy Chu
  */
 public class OBJReader implements MeshLoader {
+  /**
+   * Filepath of the object file to be read in
+   */
   private final String objectFile;
+  /**
+   * Stored vertices from the object file
+   */
   private final List<Vec4> vertices = new ArrayList<>();
+  /**
+   * Stored vertex normals from the object file
+   */
   private final List<Vec4> vertexNormals = new ArrayList<>();
+  /**
+   * Indices of the vertices that make up each face
+   */
   private final List<int[]> faces = new ArrayList<>();
 
+  /**
+   * Constructor
+   * 
+   * @param filename filepath for the object file
+   */
   public OBJReader(final String filename) {
     objectFile = filename;
   }
@@ -91,6 +108,10 @@ public class OBJReader implements MeshLoader {
     }
   }
 
+  /**
+   * @param ts Data structure to store the triangles in
+   * @param aff Affine transforms
+   */
   private void constructTriangles(final TriangleStorage ts, final AffineTransform4 aff) {
     for(final int[] face : faces) {
       if(face.length == 3) {
