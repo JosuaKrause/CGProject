@@ -65,9 +65,19 @@ public class KdTree extends SimpleStorage {
 
     /**
      * @param triangles The triangles present in the KdNode
+     * @param depth Depth of the node
      */
-    public void buildKdTree(final List<Triangle> triangles) {
+    @SuppressWarnings("synthetic-access")
+    public void buildKdTree(final List<Triangle> triangles, final int depth) {
       // Sort the list appropriately
+      if(depth >= depthThreshold) {
+        tri = triangles;
+        return;
+      }
+      if(triangles.size() <= triangleThreshold) {
+        tri = triangles;
+        return;
+      }
       if(triangles.size() <= 1) {
         tri = triangles;
         return;
@@ -160,10 +170,10 @@ public class KdTree extends SimpleStorage {
         return;
       }
       if(children[0] != null) {
-        children[0].buildKdTree(leftBottomNear);
+        children[0].buildKdTree(leftBottomNear, depth + 1);
       }
       if(children[1] != null) {
-        children[1].buildKdTree(rightTopFar);
+        children[1].buildKdTree(rightTopFar, depth + 1);
       }
     }
 
@@ -233,10 +243,25 @@ public class KdTree extends SimpleStorage {
   private KdNode root;
 
   /**
-   * Constructor for the KdTree
+   * Threshold for the depth of the KdTree
    */
-  public KdTree() {
+  private final int depthThreshold;
+
+  /**
+   * Theshold for the number of triangles in a node.
+   */
+  private final int triangleThreshold;
+
+  /**
+   * Constructor for the KdTree
+   * 
+   * @param depthThreshold Threshold for KdTree depth
+   * @param triangleThreshold Threshold for KdNode size
+   */
+  public KdTree(final int depthThreshold, final int triangleThreshold) {
     root = null;
+    this.depthThreshold = depthThreshold;
+    this.triangleThreshold = triangleThreshold;
   }
 
   @Override
@@ -249,7 +274,7 @@ public class KdTree extends SimpleStorage {
   public void finishLoading() {
     final int splitType = 0;
     root = new KdNode(bbox, splitType);
-    root.buildKdTree(getSoup());
+    root.buildKdTree(getSoup(), 0);
   }
 
   @Override
