@@ -44,7 +44,7 @@ import cgp.tracer.SimpleRayProducer;
 
 /**
  * The entry point for the application.
- *
+ * 
  * @author Joschi <josua.krause@gmail.com>
  */
 public final class Main {
@@ -59,7 +59,7 @@ public final class Main {
 
   /**
    * Starts the application.
-   *
+   * 
    * @param args The model to load. No argument defaults to "teapot". Valid
    *          values are "teapot", "lamp", "bunny", and "test".
    * @throws IOException I/O Exception.
@@ -190,8 +190,8 @@ public final class Main {
         final long[] tests = rs.shootRays();
         System.out.println("end: took " + ((System.nanoTime() - nano) * 1e-6) + "ms");
         comp.repaint();
-        System.out.println("Triangle tests: " + tests[0] + "\nBounding Box tests: "
-            + tests[1]);
+        System.out.println("Triangle tests: " + tests[0]);
+        System.out.println("Bounding Box tests: " + tests[1]);
         frame.setTitle(title);
         isRunning.set(false);
         synchronized(isRunning) {
@@ -277,15 +277,15 @@ public final class Main {
 
   /** Mesh presets. */
   public static final String[] MESH_PRESET = {
-    "bunny",
-    "teapot",
-    "lamp",
-    "test",
+      "bunny",
+      "teapot",
+      "lamp",
+      "test",
   };
 
   /**
    * Loads a model from a preset.
-   *
+   * 
    * @param preset The preset name.
    * @param rp The ray producer.
    * @param ts The triangle storage.
@@ -340,13 +340,13 @@ public final class Main {
 
   /** Storage preset names. */
   public static final String[] STORAGE_PRESET = {
-    "KdTree max depth",
-    "Octree max depth",
+      "KdTree max depth",
+      "Octree max depth",
   };
 
   /**
    * Creates a hitter from a preset.
-   *
+   * 
    * @param preset The preset.
    * @return The hitter.
    */
@@ -366,7 +366,7 @@ public final class Main {
 
   /**
    * Fills the hitter.
-   *
+   * 
    * @param preset The preset.
    * @param ts The triangles.
    * @param rs The ray shooter.
