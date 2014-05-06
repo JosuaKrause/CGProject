@@ -60,7 +60,7 @@ public class Main {
    */
   public static void main(final String[] args) throws IOException {
     final long startLoading = System.nanoTime();
-    final TriangleStorage ts = new KdTree(1, 100);
+    final TriangleStorage ts = new KdTree(100, 1);
     System.out.println("algorithm is " + ts.getClass().getSimpleName());
     // camera
     final Dimension dim = new Dimension(800, 600);

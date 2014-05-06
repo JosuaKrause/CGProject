@@ -12,14 +12,14 @@ import cgp.tracer.TestCounter;
 
 /**
  * An Octree.
- *
+ * 
  * @author Joschi <josua.krause@gmail.com>
  */
 public class Octree extends SimpleStorage {
 
   /**
    * An internal node of the Octree.
-   *
+   * 
    * @author Joschi <josua.krause@gmail.com>
    */
   private final class Node {
@@ -39,7 +39,7 @@ public class Octree extends SimpleStorage {
 
     /**
      * Creates a new node.
-     *
+     * 
      * @param box The bounding box.
      * @param depth The depth of the node.
      */
@@ -49,11 +49,13 @@ public class Octree extends SimpleStorage {
       ts = new BitSet();
       children = null;
       offset = 0;
+      totalBoundingBoxes++;
+      maximumDepth = Math.max(depth, maximumDepth);
     }
 
     /**
      * Adds a triangle.
-     *
+     * 
      * @param index The index.
      * @param t The triangle.
      */
@@ -63,7 +65,7 @@ public class Octree extends SimpleStorage {
 
     /**
      * Adds a triangle.
-     *
+     * 
      * @param index The triangle index.
      * @param t The triangle.
      * @param boxIndex The index of the bounding box in the parent.
@@ -126,7 +128,7 @@ public class Octree extends SimpleStorage {
 
     /**
      * Tests for a hit.
-     *
+     * 
      * @param r The ray.
      * @param c The test counter.
      * @return The hit.
@@ -163,7 +165,7 @@ public class Octree extends SimpleStorage {
 
     /**
      * Checks for a hit in a leaf node.
-     *
+     * 
      * @param r The ray.
      * @param c The test counter.
      * @return The hit.
@@ -200,6 +202,17 @@ public class Octree extends SimpleStorage {
       offset += lowestIndex;
     }
 
+    /**
+     * Counts the number of bounding boxes in the octree.
+     */
+    public void countBoundingBoxes() {
+      totalBoundingBoxes++;
+      if(ts != null) {
+        for(final Node n : children) {
+
+        }
+      }
+    }
   } // Node
 
   /**
@@ -218,10 +231,18 @@ public class Octree extends SimpleStorage {
   private Node root;
   /** The minimal distance between triangle end-points. */
   protected double minDist;
+  /**
+   * The maximum depth of the octree.
+   */
+  protected int maximumDepth = 0;
+  /**
+   * The number of bounding boxes in the octree.
+   */
+  protected int totalBoundingBoxes = 0;
 
   /**
    * Creates an Octree.
-   *
+   * 
    * @param depthThreshold The depth threshold.
    * @param triangleThreshold The triangle threshold.
    */
@@ -252,11 +273,14 @@ public class Octree extends SimpleStorage {
     }
     root.splitNode();
     root.optimize();
+    root.countBoundingBoxes();
+    System.out.println("Depth of octree: " + maximumDepth
+        + "\nBounding boxes in octree: " + totalBoundingBoxes);
   }
 
   /**
    * Splits the bounding box.
-   *
+   * 
    * @param box The bounding box.
    * @param dest An array with length 8 that has the result after the call.
    * @return The center of the original bounding box.
@@ -285,7 +309,7 @@ public class Octree extends SimpleStorage {
 
   /**
    * Getter.
-   *
+   * 
    * @param minX Minimal x.
    * @param minY Minimal y.
    * @param minZ Minimal z.
@@ -298,7 +322,7 @@ public class Octree extends SimpleStorage {
 
   /**
    * Whether this node has the lower coordinates.
-   *
+   * 
    * @param index The index of the node.
    * @param axis The axis.
    * @return Whether this node has the lower coordinates.

@@ -67,8 +67,9 @@ public class KdTree extends SimpleStorage {
      * @param triangles The triangles present in the KdNode
      * @param depth Depth of the node
      */
-    @SuppressWarnings("synthetic-access")
+
     public void buildKdTree(final List<Triangle> triangles, final int depth) {
+      maximumDepth = Math.max(depth, maximumDepth);
       // Sort the list appropriately
       if(depth >= depthThreshold) {
         tri = triangles;
@@ -171,9 +172,11 @@ public class KdTree extends SimpleStorage {
       }
       if(children[0] != null) {
         children[0].buildKdTree(leftBottomNear, depth + 1);
+        totalBoundingBoxes++;
       }
       if(children[1] != null) {
         children[1].buildKdTree(rightTopFar, depth + 1);
+        totalBoundingBoxes++;
       }
     }
 
@@ -245,12 +248,21 @@ public class KdTree extends SimpleStorage {
   /**
    * Threshold for the depth of the KdTree
    */
-  private final int depthThreshold;
+  protected final int depthThreshold;
 
   /**
    * Theshold for the number of triangles in a node.
    */
-  private final int triangleThreshold;
+  protected final int triangleThreshold;
+
+  /**
+   * Greatest depth of kd-tree.
+   */
+  protected int maximumDepth = 0;
+  /**
+   * Total number of bounding boxes.
+   */
+  protected int totalBoundingBoxes = 0;
 
   /**
    * Constructor for the KdTree
@@ -274,7 +286,10 @@ public class KdTree extends SimpleStorage {
   public void finishLoading() {
     final int splitType = 0;
     root = new KdNode(bbox, splitType);
+    totalBoundingBoxes++;
     root.buildKdTree(getSoup(), 0);
+    System.out.println("Depth of kd-tree: " + maximumDepth
+        + "\nBounding boxes in kd-tree: " + totalBoundingBoxes);
   }
 
   @Override
