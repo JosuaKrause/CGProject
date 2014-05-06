@@ -26,6 +26,8 @@ public class Octree extends SimpleStorage {
 
     /** The bounding box. */
     private final BoundingBox box;
+    /** The depth of the node. */
+    private final int depth;
     /** The set of triangles or <code>null</code> if inner node. */
     private BitSet ts;
     /** The offset of the bit set. */
@@ -39,9 +41,11 @@ public class Octree extends SimpleStorage {
      * Creates a new node.
      *
      * @param box The bounding box.
+     * @param depth The depth of the node.
      */
-    public Node(final BoundingBox box) {
+    public Node(final BoundingBox box, final int depth) {
       this.box = Objects.requireNonNull(box);
+      this.depth = depth;
       ts = new BitSet();
       children = null;
       offset = 0;
@@ -89,7 +93,8 @@ public class Octree extends SimpleStorage {
 
     /** Splits the node. */
     public void splitNode() {
-      if(ts.isEmpty() || ts.cardinality() <= threshold || noSplit) return;
+      if(depth >= depthThreshold) return;
+      if(ts.isEmpty() || ts.cardinality() <= triangleThreshold || noSplit) return;
       if(box.getWidth() <= minDist || box.getHeight() <= minDist
           || box.getDepth() <= minDist) return;
       final BoundingBox[] boxes = new BoundingBox[8];
@@ -99,7 +104,7 @@ public class Octree extends SimpleStorage {
       final Vec4 mid = split(box, boxes);
       boolean unsplit = true;
       for(int i = 0; i < children.length; ++i) {
-        final Node n = new Node(boxes[i]);
+        final Node n = new Node(boxes[i], depth + 1);
         for(int t = b.nextSetBit(0); t >= 0; t = b.nextSetBit(t + 1)) {
           final int index = t + offset;
           unsplit = n.addTriangle(index, getTriangle(index), i, mid) && unsplit;
@@ -197,8 +202,16 @@ public class Octree extends SimpleStorage {
 
   } // Node
 
-  /** The threshold when boxes are not being split anymore. */
-  protected final int threshold;
+  /**
+   * The threshold when boxes are not being split anymore because of the number
+   * of triangles in the node.
+   */
+  protected final int triangleThreshold;
+  /**
+   * The threshold when boxes are not being split anymore because of the depth
+   * of the tree.
+   */
+  protected final int depthThreshold;
   /** The bounding box of the scene. */
   private BoundingBox bbox = new BoundingBox();
   /** The root node. */
@@ -207,13 +220,16 @@ public class Octree extends SimpleStorage {
   protected double minDist;
 
   /**
-   * Creates an octree.
+   * Creates an Octree.
    *
-   * @param threshold The threshold.
+   * @param depthThreshold The depth threshold.
+   * @param triangleThreshold The triangle threshold.
    */
-  public Octree(final int threshold) {
-    if(threshold < 1) throw new IllegalArgumentException("" + threshold);
-    this.threshold = threshold;
+  public Octree(final int depthThreshold, final int triangleThreshold) {
+    if(triangleThreshold < 1) throw new IllegalArgumentException("" + triangleThreshold);
+    if(depthThreshold < 1) throw new IllegalArgumentException("" + depthThreshold);
+    this.depthThreshold = depthThreshold;
+    this.triangleThreshold = triangleThreshold;
     root = null;
     minDist = Double.POSITIVE_INFINITY;
   }
@@ -230,7 +246,7 @@ public class Octree extends SimpleStorage {
 
   @Override
   public void finishLoading() {
-    root = new Node(bbox);
+    root = new Node(bbox, 0);
     for(int i = 0; i < size(); ++i) {
       root.addTriangle(i, getTriangle(i));
     }
