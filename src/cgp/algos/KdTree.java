@@ -259,11 +259,11 @@ public class KdTree extends Hitter {
   /**
    * Greatest depth of kd-tree.
    */
-  protected int maximumDepth = 0;
+  protected int maximumDepth;
   /**
    * Total number of bounding boxes.
    */
-  protected int totalBoundingBoxes = 0;
+  protected int totalBoundingBoxes;
 
   /**
    * Constructor for the KdTree
@@ -279,6 +279,8 @@ public class KdTree extends Hitter {
 
   @Override
   protected void build() {
+    maximumDepth = 0;
+    totalBoundingBoxes = 0;
     root = null;
     bbox = new BoundingBox();
     for(final Triangle t : ts.getList()) {
@@ -287,7 +289,7 @@ public class KdTree extends Hitter {
     final int splitType = 0;
     root = new KdNode(bbox, splitType);
     ++totalBoundingBoxes;
-    root.buildKdTree(getList(), 0);
+    root.buildKdTree(ts.getList(), 0);
     System.out.println("Depth of kd-tree: " + maximumDepth);
     System.out.println("Bounding boxes in kd-tree: " + totalBoundingBoxes);
   }

@@ -12,14 +12,14 @@ import cgp.tracer.TestCounter;
 
 /**
  * An Octree.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class Octree extends Hitter {
 
   /**
    * An internal node of the Octree.
-   * 
+   *
    * @author Joschi <josua.krause@gmail.com>
    */
   private final class Node {
@@ -39,7 +39,7 @@ public class Octree extends Hitter {
 
     /**
      * Creates a new node.
-     * 
+     *
      * @param box The bounding box.
      * @param depth The depth of the node.
      */
@@ -55,7 +55,7 @@ public class Octree extends Hitter {
 
     /**
      * Adds a triangle.
-     * 
+     *
      * @param index The index.
      * @param t The triangle.
      */
@@ -65,7 +65,7 @@ public class Octree extends Hitter {
 
     /**
      * Adds a triangle.
-     * 
+     *
      * @param index The triangle index.
      * @param t The triangle.
      * @param boxIndex The index of the bounding box in the parent.
@@ -128,7 +128,7 @@ public class Octree extends Hitter {
 
     /**
      * Tests for a hit.
-     * 
+     *
      * @param r The ray.
      * @param c The test counter.
      * @return The hit.
@@ -165,7 +165,7 @@ public class Octree extends Hitter {
 
     /**
      * Checks for a hit in a leaf node.
-     * 
+     *
      * @param r The ray.
      * @param c The test counter.
      * @return The hit.
@@ -206,10 +206,10 @@ public class Octree extends Hitter {
      * Counts the number of bounding boxes in the octree.
      */
     public void countBoundingBoxes() {
-      totalBoundingBoxes++;
+      ++totalBoundingBoxes;
       if(ts != null) {
         for(final Node n : children) {
-
+          // TODO
         }
       }
     }
@@ -234,15 +234,15 @@ public class Octree extends Hitter {
   /**
    * The maximum depth of the octree.
    */
-  protected int maximumDepth = 0;
+  protected int maximumDepth;
   /**
    * The number of bounding boxes in the octree.
    */
-  protected int totalBoundingBoxes = 0;
+  protected int totalBoundingBoxes;
 
   /**
    * Creates an Octree.
-   * 
+   *
    * @param depthThreshold The depth threshold.
    * @param triangleThreshold The triangle threshold.
    */
@@ -256,6 +256,8 @@ public class Octree extends Hitter {
 
   @Override
   protected void build() {
+    maximumDepth = 0;
+    totalBoundingBoxes = 0;
     root = null;
     minDist = Double.POSITIVE_INFINITY;
     bbox = new BoundingBox();
@@ -273,13 +275,13 @@ public class Octree extends Hitter {
     root.splitNode();
     root.optimize();
     root.countBoundingBoxes();
-    System.out.println("Depth of octree: " + maximumDepth
-        + "\nBounding boxes in octree: " + totalBoundingBoxes);
+    System.out.println("Depth of octree: " + maximumDepth);
+    System.out.println("Bounding boxes in octree: " + totalBoundingBoxes);
   }
 
   /**
    * Splits the bounding box.
-   * 
+   *
    * @param box The bounding box.
    * @param dest An array with length 8 that has the result after the call.
    * @return The center of the original bounding box.
@@ -308,7 +310,7 @@ public class Octree extends Hitter {
 
   /**
    * Getter.
-   * 
+   *
    * @param minX Minimal x.
    * @param minY Minimal y.
    * @param minZ Minimal z.
@@ -321,7 +323,7 @@ public class Octree extends Hitter {
 
   /**
    * Whether this node has the lower coordinates.
-   * 
+   *
    * @param index The index of the node.
    * @param axis The axis.
    * @return Whether this node has the lower coordinates.
