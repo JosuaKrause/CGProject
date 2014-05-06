@@ -304,22 +304,22 @@ public final class Main {
         aff = AffineTransform4.scale(5, 5, 5);
         file = "objs/bunny.obj";
         origin = new Vec4(7, 9, 15, true);
-        view = new Vec4(-0.39, -0.50, -0.77, false);
-        up = new Vec4(-0.20, 0.86, -0.46, false);
+        view = new Vec4(-0.39, -0.50, -0.77, false).normalized();
+        up = new Vec4(-0.20, 0.86, -0.46, false).normalized();
         break;
       case "teapot":
         aff = AffineTransform4.scale(0.1, 0.1, 0.1);
         file = "objs/teapot.obj";
         origin = new Vec4(10, 10, 15, true);
-        view = new Vec4(-0.43, -0.50, -0.75, false);
-        up = new Vec4(-0.22, 0.86, -0.45, false);
+        view = new Vec4(-0.43, -0.50, -0.75, false).normalized();
+        up = new Vec4(-0.22, 0.86, -0.45, false).normalized();
         break;
       case "lamp":
         aff = AffineTransform4.IDENTITY;
         file = "objs/lamp.obj";
         origin = new Vec4(-3.32, 9.75, 16.29, true);
-        view = new Vec4(0.18, -0.37, -0.91, false);
-        up = new Vec4(0.07, 0.93, -0.36, false);
+        view = new Vec4(0.18, -0.37, -0.91, false).normalized();
+        up = new Vec4(0.07, 0.93, -0.36, false).normalized();
         break;
       case "test":
         aff = AffineTransform4.scale(2, 2, 2);

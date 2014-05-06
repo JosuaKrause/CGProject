@@ -104,6 +104,9 @@ public class OpenGLView {
             if(Keyboard.isKeyDown(Keyboard.KEY_E)) {
               cam.rotateViewByTicks(4);
             }
+            if(Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+              break;
+            }
             // draw stuff
             draw(list);
             Display.update();
