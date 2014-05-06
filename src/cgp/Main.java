@@ -60,7 +60,7 @@ public class Main {
    */
   public static void main(final String[] args) throws IOException {
     final long startLoading = System.nanoTime();
-    final TriangleStorage ts = new KdTree(100, 1);
+    final TriangleStorage ts = new KdTree(1, 100);
     System.out.println("algorithm is " + ts.getClass().getSimpleName());
     // camera
     final Dimension dim = new Dimension(800, 600);
@@ -144,10 +144,11 @@ public class Main {
         frame.setTitle(title + "*");
         System.out.println("start");
         final long nano = System.nanoTime();
-        final long tests = rs.shootRays();
+        final long[] tests = rs.shootRays();
         System.out.println("end: took " + ((System.nanoTime() - nano) * 1e-6) + "ms");
         comp.repaint();
-        System.out.println("tests: " + tests);
+        System.out.println("Triangle tests: " + tests[0] + "\nBounding Box tests: "
+            + tests[1]);
         frame.setTitle(title);
         isRunning.set(false);
         synchronized(isRunning) {

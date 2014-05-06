@@ -13,7 +13,7 @@ import cgp.data.Ray;
 
 /**
  * The ray shooter.
- *
+ * 
  * @author Joschi <josua.krause@gmail.com>
  */
 public class RayShooter {
@@ -27,7 +27,7 @@ public class RayShooter {
 
   /**
    * Creates a new ray shooter.
-   *
+   * 
    * @param prod The ray producer.
    * @param storage The triangle storage.
    */
@@ -40,7 +40,7 @@ public class RayShooter {
 
   /**
    * Adds a consumer.
-   *
+   * 
    * @param hc A hit consumer.
    */
   public void addConsumer(final HitConsumer hc) {
@@ -53,7 +53,7 @@ public class RayShooter {
   /**
    * A ray shooting action. The action is divided until the number of rays to
    * shoot is under a given threshold.
-   *
+   * 
    * @author Joschi <josua.krause@gmail.com>
    */
   private class ShootingAction extends RecursiveAction {
@@ -73,7 +73,7 @@ public class RayShooter {
 
     /**
      * Creates a shooting action.
-     *
+     * 
      * @param hits The hit array.
      * @param xFrom The lowest inclusive x coordinate.
      * @param xTo The highest exclusive x coordinate.
@@ -105,7 +105,7 @@ public class RayShooter {
 
     /**
      * Getter.
-     *
+     * 
      * @return Whether the number of rays is below the threshold.
      */
     private boolean isSmallTask() {
@@ -139,11 +139,20 @@ public class RayShooter {
 
     /**
      * Getter.
-     *
+     * 
      * @return The total number of triangle tests.
      */
     public long getTotalTestCount() {
       return counter.getCount();
+    }
+
+    /**
+     * Getter
+     * 
+     * @return The total number of bounding boxes.
+     */
+    public long getTotalBBoxCount() {
+      return counter.getBBoxCount();
     }
 
   } // ShootingAction
@@ -151,22 +160,22 @@ public class RayShooter {
   /**
    * Shoots all rays. The consumers get notified after the shooting is
    * completed.
-   *
+   * 
    * @return The number of triangle checks.
    */
-  public long shootRays() {
+  public long[] shootRays() {
     final int w = prod.getWidth();
     final int h = prod.getHeight();
     final Hit[][] res = new Hit[w][h];
     final ShootingAction sa = new ShootingAction(res, 0, w, 0, h);
     fjp.invoke(sa);
     finish(res);
-    return sa.getTotalTestCount();
+    return new long[] { sa.getTotalTestCount(), sa.getTotalBBoxCount()};
   }
 
   /**
    * Shoots a single ray.
-   *
+   * 
    * @param hits A column of the hit array.
    * @param x The x coordinate.
    * @param y The y coordinate.
@@ -182,7 +191,7 @@ public class RayShooter {
 
   /**
    * Notifies the consumers of the result.
-   *
+   * 
    * @param hits The filled hit array.
    */
   private void finish(final Hit[][] hits) {
