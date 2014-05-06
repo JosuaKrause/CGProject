@@ -31,25 +31,29 @@ public class SimpleRayProducer implements RayProducer {
   /**
    * Creates a simple ray producer.
    *
-   * @param eye The camera origin.
-   * @param view The viewing direction.
-   * @param up The direction which is up for the camera.
    * @param w The width.
    * @param h The height.
    * @param fov The field of view in degrees.
    * @param near Nearest distance.
    * @param far Farthest distance.
    */
-  public SimpleRayProducer(final Vec4 eye, final Vec4 view, final Vec4 up,
-      final int w, final int h, final double fov, final double near, final double far) {
+  public SimpleRayProducer(final int w, final int h, final double fov, final double near,
+      final double far) {
     this.w = w;
     this.h = h;
-    this.eye = eye.expectPoint();
-    this.view = view.expectDirection();
-    this.up = up.expectDirection();
     this.fov = fov;
     this.near = near;
     this.far = far;
+    eye = Vec4.ORIGIN;
+    view = Vec4.Z_AXIS.negate();
+    up = Vec4.Y_AXIS;
+  }
+
+  @Override
+  public void setView(final Vec4 eye, final Vec4 view, final Vec4 up) {
+    this.eye = eye.expectPoint();
+    this.view = view.expectDirection();
+    this.up = up.expectDirection();
   }
 
   @Override

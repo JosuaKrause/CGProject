@@ -1,9 +1,6 @@
 package cgp.algos;
 
-import cgp.data.Ray;
 import cgp.data.Triangle;
-import cgp.tracer.Hit;
-import cgp.tracer.TestCounter;
 
 /**
  * A triangle storage data structure.
@@ -13,38 +10,10 @@ import cgp.tracer.TestCounter;
 public interface TriangleStorage {
 
   /**
-   * Adds a triangle.
-   *
-   * @param tri The triangle.
+   * Adds a triangles to the storage.
+   * 
+   * @param t The triangle to add.
    */
-  void addTriangle(Triangle tri);
-
-  /**
-   * This method is called after all triangles were added to the data structure.
-   */
-  void finishLoading();
-
-  /**
-   * Checks whether the ray hits a triangle.
-   *
-   * @param r The ray.
-   * @param counter The check counter.
-   * @return The hit.
-   */
-  Hit getHit(Ray r, TestCounter counter);
-
-  /**
-   * Getter.
-   *
-   * @return Iterates over all triangles.
-   */
-  Iterable<Triangle> getSoup();
-
-  /**
-   * Getter.
-   *
-   * @return The number of triangles.
-   */
-  int size();
+  void addTriangle(Triangle t);
 
 }

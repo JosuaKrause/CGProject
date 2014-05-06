@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cgp.algos.TriangleStorage;
-import cgp.data.AffineTransform4;
 import cgp.data.Triangle;
 import cgp.data.Vec4;
 
@@ -34,7 +33,7 @@ public class OBJReader implements MeshLoader {
 
   /**
    * Constructor
-   * 
+   *
    * @param filename filepath for the object file
    */
   public OBJReader(final String filename) {
@@ -42,8 +41,7 @@ public class OBJReader implements MeshLoader {
   }
 
   @Override
-  public void loadMesh(
-      final TriangleStorage ts, final AffineTransform4 aff) throws IOException {
+  public void loadMesh(final TriangleStorage ts) throws IOException {
     boolean shouldReset = false;
     try (final BufferedReader in = new BufferedReader(new FileReader(objectFile))) {
       vertices.clear();
@@ -89,7 +87,7 @@ public class OBJReader implements MeshLoader {
               // If OBJ file keeps faces in relation to only 3 or 4 vertices,
               // keep resetting the arrayLists.
               shouldReset = true;
-              constructTriangles(ts, aff);
+              constructTriangles(ts);
               vertices.clear();
               vertexNormals.clear();
               faces.clear();
@@ -100,7 +98,7 @@ public class OBJReader implements MeshLoader {
         }
       }
       if(!shouldReset) {
-        constructTriangles(ts, aff);
+        constructTriangles(ts);
         vertices.clear();
         vertexNormals.clear();
         faces.clear();
@@ -110,39 +108,38 @@ public class OBJReader implements MeshLoader {
 
   /**
    * @param ts Data structure to store the triangles in
-   * @param aff Affine transforms
    */
-  private void constructTriangles(final TriangleStorage ts, final AffineTransform4 aff) {
+  private void constructTriangles(final TriangleStorage ts) {
     for(final int[] face : faces) {
       if(face.length == 3) {
         // No normals
         if(vertexNormals.isEmpty()) {
-          ts.addTriangle(aff.transform(new Triangle(vertices.get(face[0] - 1),
-              vertices.get(face[1] - 1), vertices.get(face[2] - 1))));
+          ts.addTriangle(new Triangle(vertices.get(face[0] - 1),
+              vertices.get(face[1] - 1), vertices.get(face[2] - 1)));
         } else {
           // Has normals
-          ts.addTriangle(aff.transform(new Triangle(
+          ts.addTriangle(new Triangle(
               vertices.get(face[0] - 1), vertices.get(face[1] - 1),
               vertices.get(face[2] - 1), vertexNormals.get(face[0] - 1),
-              vertexNormals.get(face[1] - 1), vertexNormals.get(face[2] - 1))));
+              vertexNormals.get(face[1] - 1), vertexNormals.get(face[2] - 1)));
         }
       } else {
         // No normals
         if(vertexNormals.isEmpty()) {
-          ts.addTriangle(aff.transform(new Triangle(vertices.get(face[0] - 1),
-              vertices.get(face[1] - 1), vertices.get(face[2] - 1))));
-          ts.addTriangle(aff.transform(new Triangle(vertices.get(face[2] - 1),
-              vertices.get(face[3] - 1), vertices.get(face[0] - 1))));
+          ts.addTriangle(new Triangle(vertices.get(face[0] - 1),
+              vertices.get(face[1] - 1), vertices.get(face[2] - 1)));
+          ts.addTriangle(new Triangle(vertices.get(face[2] - 1),
+              vertices.get(face[3] - 1), vertices.get(face[0] - 1)));
         } else {
           // Has normals
-          ts.addTriangle(aff.transform(new Triangle(
+          ts.addTriangle(new Triangle(
               vertices.get(face[0] - 1), vertices.get(face[1] - 1),
               vertices.get(face[2] - 1), vertexNormals.get(face[0] - 1),
-              vertexNormals.get(face[1] - 1), vertexNormals.get(face[2] - 1))));
-          ts.addTriangle(aff.transform(new Triangle(
+              vertexNormals.get(face[1] - 1), vertexNormals.get(face[2] - 1)));
+          ts.addTriangle(new Triangle(
               vertices.get(face[2] - 1), vertices.get(face[3] - 1),
               vertices.get(face[0] - 1), vertexNormals.get(face[2] - 1),
-              vertexNormals.get(face[3] - 1), vertexNormals.get(face[0] - 1))));
+              vertexNormals.get(face[3] - 1), vertexNormals.get(face[0] - 1)));
         }
       }
     }

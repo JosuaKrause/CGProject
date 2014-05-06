@@ -7,7 +7,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 
 import cgp.Main;
-import cgp.algos.TriangleStorage;
+import cgp.algos.Hitter;
 import cgp.consume.HitConsumer;
 import cgp.data.Ray;
 
@@ -22,20 +22,27 @@ public class RayShooter {
   private final List<HitConsumer> consumers = new ArrayList<>();
   /** The ray producer. */
   private final RayProducer prod;
-  /** The triangle storage. */
-  private final TriangleStorage storage;
+  /** The triangle hit tester. */
+  private Hitter hitter;
 
   /**
    * Creates a new ray shooter.
    * 
    * @param prod The ray producer.
-   * @param storage The triangle storage.
    */
-  public RayShooter(final RayProducer prod, final TriangleStorage storage) {
-    this.storage = Objects.requireNonNull(storage);
+  public RayShooter(final RayProducer prod) {
     this.prod = Objects.requireNonNull(prod);
     fjp = Main.SINGLE_THREAD ? new ForkJoinPool(1) : new ForkJoinPool();
     System.out.println("using " + fjp.getParallelism() + " cores");
+  }
+
+  /**
+   * Setter.
+   * 
+   * @param hitter The triangle hit tester.
+   */
+  public void setHitter(final Hitter hitter) {
+    this.hitter = Objects.requireNonNull(hitter);
   }
 
   /**
@@ -184,7 +191,7 @@ public class RayShooter {
   void shootRay(final Hit[] hits, final int x, final int y, final TestCounter all) {
     final Ray r = prod.getFor(x, y);
     final TestCounter c = new TestCounter();
-    final Hit h = storage.getHit(r, c);
+    final Hit h = hitter.getHit(r, c);
     all.addChecks(c);
     hits[y] = h;
   }

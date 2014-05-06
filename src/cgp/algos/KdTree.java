@@ -15,13 +15,14 @@ import cgp.tracer.TestCounter;
 
 /**
  * A kd-tree
- * 
+ *
  * @author Timothy Chu
  */
-public class KdTree extends SimpleStorage {
+public class KdTree extends Hitter {
+
   /**
    * Internal node for the kd-tree
-   * 
+   *
    * @author Timothy Chu
    */
   private final class KdNode {
@@ -52,7 +53,7 @@ public class KdTree extends SimpleStorage {
 
     /**
      * Constructor for a new KdNode
-     * 
+     *
      * @param box The bounding box for this node
      * @param splitType The axis that the bounding box is being split on
      */
@@ -172,17 +173,17 @@ public class KdTree extends SimpleStorage {
       }
       if(children[0] != null) {
         children[0].buildKdTree(leftBottomNear, depth + 1);
-        totalBoundingBoxes++;
+        ++totalBoundingBoxes;
       }
       if(children[1] != null) {
         children[1].buildKdTree(rightTopFar, depth + 1);
-        totalBoundingBoxes++;
+        ++totalBoundingBoxes;
       }
     }
 
     /**
      * Tests for a hit.
-     * 
+     *
      * @param r The ray.
      * @param c The test counter.
      * @return The hit.
@@ -215,7 +216,7 @@ public class KdTree extends SimpleStorage {
 
     /**
      * Checks for a hit in a leaf node.
-     * 
+     *
      * @param r The ray.
      * @param c The test counter.
      * @return The hit.
@@ -238,7 +239,7 @@ public class KdTree extends SimpleStorage {
   /**
    * The bounding box that encompasses all of the triangles
    */
-  private BoundingBox bbox = new BoundingBox();
+  private BoundingBox bbox;
 
   /**
    * The root node of the kd-tree
@@ -266,7 +267,7 @@ public class KdTree extends SimpleStorage {
 
   /**
    * Constructor for the KdTree
-   * 
+   *
    * @param depthThreshold Threshold for KdTree depth
    * @param triangleThreshold Threshold for KdNode size
    */
@@ -277,19 +278,18 @@ public class KdTree extends SimpleStorage {
   }
 
   @Override
-  public void addTriangle(final Triangle tri) {
-    super.addTriangle(tri);
-    bbox = bbox.add(new BoundingBox(tri));
-  }
-
-  @Override
-  public void finishLoading() {
+  protected void build() {
+    root = null;
+    bbox = new BoundingBox();
+    for(final Triangle t : ts.getList()) {
+      bbox = bbox.add(new BoundingBox(t));
+    }
     final int splitType = 0;
     root = new KdNode(bbox, splitType);
-    totalBoundingBoxes++;
-    root.buildKdTree(getSoup(), 0);
-    System.out.println("Depth of kd-tree: " + maximumDepth
-        + "\nBounding boxes in kd-tree: " + totalBoundingBoxes);
+    ++totalBoundingBoxes;
+    root.buildKdTree(getList(), 0);
+    System.out.println("Depth of kd-tree: " + maximumDepth);
+    System.out.println("Bounding boxes in kd-tree: " + totalBoundingBoxes);
   }
 
   @Override

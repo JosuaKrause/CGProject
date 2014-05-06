@@ -3,7 +3,11 @@ package cgp;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
@@ -18,8 +22,10 @@ import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
+import cgp.algos.Hitter;
 import cgp.algos.KdTree;
-import cgp.algos.TriangleStorage;
+import cgp.algos.Octree;
+import cgp.algos.Triangles;
 import cgp.consume.BaryConsumer;
 import cgp.consume.DepthConsumer;
 import cgp.consume.ImageConsumer;
@@ -38,10 +44,10 @@ import cgp.tracer.SimpleRayProducer;
 
 /**
  * The entry point for the application.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
-public class Main {
+public final class Main {
 
   /** Forces the use of a single thread. */
   public static final boolean SINGLE_THREAD = false;
@@ -53,21 +59,20 @@ public class Main {
 
   /**
    * Starts the application.
-   * 
+   *
    * @param args The model to load. No argument defaults to "teapot". Valid
    *          values are "teapot", "lamp", "bunny", and "test".
    * @throws IOException I/O Exception.
    */
   public static void main(final String[] args) throws IOException {
-    final long startLoading = System.nanoTime();
-    final TriangleStorage ts = new KdTree(100, 1);
-    System.out.println("algorithm is " + ts.getClass().getSimpleName());
     // camera
     final Dimension dim = new Dimension(800, 600);
-    final String name = args.length == 1 ? args[0] : "teapot";
-    final RayProducer rp = loadPreset(name, dim, ts);
-    System.out.println(ts.size() + " triangles loaded: took "
-        + ((System.nanoTime() - startLoading) * 1e-6) + "ms");
+    final RayProducer rp = new SimpleRayProducer(dim.width, dim.height, 45, 1, 50);
+    final RayShooter rs = new RayShooter(rp);
+    final Triangles ts = new Triangles();
+    final String name = args.length == 1 ? args[0] : MESH_PRESET[0];
+    loadPreset(name, rp, ts);
+    fillHitter(STORAGE_PRESET[0], ts, rs);
     // open Gl
     final AtomicBoolean isRunning = new AtomicBoolean();
     final OpenGLView ogl = new OpenGLView(name, rp, ts, isRunning);
@@ -85,11 +90,50 @@ public class Main {
 
       @Override
       public void dispose() {
+        ogl.setFrame(null);
         ogl.dispose();
         super.dispose();
       }
 
     };
+    ogl.setFrame(frame);
+    final MenuBar mbar = new MenuBar();
+    final Menu mMesh = new Menu("Meshes");
+    for(final String p : MESH_PRESET) {
+      final MenuItem mi = new MenuItem(p);
+      mi.addActionListener(new ActionListener() {
+
+        @Override
+        public void actionPerformed(final ActionEvent ae) {
+          if(isRunning.get()) return;
+          try {
+            loadPreset(p, rp, ts);
+            fillHitter(null, ts, rs);
+          } catch(final IOException e) {
+            e.printStackTrace();
+          }
+        }
+
+      });
+      mMesh.add(mi);
+    }
+    final Menu mStorage = new Menu("Storages");
+    for(final String p : STORAGE_PRESET) {
+      final MenuItem mi = new MenuItem(p);
+      mi.addActionListener(new ActionListener() {
+
+        @Override
+        public void actionPerformed(final ActionEvent ae) {
+          if(isRunning.get()) return;
+          fillHitter(p, ts, rs);
+        }
+
+      });
+      mStorage.add(mi);
+    }
+    mbar.add(mMesh);
+    mbar.add(mStorage);
+    frame.setMenuBar(mbar);
     final AbstractAction setTitle = new AbstractAction() {
 
       @Override
@@ -131,7 +175,6 @@ public class Main {
     });
     im.put(KeyStroke.getKeyStroke(KeyEvent.VK_I, 0), keyI);
     // ray shooting
-    final RayShooter rs = new RayShooter(rp, ts);
     for(final ImageConsumer ic : consumer) {
       rs.addConsumer(ic);
     }
@@ -232,17 +275,25 @@ public class Main {
     frame.setVisible(true);
   }
 
+  /** Mesh presets. */
+  public static final String[] MESH_PRESET = {
+    "bunny",
+    "teapot",
+    "lamp",
+    "test",
+  };
+
   /**
    * Loads a model from a preset.
-   * 
+   *
    * @param preset The preset name.
-   * @param dim The dimensions of the windows.
+   * @param rp The ray producer.
    * @param ts The triangle storage.
-   * @return The ray producer.
    * @throws IOException I/O Exception.
    */
-  public static final RayProducer loadPreset(final String preset,
-      final Dimension dim, final TriangleStorage ts) throws IOException {
+  public static void loadPreset(
+      final String preset, final RayProducer rp, final Triangles ts) throws IOException {
+    final long startLoading = System.nanoTime();
     final AffineTransform4 aff;
     final String file;
     final Vec4 origin;
@@ -281,9 +332,60 @@ public class Main {
         throw new IllegalArgumentException(preset);
     }
     final MeshLoader loader = file == null ? new ExampleMesh() : new OBJReader(file);
-    loader.loadMesh(ts, aff);
-    ts.finishLoading();
-    return new SimpleRayProducer(origin, view, up, dim.width, dim.height, 45, 1, 50);
+    ts.setTriangles(loader, aff);
+    rp.setView(origin, view, up);
+    System.out.println(preset + ": " + ts.size() + " triangles loaded - took "
+        + ((System.nanoTime() - startLoading) * 1e-6) + "ms");
+  }
+
+  /** Storage preset names. */
+  public static final String[] STORAGE_PRESET = {
+    "KdTree max depth",
+    "Octree max depth",
+  };
+
+  /**
+   * Creates a hitter from a preset.
+   *
+   * @param preset The preset.
+   * @return The hitter.
+   */
+  public static Hitter createHitter(final String preset) {
+    switch(preset) {
+      case "KdTree max depth":
+        return new KdTree(Integer.MAX_VALUE, 1);
+      case "Octree max depth":
+        return new Octree(Integer.MAX_VALUE, 1);
+      default:
+        throw new IllegalArgumentException(preset);
+    }
+  }
+
+  /** The current storage preset. */
+  public static Hitter CUR_STORAGE;
+
+  /**
+   * Fills the hitter.
+   *
+   * @param preset The preset.
+   * @param ts The triangles.
+   * @param rs The ray shooter.
+   */
+  public static void fillHitter(
+      final String preset, final Triangles ts, final RayShooter rs) {
+    final long startLoading = System.nanoTime();
+    final Hitter ht;
+    if(preset == null) {
+      ht = CUR_STORAGE;
+    } else {
+      ht = createHitter(preset);
+    }
+    CUR_STORAGE = ht;
+    System.out.println("algorithm is " + ht.getClass().getSimpleName());
+    ht.fromTriangles(ts);
+    System.out.println("building - took "
+        + ((System.nanoTime() - startLoading) * 1e-6) + "ms");
+    rs.setHitter(ht);
   }
 
 }

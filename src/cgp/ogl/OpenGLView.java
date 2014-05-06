@@ -5,6 +5,8 @@ import static org.lwjgl.opengl.GL11.*;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.JFrame;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -12,7 +14,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.util.glu.GLU;
 
-import cgp.algos.TriangleStorage;
+import cgp.algos.Triangles;
 import cgp.data.Triangle;
 import cgp.data.Vec4;
 
@@ -24,11 +26,13 @@ import cgp.data.Vec4;
 public class OpenGLView {
 
   /** The triangle storage. */
-  private final TriangleStorage storage;
+  private final Triangles storage;
   /** The camera. */
   private final Camera cam;
   /** Whether to destroy the frame. */
   private AtomicBoolean kill;
+  /** The main frame or <code>null</code>. */
+  JFrame frame;
 
   /**
    * Creates an Open-GL view.
@@ -39,7 +43,7 @@ public class OpenGLView {
    * @param isRunning Whether a ray-tracing computation is currently running.
    */
   public OpenGLView(final String name, final Camera cam,
-      final TriangleStorage storage, final AtomicBoolean isRunning) {
+      final Triangles storage, final AtomicBoolean isRunning) {
     this.cam = Objects.requireNonNull(cam);
     this.storage = Objects.requireNonNull(storage);
     final AtomicBoolean k = kill = new AtomicBoolean(false);
@@ -108,6 +112,9 @@ public class OpenGLView {
         } catch(final InterruptedException e) {
           interrupt();
         } finally {
+          if(frame != null) {
+            frame.dispose();
+          }
           Display.destroy();
         }
       }
@@ -118,15 +125,31 @@ public class OpenGLView {
   }
 
   /**
+   * Setter.
+   *
+   * @param frame The main frame.
+   */
+  public void setFrame(final JFrame frame) {
+    this.frame = frame;
+  }
+
+  /**
    * Generates the triangle list.
    *
    * @return The list index.
    */
   int init() {
-    final int list = glGenLists(1);
+    return glGenLists(1);
+  }
+
+  /**
+   * Draws the triangles.
+   *
+   * @param list The list to draw.
+   */
+  void draw(final int list) {
     glNewList(list, GL_COMPILE);
-    // TODO computes camera dependent values...
-    for(final Triangle t : storage.getSoup()) {
+    for(final Triangle t : storage.getList()) {
       glBegin(GL_TRIANGLES);
       viewColor(t.getA(), t.getANormal());
       vertex(t.getA());
@@ -137,16 +160,6 @@ public class OpenGLView {
       glEnd();
     }
     glEndList();
-    return list;
-  }
-
-  /**
-   * Draws the triangles.
-   *
-   * @param list The list to draw.
-   */
-  void draw(final int list) {
-    // we are lazy and use immediate mode
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     GLU.gluPerspective((float) cam.getFov(),

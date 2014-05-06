@@ -15,7 +15,7 @@ import cgp.tracer.TestCounter;
  * 
  * @author Joschi <josua.krause@gmail.com>
  */
-public class Octree extends SimpleStorage {
+public class Octree extends Hitter {
 
   /**
    * An internal node of the Octree.
@@ -29,7 +29,7 @@ public class Octree extends SimpleStorage {
     /** The depth of the node. */
     private final int depth;
     /** The set of triangles or <code>null</code> if inner node. */
-    private BitSet ts;
+    private BitSet tset;
     /** The offset of the bit set. */
     private int offset;
     /** The children or <code>null</code> if leaf. */
@@ -46,7 +46,7 @@ public class Octree extends SimpleStorage {
     public Node(final BoundingBox box, final int depth) {
       this.box = Objects.requireNonNull(box);
       this.depth = depth;
-      ts = new BitSet();
+      tset = new BitSet();
       children = null;
       offset = 0;
       totalBoundingBoxes++;
@@ -80,8 +80,8 @@ public class Octree extends SimpleStorage {
           if(isMinNode(boxIndex, axis) ? rel > 0 : rel < 0) return false;
         }
       }
-      if(ts != null) {
-        ts.set(index - offset);
+      if(tset != null) {
+        tset.set(index - offset);
         noSplit = false;
         return true;
       }
@@ -96,26 +96,26 @@ public class Octree extends SimpleStorage {
     /** Splits the node. */
     public void splitNode() {
       if(depth >= depthThreshold) return;
-      if(ts.isEmpty() || ts.cardinality() <= triangleThreshold || noSplit) return;
+      if(tset.isEmpty() || tset.cardinality() <= triangleThreshold || noSplit) return;
       if(box.getWidth() <= minDist || box.getHeight() <= minDist
           || box.getDepth() <= minDist) return;
       final BoundingBox[] boxes = new BoundingBox[8];
       children = new Node[8];
-      final BitSet b = ts;
-      ts = null;
+      final BitSet b = tset;
+      tset = null;
       final Vec4 mid = split(box, boxes);
       boolean unsplit = true;
       for(int i = 0; i < children.length; ++i) {
         final Node n = new Node(boxes[i], depth + 1);
         for(int t = b.nextSetBit(0); t >= 0; t = b.nextSetBit(t + 1)) {
           final int index = t + offset;
-          unsplit = n.addTriangle(index, getTriangle(index), i, mid) && unsplit;
+          unsplit = n.addTriangle(index, ts.getTriangle(index), i, mid) && unsplit;
         }
         children[i] = n;
         n.optimize();
       }
       if(unsplit) {
-        ts = b;
+        tset = b;
         children = null;
         noSplit = true;
         optimize();
@@ -135,7 +135,7 @@ public class Octree extends SimpleStorage {
      */
     public Hit getHit(final Ray r, final TestCounter c) {
       if(!box.intersects(r, c)) return new Hit(r, c);
-      if(ts != null) return getLevelHit(r, c);
+      if(tset != null) return getLevelHit(r, c);
       final Vec4 d = r.getDirection();
       final boolean[] mins = {
           d.getX() > 0,
@@ -173,8 +173,8 @@ public class Octree extends SimpleStorage {
     private Hit getLevelHit(final Ray r, final TestCounter c) {
       double minDist = Double.POSITIVE_INFINITY;
       Triangle curBest = null;
-      for(int t = ts.nextSetBit(0); t >= 0; t = ts.nextSetBit(t + 1)) {
-        final Triangle tri = getTriangle(t + offset);
+      for(int t = tset.nextSetBit(0); t >= 0; t = tset.nextSetBit(t + 1)) {
+        final Triangle tri = ts.getTriangle(t + offset);
         final double dist = tri.hit(r, c);
         if(r.isValidDistance(dist) && dist < minDist) {
           minDist = dist;
@@ -186,19 +186,19 @@ public class Octree extends SimpleStorage {
 
     /** Optimizes the bitset storage by shifting it to its lowest set bit. */
     public void optimize() {
-      if(ts == null) {
+      if(tset == null) {
         for(final Node c : children) {
           c.optimize();
         }
         return;
       }
-      final int lowestIndex = ts.nextSetBit(0);
+      final int lowestIndex = tset.nextSetBit(0);
       if(lowestIndex <= 0) return;
-      final BitSet set = new BitSet(ts.length() - lowestIndex);
-      for(int t = ts.nextSetBit(0); t >= 0; t = ts.nextSetBit(t + 1)) {
+      final BitSet set = new BitSet(tset.length() - lowestIndex);
+      for(int t = tset.nextSetBit(0); t >= 0; t = tset.nextSetBit(t + 1)) {
         set.set(t - lowestIndex);
       }
-      ts = set;
+      tset = set;
       offset += lowestIndex;
     }
 
@@ -226,7 +226,7 @@ public class Octree extends SimpleStorage {
    */
   protected final int depthThreshold;
   /** The bounding box of the scene. */
-  private BoundingBox bbox = new BoundingBox();
+  private BoundingBox bbox;
   /** The root node. */
   private Node root;
   /** The minimal distance between triangle end-points. */
@@ -251,25 +251,24 @@ public class Octree extends SimpleStorage {
     if(depthThreshold < 1) throw new IllegalArgumentException("" + depthThreshold);
     this.depthThreshold = depthThreshold;
     this.triangleThreshold = triangleThreshold;
+
+  }
+
+  @Override
+  protected void build() {
     root = null;
     minDist = Double.POSITIVE_INFINITY;
-  }
-
-  @Override
-  public void addTriangle(final Triangle tri) {
-    super.addTriangle(tri);
-    final BoundingBox cur = new BoundingBox(tri);
-    minDist = Math.min(
-        Math.max(Math.max(cur.getWidth(), cur.getHeight()),
-            Math.max(cur.getDepth(), 1e-9)), minDist);
-    bbox = bbox.add(cur);
-  }
-
-  @Override
-  public void finishLoading() {
+    bbox = new BoundingBox();
+    for(final Triangle t : ts.getList()) {
+      final BoundingBox cur = new BoundingBox(t);
+      minDist = Math.min(
+          Math.max(Math.max(cur.getWidth(), cur.getHeight()),
+              Math.max(cur.getDepth(), 1e-9)), minDist);
+      bbox = bbox.add(cur);
+    }
     root = new Node(bbox, 0);
-    for(int i = 0; i < size(); ++i) {
-      root.addTriangle(i, getTriangle(i));
+    for(int i = 0; i < ts.size(); ++i) {
+      root.addTriangle(i, ts.getTriangle(i));
     }
     root.splitNode();
     root.optimize();
