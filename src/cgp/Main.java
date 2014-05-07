@@ -25,6 +25,7 @@ import javax.swing.WindowConstants;
 import cgp.algos.Hitter;
 import cgp.algos.KdTree;
 import cgp.algos.Octree;
+import cgp.algos.SimpleStorage;
 import cgp.algos.Triangles;
 import cgp.consume.BaryConsumer;
 import cgp.consume.DepthConsumer;
@@ -277,10 +278,10 @@ public final class Main {
 
   /** Mesh presets. */
   public static final String[] MESH_PRESET = {
-    "bunny",
-    "teapot",
-    "lamp",
-    "test",
+      "bunny",
+      "teapot",
+      "lamp",
+      "test",
   };
 
   /**
@@ -340,8 +341,9 @@ public final class Main {
 
   /** Storage preset names. */
   public static final String[] STORAGE_PRESET = {
-    "KdTree max depth",
-    "Octree max depth",
+      "KdTree max depth",
+      "Octree max depth",
+      "Simple list",
   };
 
   /**
@@ -356,6 +358,8 @@ public final class Main {
         return new KdTree(Integer.MAX_VALUE, 1);
       case "Octree max depth":
         return new Octree(Integer.MAX_VALUE, 1);
+      case "Simple list":
+        return new SimpleStorage();
       default:
         throw new IllegalArgumentException(preset);
     }

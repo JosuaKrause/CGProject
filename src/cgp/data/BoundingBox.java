@@ -77,10 +77,11 @@ public class BoundingBox {
    *
    * @param r The ray.
    * @param tc The test counter.
-   * @return Whether the ray intersects the bounding box.
+   * @return When the ray intersects the bounding box or a negative value if it
+   *         doesn't.
    */
-  public boolean intersects(final Ray r, final TestCounter tc) {
-    if(mins == null || maxs == null) return false;
+  public double intersects(final Ray r, final TestCounter tc) {
+    if(mins == null || maxs == null) return -1;
     tc.addBBoxCheck(); // we don't count empty boxes
     // taken from
     // An Efficient and Robust Ray–Box Intersection Algorithm
@@ -94,7 +95,7 @@ public class BoundingBox {
     double tmax = r.hitCoord(!sx ? mins : maxs, X);
     final double tymin = r.hitCoord(sy ? mins : maxs, Y);
     final double tymax = r.hitCoord(!sy ? mins : maxs, Y);
-    if(vx && vy && (tmin > tymax || tymin > tmax)) return false;
+    if(vx && vy && (tmin > tymax || tymin > tmax)) return -1;
     if(!vx || (vy && tymin > tmin)) {
       tmin = tymin;
     }
@@ -105,14 +106,15 @@ public class BoundingBox {
     final boolean vz = d.getZ() != 0;
     final double tzmin = r.hitCoord(sz ? mins : maxs, Z);
     final double tzmax = r.hitCoord(!sz ? mins : maxs, Z);
-    if(vz && (vx || vy) && (tmin > tzmax || tzmin > tmax)) return false;
+    if(vz && (vx || vy) && (tmin > tzmax || tzmin > tmax)) return -1;
     if((!vx && !vy) || (vz && tzmin > tmin)) {
       tmin = tzmin;
     }
     if((!vx && !vy) || (vz && tzmax < tmax)) {
       tmax = tzmax;
     }
-    return tmin < r.getFar() && tmax > r.getNear();
+    if(tmin < r.getFar() && tmax > r.getNear()) return tmin;
+    return -1;
   }
 
   /**
@@ -126,7 +128,7 @@ public class BoundingBox {
   public Vec4 get(final boolean minX, final boolean minY, final boolean minZ) {
     return new Vec4(minX ? mins.getX() : maxs.getX(),
         minY ? mins.getY() : maxs.getY(),
-            minZ ? mins.getZ() : maxs.getZ(), true);
+        minZ ? mins.getZ() : maxs.getZ(), true);
   }
 
   /**
@@ -153,7 +155,7 @@ public class BoundingBox {
 
   /**
    * Getter.
-   * 
+   *
    * @return The width of the bounding box.
    */
   public double getWidth() {
@@ -162,7 +164,7 @@ public class BoundingBox {
 
   /**
    * Getter.
-   * 
+   *
    * @return The height of the bounding box.
    */
   public double getHeight() {
@@ -171,7 +173,7 @@ public class BoundingBox {
 
   /**
    * Getter.
-   * 
+   *
    * @return The depth of the bounding box.
    */
   public double getDepth() {

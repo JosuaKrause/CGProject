@@ -1,6 +1,8 @@
 package cgp.algos;
 
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Comparator;
 import java.util.Objects;
 
 import cgp.data.BoundingBox;
@@ -72,8 +74,8 @@ public class Octree extends Hitter {
      * @param mid The middle point of the parent bounding box.
      * @return Whether the triangle was added.
      */
-    private boolean addTriangle(final int index, final Triangle t, final int boxIndex,
-        final Vec4 mid) {
+    private boolean addTriangle(
+        final int index, final Triangle t, final int boxIndex, final Vec4 mid) {
       if(mid != null) {
         for(int axis = 0; axis < 3; ++axis) {
           final int rel = t.relToPlane(mid.get(axis), axis);
@@ -126,39 +128,45 @@ public class Octree extends Hitter {
       }
     }
 
+    public double getBBoxDist(final Ray r, final TestCounter tc) {
+      return box.intersects(r, tc);
+    }
+
     /**
      * Tests for a hit.
      *
      * @param r The ray.
      * @param c The test counter.
+     * @param dist The minimal distance of the bounding box.
      * @return The hit.
      */
-    public Hit getHit(final Ray r, final TestCounter c) {
-      if(!box.intersects(r, c)) return new Hit(r, c);
+    public Hit getHit(final Ray r, final TestCounter c, final double dist) {
+      if(dist < 0) return new Hit(r, c);
       if(tset != null) return getLevelHit(r, c);
-      final Vec4 d = r.getDirection();
-      final boolean[] mins = {
-          d.getX() > 0,
-          d.getY() > 0,
-          d.getZ() > 0
-      };
-      final double x = Math.abs(d.getX());
-      final double y = Math.abs(d.getY());
-      final double z = Math.abs(d.getZ());
-      final int first = x < y ? (x < z ? 0 : 2) : (y < z ? 1 : 2);
-      final int last = x > y ? (x > z ? 0 : 2) : (y > z ? 1 : 2);
-      final int mid = 3 - first - last;
-      for(int round = 0; round < 8; ++round) {
-        final Node n = children[index(mins[0], mins[1], mins[2])];
-        final Hit hit = n.getHit(r, c);
-        if(hit.hasHit()) return hit;
-        mins[first] = !mins[first];
-        if((round & 1) == 1) {
-          mins[mid] = !mins[mid];
+      final Integer[] order = new Integer[8];
+      final double[] distances = new double[8];
+      for(int i = 0; i < 8; ++i) {
+        order[i] = i;
+        distances[i] = children[i].getBBoxDist(r, c);
+      }
+      Arrays.sort(order, new Comparator<Integer>() {
+
+        @Override
+        public int compare(final Integer o1, final Integer o2) {
+          if(distances[o1] < 0) return distances[o2] < 0 ? 0 : 1;
+          if(distances[o2] < 0) return -1;
+          return Double.compare(distances[o1], distances[o2]);
         }
-        if((round & 3) == 3) {
-          mins[last] = !mins[last];
+
+      });
+      for(int i = 0; i < 8; ++i) {
+        if(distances[order[i]] < 0) return new Hit(r, c);
+        final Node n = children[order[i]];
+        final Hit hit = n.getHit(r, c, distances[order[i]]);
+        if(!hit.hasHit()) {
+          continue;
         }
+        return hit;
       }
       return new Hit(r, c);
     }
@@ -334,7 +342,8 @@ public class Octree extends Hitter {
 
   @Override
   public Hit getHit(final Ray r, final TestCounter c) {
-    return root.getHit(r, c);
+    final double dist = root.getBBoxDist(r, c);
+    return root.getHit(r, c, dist);
   }
 
 }

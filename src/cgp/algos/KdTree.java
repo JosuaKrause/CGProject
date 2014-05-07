@@ -189,7 +189,7 @@ public class KdTree extends Hitter {
      * @return The hit.
      */
     public Hit getHit(final Ray r, final TestCounter c) {
-      if(!box.intersects(r, c)) return new Hit(r, c);
+      if(box.intersects(r, c) < 0) return new Hit(r, c);
       if(tri != null) return getLevelHit(r, c);
       int firstCheck = 0;
       switch(splitType) {
