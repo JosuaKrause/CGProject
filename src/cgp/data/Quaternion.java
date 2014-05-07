@@ -2,14 +2,14 @@ package cgp.data;
 
 /**
  * A quaternion view on a vector.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public class Quaternion extends Vec4 {
 
   /**
    * Creates a quaternion.
-   * 
+   *
    * @param vec The vector.
    * @param s The scalar angle.
    */
@@ -20,7 +20,7 @@ public class Quaternion extends Vec4 {
 
   /**
    * Creates a quaternion.
-   * 
+   *
    * @param x The x component.
    * @param y The y component.
    * @param z The z component.
@@ -37,7 +37,7 @@ public class Quaternion extends Vec4 {
 
   /**
    * Getter.
-   * 
+   *
    * @return Converts back to a vector.
    */
   public Vec4 getVec() {
@@ -46,7 +46,7 @@ public class Quaternion extends Vec4 {
 
   /**
    * Getter.
-   * 
+   *
    * @return The scalar angle.
    */
   public double getS() {
@@ -55,7 +55,7 @@ public class Quaternion extends Vec4 {
 
   /**
    * Multiplies this quaternion with another quaternion.
-   * 
+   *
    * @param o The other quaternion.
    * @return The multiplied quaternion.
    */
@@ -76,7 +76,7 @@ public class Quaternion extends Vec4 {
 
   /**
    * Creates a normalized quaternion.
-   * 
+   *
    * @param alpha The scalar angle.
    * @param axis The axis.
    * @return The quaternion.
@@ -85,6 +85,19 @@ public class Quaternion extends Vec4 {
     axis.expectDirection();
     final double a = alpha * 0.5;
     return new Quaternion(axis.normalized().mul(Math.sin(a)), Math.cos(a));
+  }
+
+  public static final Quaternion rotate(final Vec4 v, final Vec4 axis, final double theta) {
+    return rotate(v, normQuaternion(theta, axis));
+  }
+
+  public static final Quaternion rotate(final Vec4 v, final Quaternion p) {
+    return rotate(new Quaternion(v, 0), p);
+  }
+
+  public static final Quaternion rotate(final Quaternion v, final Quaternion p) {
+    final Quaternion q = p.negate();
+    return q.mul(v).mul(p);
   }
 
 }

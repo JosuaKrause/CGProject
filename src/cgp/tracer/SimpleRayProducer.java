@@ -79,14 +79,13 @@ public class SimpleRayProducer implements RayProducer {
    * @param angleY The angle in y direction.
    */
   public void rotate(final double angleX, final double angleY) {
-    final Quaternion qX = Quaternion.normQuaternion(angleX, up);
-    final Quaternion pX = qX.negate();
-    final Vec4 left = view.cross(up);
-    final Quaternion qY = Quaternion.normQuaternion(-angleY, left);
-    final Quaternion pY = qY.negate();
-    final Quaternion v = new Quaternion(view, 0);
-    view = qY.mul(qX.mul(v).mul(pX)).mul(pY).getVec().normalized();
-    up = view.cross(left.rotateY(angleX).normalized()).negate();
+    final Quaternion aUp = Quaternion.normQuaternion(-angleX, up);
+    final Quaternion aLeft = Quaternion.normQuaternion(-angleY, getLeft());
+    final Quaternion v = Quaternion.rotate(view, aUp);
+    final Quaternion u = Quaternion.rotate(up, aUp);
+    final Quaternion bLeft = Quaternion.rotate(aLeft, aUp);
+    view = Quaternion.rotate(v, bLeft).getVec().normalized();
+    up = Quaternion.rotate(u, bLeft).getVec().normalized();
     leftCache = null;
   }
 

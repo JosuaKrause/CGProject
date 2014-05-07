@@ -271,6 +271,7 @@ public final class Main {
     comp.grabFocus();
     frame.add(comp);
     frame.pack();
+    frame.setResizable(false);
     frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     frame.setLocationRelativeTo(null);
     frame.setVisible(true);
@@ -278,10 +279,10 @@ public final class Main {
 
   /** Mesh presets. */
   public static final String[] MESH_PRESET = {
-      "bunny",
-      "teapot",
-      "lamp",
-      "test",
+    "bunny",
+    "teapot",
+    "lamp",
+    "test",
   };
 
   /**
@@ -341,9 +342,9 @@ public final class Main {
 
   /** Storage preset names. */
   public static final String[] STORAGE_PRESET = {
-      "KdTree max depth",
-      "Octree max depth",
-      "Simple list",
+    "KdTree max depth",
+    "Octree max depth",
+    "Simple list",
   };
 
   /**

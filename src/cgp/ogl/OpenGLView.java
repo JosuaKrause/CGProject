@@ -55,6 +55,8 @@ public class OpenGLView {
         try {
           Display.setDisplayMode(new DisplayMode(cam.getWidth(), cam.getHeight()));
           Display.setTitle(name + " - Navigation View");
+          Display.setResizable(false);
+          Display.setVSyncEnabled(true);
           Display.create();
           glDisable(GL_CULL_FACE);
           glEnable(GL_DEPTH_TEST);
@@ -68,7 +70,7 @@ public class OpenGLView {
         try {
           boolean moving = false;
           while(!Display.isCloseRequested() && !k.get()) {
-            if(isRunning.get()) {
+            if(!Display.isActive() || isRunning.get()) {
               synchronized(isRunning) {
                 isRunning.wait(1000);
               }
