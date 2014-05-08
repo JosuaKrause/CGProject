@@ -79,7 +79,7 @@ public class SimpleRayProducer implements RayProducer {
    * @param angleY The angle in y direction.
    */
   public void rotate(final double angleX, final double angleY) {
-    final Quaternion aUp = Quaternion.normQuaternion(-angleX, up);
+    final Quaternion aUp = Quaternion.normQuaternion(-angleX, Vec4.Y_AXIS);
     final Quaternion aLeft = Quaternion.normQuaternion(-angleY, getLeft());
     final Quaternion v = Quaternion.rotate(Quaternion.rotate(view, aUp), aLeft);
     final Quaternion u = Quaternion.rotate(Quaternion.rotate(up, aUp), aLeft);
