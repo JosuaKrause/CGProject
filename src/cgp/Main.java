@@ -73,7 +73,7 @@ public final class Main {
     final RayProducer rp = new SimpleRayProducer(dim.width, dim.height, 45, 1, 50);
     final RayShooter rs = new RayShooter(rp);
     final Triangles ts = new Triangles();
-    final String name = args.length == 1 ? args[0] : MESH_PRESET[0];
+    final String name = args.length == 1 ? args[0] : MESH_PRESET[2];
     loadPreset(name, rp, ts);
     fillHitter(STORAGE_PRESET[0], ts, rs);
     // open Gl

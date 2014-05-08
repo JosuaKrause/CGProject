@@ -148,8 +148,8 @@ public class Octree extends Hitter {
      * @param ti The index of the hit triangle gets stored in this integer.
      * @return The hit.
      */
-    public Hit getHit(final Ray r, final TestCounter c, final double dist,
-        final AtomicInteger ti) {
+    public Hit getHit(final Ray r, final TestCounter c,
+        final double dist, final AtomicInteger ti) {
       if(dist < 0) return new Hit(r, c);
       if(tset != null) return getLevelHit(r, c, ti);
       final Integer[] order = new Integer[8];
@@ -168,6 +168,7 @@ public class Octree extends Hitter {
         }
 
       });
+      Hit best = new Hit(r, c);
       for(int i = 0; i < 8; ++i) {
         if(distances[order[i]] < 0) {
           continue;
@@ -177,9 +178,12 @@ public class Octree extends Hitter {
         if(!hit.hasHit()) {
           continue;
         }
-        return hit;
+        if(hit.getDistance() < best.getDistance() || !best.hasHit()) {
+          best = hit;
+        }
+        // return hit;
       }
-      return new Hit(r, c);
+      return best;
     }
 
     /**
