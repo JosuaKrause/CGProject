@@ -3,8 +3,10 @@ package cgp.algos;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import cgp.data.BoundingBox;
 import cgp.data.Ray;
@@ -54,7 +56,7 @@ public class KdTree extends Hitter {
      * Triangles that are stored in both of the current node's children. Used
      * for hit checking.
      */
-    private final List<Triangle> crossingTriangles;
+    private final Set<Triangle> crossingTriangles;
 
     /**
      * Constructor for a new KdNode
@@ -67,7 +69,7 @@ public class KdTree extends Hitter {
       children = new KdNode[2];
       this.splitType = splitType;
       tri = null;
-      crossingTriangles = new ArrayList<>();
+      crossingTriangles = new HashSet<>();
     }
 
     /**
