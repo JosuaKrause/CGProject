@@ -87,14 +87,36 @@ public class Quaternion extends Vec4 {
     return new Quaternion(axis.normalized().mul(Math.sin(a)), Math.cos(a));
   }
 
+  /**
+   * Rotates a vector around a given axis.
+   *
+   * @param v The vector to rotate.
+   * @param axis The axis to rotate.
+   * @param theta The angle of the rotation.
+   * @return The rotated quaternion.
+   */
   public static final Quaternion rotate(final Vec4 v, final Vec4 axis, final double theta) {
     return rotate(v, normQuaternion(theta, axis));
   }
 
+  /**
+   * Rotates a vector around a normalized quaternion.
+   *
+   * @param v The vector to rotate.
+   * @param p The normalized quaternion.
+   * @return The rotated quaternion.
+   */
   public static final Quaternion rotate(final Vec4 v, final Quaternion p) {
     return rotate(new Quaternion(v, 0), p);
   }
 
+  /**
+   * Rotates a quaternion around a normalized quaternion.
+   * 
+   * @param v The quaternion to rotate.
+   * @param p The normalized quaternion.
+   * @return The rotated quaternion.
+   */
   public static final Quaternion rotate(final Quaternion v, final Quaternion p) {
     final Quaternion q = p.negate();
     return q.mul(v).mul(p);

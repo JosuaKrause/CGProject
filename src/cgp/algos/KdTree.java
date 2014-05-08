@@ -15,14 +15,14 @@ import cgp.tracer.TestCounter;
 
 /**
  * A kd-tree
- * 
+ *
  * @author Timothy Chu
  */
 public class KdTree extends Hitter {
 
   /**
    * Internal node for the kd-tree
-   * 
+   *
    * @author Timothy Chu
    */
   private final class KdNode {
@@ -58,7 +58,7 @@ public class KdTree extends Hitter {
 
     /**
      * Constructor for a new KdNode
-     * 
+     *
      * @param box The bounding box for this node
      * @param splitType The axis that the bounding box is being split on
      */
@@ -121,10 +121,10 @@ public class KdTree extends Hitter {
               ts.get(splitIndex).getC().getZ()));
           break;
       }
-      final List<Triangle> leftBottomNear = new ArrayList<>(ts.subList(0,
-          splitIndex));
-      final List<Triangle> rightTopFar = new ArrayList<>(ts.subList(
-          splitIndex, ts.size()));
+      final List<Triangle> leftBottomNear = new ArrayList<>(
+          ts.subList(0, splitIndex));
+      final List<Triangle> rightTopFar = new ArrayList<>(
+          ts.subList(splitIndex, ts.size()));
       // Add any triangles that intersect the split line to both lists
       for(final Triangle t : leftBottomNear) {
         switch(splitType) {
@@ -192,7 +192,7 @@ public class KdTree extends Hitter {
 
     /**
      * Tests for a hit.
-     * 
+     *
      * @param r The ray.
      * @param c The test counter.
      * @return The hit.
@@ -231,7 +231,7 @@ public class KdTree extends Hitter {
 
     /**
      * Checks for a hit in a leaf node.
-     * 
+     *
      * @param r The ray.
      * @param c The test counter.
      * @return The hit.
@@ -282,7 +282,7 @@ public class KdTree extends Hitter {
 
   /**
    * Constructor for the KdTree
-   * 
+   *
    * @param depthThreshold Threshold for KdTree depth
    * @param triangleThreshold Threshold for KdNode size
    */

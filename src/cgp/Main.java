@@ -45,7 +45,7 @@ import cgp.tracer.SimpleRayProducer;
 
 /**
  * The entry point for the application.
- * 
+ *
  * @author Joschi <josua.krause@gmail.com>
  */
 public final class Main {
@@ -60,7 +60,7 @@ public final class Main {
 
   /**
    * Starts the application.
-   * 
+   *
    * @param args The model to load. No argument defaults to "teapot". Valid
    *          values are "teapot", "lamp", "bunny", and "test".
    * @throws IOException I/O Exception.
@@ -73,7 +73,7 @@ public final class Main {
     final Triangles ts = new Triangles();
     final String name = args.length == 1 ? args[0] : MESH_PRESET[0];
     loadPreset(name, rp, ts);
-    fillHitter(STORAGE_PRESET[0], ts, rs);
+    fillHitter(STORAGE_PRESET[1], ts, rs);
     // open Gl
     final AtomicBoolean isRunning = new AtomicBoolean();
     final OpenGLView ogl = new OpenGLView(name, rp, ts, isRunning);
@@ -279,15 +279,15 @@ public final class Main {
 
   /** Mesh presets. */
   public static final String[] MESH_PRESET = {
-      "bunny",
-      "teapot",
-      "lamp",
-      "test",
+    "bunny",
+    "teapot",
+    "lamp",
+    "test",
   };
 
   /**
    * Loads a model from a preset.
-   * 
+   *
    * @param preset The preset name.
    * @param rp The ray producer.
    * @param ts The triangle storage.
@@ -342,14 +342,14 @@ public final class Main {
 
   /** Storage preset names. */
   public static final String[] STORAGE_PRESET = {
-    "KdTree max depth",
-    "Octree max depth",
-    "Simple list",
+      "KdTree max depth",
+      "Octree max depth",
+      "Simple list",
   };
 
   /**
    * Creates a hitter from a preset.
-   * 
+   *
    * @param preset The preset.
    * @return The hitter.
    */
@@ -371,7 +371,7 @@ public final class Main {
 
   /**
    * Fills the hitter.
-   * 
+   *
    * @param preset The preset.
    * @param ts The triangles.
    * @param rs The ray shooter.

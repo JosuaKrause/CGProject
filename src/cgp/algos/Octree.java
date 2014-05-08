@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import cgp.data.BoundingBox;
 import cgp.data.Ray;
@@ -127,6 +128,13 @@ public class Octree extends Hitter {
       }
     }
 
+    /**
+     * Computes the distance to the given bounding box.
+     *
+     * @param r The ray.
+     * @param tc The test counter.
+     * @return The distance to the bounding box.
+     */
     public double getBBoxDist(final Ray r, final TestCounter tc) {
       return box.intersects(r, tc);
     }
@@ -137,11 +145,13 @@ public class Octree extends Hitter {
      * @param r The ray.
      * @param c The test counter.
      * @param dist The minimal distance of the bounding box.
+     * @param ti The index of the hit triangle gets stored in this integer.
      * @return The hit.
      */
-    public Hit getHit(final Ray r, final TestCounter c, final double dist) {
+    public Hit getHit(final Ray r, final TestCounter c, final double dist,
+        final AtomicInteger ti) {
       if(dist < 0) return new Hit(r, c);
-      if(tset != null) return getLevelHit(r, c);
+      if(tset != null) return getLevelHit(r, c, ti);
       final Integer[] order = new Integer[8];
       final double[] distances = new double[8];
       for(int i = 0; i < 8; ++i) {
@@ -159,9 +169,11 @@ public class Octree extends Hitter {
 
       });
       for(int i = 0; i < 8; ++i) {
-        if(distances[order[i]] < 0) return new Hit(r, c);
+        if(distances[order[i]] < 0) {
+          continue;
+        }
         final Node n = children[order[i]];
-        final Hit hit = n.getHit(r, c, distances[order[i]]);
+        final Hit hit = n.getHit(r, c, distances[order[i]], ti);
         if(!hit.hasHit()) {
           continue;
         }
@@ -175,9 +187,11 @@ public class Octree extends Hitter {
      *
      * @param r The ray.
      * @param c The test counter.
+     * @param index The index of the triangle that got hit gets stored in this
+     *          integer.
      * @return The hit.
      */
-    private Hit getLevelHit(final Ray r, final TestCounter c) {
+    private Hit getLevelHit(final Ray r, final TestCounter c, final AtomicInteger index) {
       double minDist = Double.POSITIVE_INFINITY;
       Triangle curBest = null;
       for(int t = tset.nextSetBit(0); t >= 0; t = tset.nextSetBit(t + 1)) {
@@ -186,6 +200,7 @@ public class Octree extends Hitter {
         if(r.isValidDistance(dist) && dist < minDist) {
           minDist = dist;
           curBest = tri;
+          index.set(t + offset);
         }
       }
       return new Hit(r, curBest, minDist, c);
@@ -211,7 +226,7 @@ public class Octree extends Hitter {
 
     /**
      * Counts the number of bounding boxes in the octree.
-     * 
+     *
      * @return The number of bounding boxes in the subtree.
      */
     public int countBoundingBoxes() {
@@ -339,7 +354,8 @@ public class Octree extends Hitter {
   @Override
   public Hit getHit(final Ray r, final TestCounter c) {
     final double dist = root.getBBoxDist(r, c);
-    return root.getHit(r, c, dist);
+    final AtomicInteger ti = new AtomicInteger(-1);
+    return root.getHit(r, c, dist, ti);
   }
 
 }

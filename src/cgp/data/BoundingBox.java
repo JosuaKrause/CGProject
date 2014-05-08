@@ -81,8 +81,9 @@ public class BoundingBox {
    *         doesn't.
    */
   public double intersects(final Ray r, final TestCounter tc) {
+    // we don't count empty boxes
     if(mins == null || maxs == null) return -1;
-    tc.addBBoxCheck(); // we don't count empty boxes
+    tc.addBBoxCheck();
     // taken from
     // An Efficient and Robust Ray–Box Intersection Algorithm
     // Williams et al.
@@ -113,7 +114,7 @@ public class BoundingBox {
     if((!vx && !vy) || (vz && tzmax < tmax)) {
       tmax = tzmax;
     }
-    if(tmin < r.getFar() && tmax > r.getNear()) return tmin;
+    if(tmin < r.getFar() && tmax > r.getNear()) return Math.max(tmin, r.getNear());
     return -1;
   }
 
@@ -128,7 +129,7 @@ public class BoundingBox {
   public Vec4 get(final boolean minX, final boolean minY, final boolean minZ) {
     return new Vec4(minX ? mins.getX() : maxs.getX(),
         minY ? mins.getY() : maxs.getY(),
-        minZ ? mins.getZ() : maxs.getZ(), true);
+            minZ ? mins.getZ() : maxs.getZ(), true);
   }
 
   /**
