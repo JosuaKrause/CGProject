@@ -19,6 +19,7 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
@@ -135,6 +136,55 @@ public final class Main {
       });
       mStorage.add(mi);
     }
+    final MenuItem mMore = new MenuItem("more...");
+    mStorage.add(mMore);
+    mMore.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(final ActionEvent e) {
+        final long startLoading = System.nanoTime();
+        final Object st = JOptionPane.showInputDialog(frame,
+            "Choose the storage algorithm:",
+            "Storage Algorithm", JOptionPane.PLAIN_MESSAGE, null, new String[] {
+            "kd-Tree", "Octree"}, "kd-Tree");
+        if(st == null) return;
+        int maxD;
+        for(;;) {
+          final String md = JOptionPane.showInputDialog(frame,
+              "Choose the maximum depth:", "10");
+          if(md == null) return;
+          try {
+            maxD = Integer.parseInt(md);
+            if(maxD > 0) {
+              break;
+            }
+          } catch(final NumberFormatException nfe) {
+            // nothing to do
+          }
+        }
+        int minT;
+        for(;;) {
+          final String mt = JOptionPane.showInputDialog(frame,
+              "Choose the minimum triangle count:", "30");
+          if(mt == null) return;
+          try {
+            minT = Integer.parseInt(mt);
+            if(minT > 0) {
+              break;
+            }
+          } catch(final NumberFormatException nfe) {
+            // nothing to do
+          }
+        }
+        CUR_STORAGE = st == "kd-Tree" ? new KdTree(maxD, minT) : new Octree(maxD, minT);
+        System.out.println("algorithm is " + CUR_STORAGE.getClass().getSimpleName());
+        CUR_STORAGE.fromTriangles(ts);
+        System.out.println("building - took "
+            + ((System.nanoTime() - startLoading) * 1e-6) + "ms");
+        rs.setHitter(CUR_STORAGE);
+      }
+
+    });
     mbar.add(mMesh);
     mbar.add(mStorage);
     frame.setMenuBar(mbar);
