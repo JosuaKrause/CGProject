@@ -19,6 +19,11 @@ public class Triangles {
   /** The list of triangles. */
   private List<Triangle> triangles;
 
+  /** Clear all triangles. */
+  public void clear() {
+    triangles = null;
+  }
+
   /**
    * Sets the triangles in the list.
    *
@@ -28,7 +33,12 @@ public class Triangles {
    */
   public void setTriangles(final MeshLoader loader, final AffineTransform4 aff)
       throws IOException {
-    final List<Triangle> triangles = new ArrayList<>();
+    final List<Triangle> triangles;
+    if(this.triangles != null) {
+      triangles = new ArrayList<>(this.triangles);
+    } else {
+      triangles = new ArrayList<>();
+    }
     loader.loadMesh(new TriangleStorage() {
 
       @Override

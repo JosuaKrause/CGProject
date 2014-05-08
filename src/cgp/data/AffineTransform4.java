@@ -2,7 +2,7 @@ package cgp.data;
 
 /**
  * An affine transformation for a three dimensional space.
- *
+ * 
  * @author Joschi <josua.krause@gmail.com>
  */
 public class AffineTransform4 {
@@ -17,7 +17,7 @@ public class AffineTransform4 {
 
   /**
    * Creates a translation transformation.
-   *
+   * 
    * @param dx The x translation.
    * @param dy The y translation.
    * @param dz The z translation.
@@ -35,7 +35,7 @@ public class AffineTransform4 {
 
   /**
    * Creates a scaling transformation.
-   *
+   * 
    * @param sx The x scale.
    * @param sy The y scale.
    * @param sz The z scale.
@@ -53,7 +53,7 @@ public class AffineTransform4 {
 
   /**
    * Creates a rotation transformation on the x axis.
-   *
+   * 
    * @param alpha The angle.
    * @return The rotation transformation.
    */
@@ -70,7 +70,7 @@ public class AffineTransform4 {
 
   /**
    * Creates a rotation transformation on the y axis.
-   *
+   * 
    * @param alpha The angle.
    * @return The rotation transformation.
    */
@@ -87,7 +87,7 @@ public class AffineTransform4 {
 
   /**
    * Creates a rotation transformation on the z axis.
-   *
+   * 
    * @param alpha The angle.
    * @return The rotation transformation.
    */
@@ -110,7 +110,7 @@ public class AffineTransform4 {
 
   /**
    * Creates an affine transformation.
-   *
+   * 
    * @param mat The internal matrix.
    */
   private AffineTransform4(final double[][] mat) {
@@ -121,7 +121,7 @@ public class AffineTransform4 {
    * Concatenates the transformation to the given transformation. Suppose
    * <code>A = this</code> and <code>B = o</code> then the resulting
    * transformation is <code>A * B</code>.
-   *
+   * 
    * @param o The transformation to concatenate.
    * @return The resulting transformation.
    */
@@ -133,7 +133,7 @@ public class AffineTransform4 {
       for(int c = 0; c < 4; ++c) {
         double sum = 0;
         for(int i = 0; i < 4; ++i) {
-          sum += m[c] * o.mat[c][r];
+          sum += m[i] * o.mat[i][c];
         }
         cur[c] = sum;
       }
@@ -143,7 +143,7 @@ public class AffineTransform4 {
 
   /**
    * Transforms the given vector according to the affine transformation.
-   *
+   * 
    * @param vec The vector to transform.
    * @return The transformed vector.
    */
@@ -164,7 +164,7 @@ public class AffineTransform4 {
 
   /**
    * Transforms the given triangle according to the affine transformation.
-   *
+   * 
    * @param tri The triangle to transform.
    * @return The transformed triangle.
    */

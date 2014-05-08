@@ -282,10 +282,11 @@ public final class Main {
 
   /** Mesh presets. */
   public static final String[] MESH_PRESET = {
-    "bunny",
-    "teapot",
-    "lamp",
-    "test",
+      "bunny",
+      "teapot",
+      "lamp",
+      "test",
+      "edgecase",
   };
 
   /**
@@ -304,6 +305,7 @@ public final class Main {
     final Vec4 origin;
     final Vec4 view;
     final Vec4 up;
+    ts.clear();
     switch(preset) {
       case "bunny":
         aff = AffineTransform4.scale(5, 5, 5);
@@ -333,6 +335,20 @@ public final class Main {
         view = Vec4.Z_AXIS.negate();
         up = Vec4.Y_AXIS;
         break;
+      case "edgecase": {
+        origin = new Vec4(10, 10, 15, true);
+        view = new Vec4(-0.43, -0.50, -0.75, false);
+        up = new Vec4(-0.22, 0.86, -0.45, false);
+        final AffineTransform4 aff1 = AffineTransform4.scale(.05, .05, .05);
+        final AffineTransform4 aff2 = AffineTransform4.scale(.2, .2, .2).concatenate(
+            AffineTransform4.translation(0, 15, 0));
+        ts.setTriangles(new OBJReader("objs/teapot.obj"), aff1);
+        ts.setTriangles(new OBJReader("objs/lamp.obj"), aff2);
+        rp.setView(origin, view, up);
+        System.out.println(preset + ": " + ts.size() + " triangles loaded - took "
+            + ((System.nanoTime() - startLoading) * 1e-6) + "ms");
+        return;
+      }
       default:
         throw new IllegalArgumentException(preset);
     }
@@ -345,7 +361,31 @@ public final class Main {
 
   /** Storage preset names. */
   public static final String[] STORAGE_PRESET = {
+      "KdTree 1 triangle threshold",
+      "KdTree 10 triangle threshold",
+      "KdTree 25 triangle threshold",
+      "KdTree 50 triangle threshold",
+      "KdTree 75 triangle threshold",
+      "KdTree 100 triangle threshold",
+      "KdTree 1 depth threshold",
+      "KdTree 2 depth threshold",
+      "KdTree 4 depth threshold",
+      "KdTree 8 depth threshold",
+      "KdTree 16 depth threshold",
+      "KdTree 32 depth threshold",
       "KdTree max depth",
+      "Octree 1 triangle threshold",
+      "Octree 10 triangle threshold",
+      "Octree 25 triangle threshold",
+      "Octree 50 triangle threshold",
+      "Octree 75 triangle threshold",
+      "Octree 100 triangle threshold",
+      "Octree 1 depth threshold",
+      "Octree 2 depth threshold",
+      "Octree 4 depth threshold",
+      "Octree 8 depth threshold",
+      "Octree 16 depth threshold",
+      "Octree 32 depth threshold",
       "Octree max depth",
       "Simple list",
   };
@@ -358,8 +398,56 @@ public final class Main {
    */
   public static Hitter createHitter(final String preset) {
     switch(preset) {
+      case "KdTree 1 triangle threshold":
+        return new KdTree(Integer.MAX_VALUE, 1);
+      case "KdTree 10 triangle threshold":
+        return new KdTree(Integer.MAX_VALUE, 10);
+      case "KdTree 25 triangle threshold":
+        return new KdTree(Integer.MAX_VALUE, 25);
+      case "KdTree 50 triangle threshold":
+        return new KdTree(Integer.MAX_VALUE, 50);
+      case "KdTree 75 triangle threshold":
+        return new KdTree(Integer.MAX_VALUE, 75);
+      case "KdTree 100 triangle threshold":
+        return new KdTree(Integer.MAX_VALUE, 100);
+      case "KdTree 1 depth threshold":
+        return new KdTree(1, 1);
+      case "KdTree 2 depth threshold":
+        return new KdTree(2, 1);
+      case "KdTree 4 depth threshold":
+        return new KdTree(4, 1);
+      case "KdTree 8 depth threshold":
+        return new KdTree(8, 1);
+      case "KdTree 16 depth threshold":
+        return new KdTree(16, 1);
+      case "KdTree 32 depth threshold":
+        return new KdTree(32, 1);
       case "KdTree max depth":
         return new KdTree(Integer.MAX_VALUE, 1);
+      case "Octree 1 triangle threshold":
+        return new Octree(Integer.MAX_VALUE, 1);
+      case "Octree 10 triangle threshold":
+        return new Octree(Integer.MAX_VALUE, 10);
+      case "Octree 25 triangle threshold":
+        return new Octree(Integer.MAX_VALUE, 25);
+      case "Octree 50 triangle threshold":
+        return new Octree(Integer.MAX_VALUE, 50);
+      case "Octree 75 triangle threshold":
+        return new Octree(Integer.MAX_VALUE, 75);
+      case "Octree 100 triangle threshold":
+        return new Octree(Integer.MAX_VALUE, 100);
+      case "Octree 1 depth threshold":
+        return new Octree(1, 1);
+      case "Octree 2 depth threshold":
+        return new Octree(2, 1);
+      case "Octree 4 depth threshold":
+        return new Octree(4, 1);
+      case "Octree 8 depth threshold":
+        return new Octree(8, 1);
+      case "Octree 16 depth threshold":
+        return new Octree(16, 1);
+      case "Octree 32 depth threshold":
+        return new Octree(32, 1);
       case "Octree max depth":
         return new Octree(Integer.MAX_VALUE, 1);
       case "Simple list":
