@@ -28,6 +28,7 @@ import cgp.algos.Octree;
 import cgp.algos.SimpleStorage;
 import cgp.algos.Triangles;
 import cgp.consume.BaryConsumer;
+import cgp.consume.CompareTestCountConsumer;
 import cgp.consume.DepthConsumer;
 import cgp.consume.ImageConsumer;
 import cgp.consume.NormalConsumer;
@@ -73,7 +74,7 @@ public final class Main {
     final Triangles ts = new Triangles();
     final String name = args.length == 1 ? args[0] : MESH_PRESET[0];
     loadPreset(name, rp, ts);
-    fillHitter(STORAGE_PRESET[1], ts, rs);
+    fillHitter(STORAGE_PRESET[0], ts, rs);
     // open Gl
     final AtomicBoolean isRunning = new AtomicBoolean();
     final OpenGLView ogl = new OpenGLView(name, rp, ts, isRunning);
@@ -84,7 +85,9 @@ public final class Main {
         new BaryConsumer(),
         new DepthConsumer(rp),
         new TestCountConsumer(true),
+        new CompareTestCountConsumer(true),
         new TestCountConsumer(false),
+        new CompareTestCountConsumer(false),
     };
     final AtomicInteger showNorm = new AtomicInteger(0);
     final JFrame frame = new JFrame() {

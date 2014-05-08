@@ -37,8 +37,8 @@ public class SimpleRayProducer implements RayProducer {
    * @param near Nearest distance.
    * @param far Farthest distance.
    */
-  public SimpleRayProducer(final int w, final int h, final double fov, final double near,
-      final double far) {
+  public SimpleRayProducer(final int w, final int h, final double fov,
+      final double near, final double far) {
     this.w = w;
     this.h = h;
     this.fov = fov;
