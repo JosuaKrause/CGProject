@@ -54,6 +54,7 @@ public class SimpleRayProducer implements RayProducer {
     this.eye = eye.expectPoint();
     this.view = view.expectDirection();
     this.up = up.expectDirection();
+    leftCache = null;
   }
 
   @Override
