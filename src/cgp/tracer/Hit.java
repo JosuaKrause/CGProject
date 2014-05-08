@@ -8,7 +8,7 @@ import cgp.data.Triangle;
 
 /**
  * A triangle hit.
- *
+ * 
  * @author Joschi <josua.krause@gmail.com>
  */
 public class Hit {
@@ -29,7 +29,7 @@ public class Hit {
 
   /**
    * Creates a failed hit.
-   *
+   * 
    * @param ray The ray.
    * @param testCount The test count.
    */
@@ -39,7 +39,7 @@ public class Hit {
 
   /**
    * Creates a new hit.
-   *
+   * 
    * @param ray The ray.
    * @param tri The triangle that got hit or <code>null</code>.
    * @param distance The travel distance or a negative value if no triangle got
@@ -64,7 +64,7 @@ public class Hit {
 
   /**
    * Getter.
-   *
+   * 
    * @return The ray.
    */
   public Ray getRay() {
@@ -73,7 +73,7 @@ public class Hit {
 
   /**
    * Getter.
-   *
+   * 
    * @return Whether there was a triangle hit.
    */
   public boolean hasHit() {
@@ -85,7 +85,7 @@ public class Hit {
 
   /**
    * Getter.
-   *
+   * 
    * @return The barycentric coordinate of the hit.
    */
   public BarycentricCoordinates getBarycentric() {
@@ -98,7 +98,7 @@ public class Hit {
 
   /**
    * Getter.
-   *
+   * 
    * @return The travel distance. Note that the distance is positive iff a
    *         triangle was hit.
    */
@@ -108,7 +108,7 @@ public class Hit {
 
   /**
    * Getter.
-   *
+   * 
    * @return The number of performed tests.
    */
   public long getTestCount() {
@@ -117,11 +117,18 @@ public class Hit {
 
   /**
    * Getter.
-   *
+   * 
    * @return The number of bounding box checks.
    */
   public long getBBoxCount() {
     return bboxCount;
+  }
+
+  /**
+   * @return The hit's triangle.
+   */
+  public Triangle getTriangle() {
+    return tri;
   }
 
 }

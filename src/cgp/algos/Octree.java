@@ -51,7 +51,6 @@ public class Octree extends Hitter {
       tset = new BitSet();
       children = null;
       offset = 0;
-      totalBoundingBoxes++;
       maximumDepth = Math.max(depth, maximumDepth);
     }
 
@@ -212,15 +211,18 @@ public class Octree extends Hitter {
 
     /**
      * Counts the number of bounding boxes in the octree.
+     * 
+     * @return The number of bounding boxes in the subtree.
      */
-    public void countBoundingBoxes() {
-      ++totalBoundingBoxes;
-      if(ts != null) {
-        for(final Node n : children) {
-          // TODO
-        }
+    public int countBoundingBoxes() {
+      if(children == null) return 1;
+      int sum = 1;
+      for(final Node n : children) {
+        sum += n.countBoundingBoxes();
       }
+      return sum;
     }
+
   } // Node
 
   /**
@@ -243,10 +245,6 @@ public class Octree extends Hitter {
    * The maximum depth of the octree.
    */
   protected int maximumDepth;
-  /**
-   * The number of bounding boxes in the octree.
-   */
-  protected int totalBoundingBoxes;
 
   /**
    * Creates an Octree.
@@ -265,7 +263,6 @@ public class Octree extends Hitter {
   @Override
   protected void build() {
     maximumDepth = 0;
-    totalBoundingBoxes = 0;
     root = null;
     minDist = Double.POSITIVE_INFINITY;
     bbox = new BoundingBox();
@@ -282,9 +279,8 @@ public class Octree extends Hitter {
     }
     root.splitNode();
     root.optimize();
-    root.countBoundingBoxes();
     System.out.println("Depth of octree: " + maximumDepth);
-    System.out.println("Bounding boxes in octree: " + totalBoundingBoxes);
+    System.out.println("Bounding boxes in octree: " + root.countBoundingBoxes());
   }
 
   /**

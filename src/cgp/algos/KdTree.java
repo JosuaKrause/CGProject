@@ -15,14 +15,14 @@ import cgp.tracer.TestCounter;
 
 /**
  * A kd-tree
- *
+ * 
  * @author Timothy Chu
  */
 public class KdTree extends Hitter {
 
   /**
    * Internal node for the kd-tree
-   *
+   * 
    * @author Timothy Chu
    */
   private final class KdNode {
@@ -50,10 +50,15 @@ public class KdTree extends Hitter {
      * triangles contained within node. Value is null if node is not a leaf
      */
     private List<Triangle> tri;
+    /**
+     * Triangles that are stored in both of the current node's children. Used
+     * for hit checking.
+     */
+    private final List<Triangle> crossingTriangles;
 
     /**
      * Constructor for a new KdNode
-     *
+     * 
      * @param box The bounding box for this node
      * @param splitType The axis that the bounding box is being split on
      */
@@ -62,6 +67,7 @@ public class KdTree extends Hitter {
       children = new KdNode[2];
       this.splitType = splitType;
       tri = null;
+      crossingTriangles = new ArrayList<>();
     }
 
     /**
@@ -126,18 +132,21 @@ public class KdTree extends Hitter {
             if(Math.max(t.getA().getX(), Math.max(t.getB().getX(),
                 t.getC().getX())) > splitValue) {
               rightTopFar.add(t);
+              crossingTriangles.add(t);
             }
             break;
           case 1:
             if(Math.max(t.getA().getY(), Math.max(t.getB().getY(),
                 t.getC().getY())) > splitValue) {
               rightTopFar.add(t);
+              crossingTriangles.add(t);
             }
             break;
           case 2:
             if(Math.max(t.getA().getZ(), Math.max(t.getB().getZ(),
                 t.getC().getZ())) > splitValue) {
               rightTopFar.add(t);
+              crossingTriangles.add(t);
             }
             break;
         }
@@ -183,7 +192,7 @@ public class KdTree extends Hitter {
 
     /**
      * Tests for a hit.
-     *
+     * 
      * @param r The ray.
      * @param c The test counter.
      * @return The hit.
@@ -209,14 +218,20 @@ public class KdTree extends Hitter {
           continue;
         }
         final Hit hit = children[index].getHit(r, c);
-        if(hit.hasHit()) return hit;
+        if(hit.hasHit()) {
+          if(crossingTriangles.contains(hit.getTriangle())) {
+            final Hit hit2 = children[(index + 1) % 2].getHit(r, c);
+            if(hit2.hasHit()) return hit.getDistance() < hit2.getDistance() ? hit : hit2;
+          }
+          return hit;
+        }
       }
       return new Hit(r, c);
     }
 
     /**
      * Checks for a hit in a leaf node.
-     *
+     * 
      * @param r The ray.
      * @param c The test counter.
      * @return The hit.
@@ -267,7 +282,7 @@ public class KdTree extends Hitter {
 
   /**
    * Constructor for the KdTree
-   *
+   * 
    * @param depthThreshold Threshold for KdTree depth
    * @param triangleThreshold Threshold for KdNode size
    */
