@@ -11,7 +11,7 @@ import cgp.io.MeshLoader;
 
 /**
  * Stores the triangles.
- *
+ * 
  * @author Joschi <josua.krause@gmail.com>
  */
 public class Triangles {
@@ -19,16 +19,21 @@ public class Triangles {
   /** The list of triangles. */
   private List<Triangle> triangles;
 
+  public void clear() {
+    triangles = null;
+  }
+
   /**
    * Sets the triangles in the list.
-   *
+   * 
    * @param loader The mesh loader.
    * @param aff The affine transformation.
    * @throws IOException I/O Exception.
    */
   public void setTriangles(final MeshLoader loader, final AffineTransform4 aff)
       throws IOException {
-    final List<Triangle> triangles = new ArrayList<>();
+    final ArrayList<Triangle> triangles = this.triangles != null ? new ArrayList<>(
+        this.triangles) : new ArrayList<Triangle>();
     loader.loadMesh(new TriangleStorage() {
 
       @Override
@@ -42,7 +47,7 @@ public class Triangles {
 
   /**
    * Getter.
-   *
+   * 
    * @return A list of all triangles.
    */
   public List<Triangle> getList() {
@@ -52,7 +57,7 @@ public class Triangles {
 
   /**
    * Getter.
-   *
+   * 
    * @param index The index.
    * @return The triangle at the given position.
    */
@@ -63,7 +68,7 @@ public class Triangles {
 
   /**
    * Getter.
-   *
+   * 
    * @return The number of triangles.
    */
   public int size() {
