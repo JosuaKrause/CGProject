@@ -81,11 +81,10 @@ public class SimpleRayProducer implements RayProducer {
   public void rotate(final double angleX, final double angleY) {
     final Quaternion aUp = Quaternion.normQuaternion(-angleX, up);
     final Quaternion aLeft = Quaternion.normQuaternion(-angleY, getLeft());
-    final Quaternion v = Quaternion.rotate(view, aUp);
-    final Quaternion u = Quaternion.rotate(up, aUp);
-    final Quaternion bLeft = Quaternion.rotate(aLeft, aUp);
-    view = Quaternion.rotate(v, bLeft).getVec().normalized();
-    up = Quaternion.rotate(u, bLeft).getVec().normalized();
+    final Quaternion v = Quaternion.rotate(Quaternion.rotate(view, aUp), aLeft);
+    final Quaternion u = Quaternion.rotate(Quaternion.rotate(up, aUp), aLeft);
+    view = v.getVec().normalized();
+    up = u.getVec().normalized();
     leftCache = null;
   }
 

@@ -119,10 +119,7 @@ public class Quaternion extends Vec4 {
    */
   public static final Quaternion rotate(final Quaternion v, final Quaternion p) {
     final Quaternion q = p.negate();
-    final Quaternion res = q.mul(v).mul(p);
-    final double len = 1 / Math.sqrt(res.lengthSq());
-    final Vec4 r = res.mul(len != 0 ? len : 1);
-    return new Quaternion(new Vec4(r.getX(), r.getY(), r.getZ(), false), r.getW());
+    return q.mul(v).mul(p);
   }
 
 }
