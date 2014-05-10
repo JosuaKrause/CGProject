@@ -78,7 +78,8 @@ public final class Main {
     fillHitter(STORAGE_PRESET[0], ts, rs);
     // open Gl
     final AtomicBoolean isRunning = new AtomicBoolean();
-    final OpenGLView ogl = new OpenGLView(name, rp, ts, isRunning);
+    final AtomicBoolean requestRefresh = new AtomicBoolean();
+    final OpenGLView ogl = new OpenGLView(name, rp, ts, isRunning, requestRefresh);
     // setup frame
     final ImageConsumer[] consumer = {
         new ViewConsumer(),
@@ -117,6 +118,7 @@ public final class Main {
           } catch(final IOException e) {
             e.printStackTrace();
           }
+          requestRefresh.set(true);
         }
 
       });

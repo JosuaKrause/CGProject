@@ -39,6 +39,8 @@ public class Octree extends Hitter {
     private Node[] children;
     /** Indicates that this node does not need to be split. */
     private boolean noSplit;
+    /** Whether the children share triangles. */
+    private boolean hasSharedChildren;
 
     /**
      * Creates a new node.
@@ -53,6 +55,7 @@ public class Octree extends Hitter {
       children = null;
       offset = 0;
       maximumDepth = Math.max(depth, maximumDepth);
+      hasSharedChildren = false;
     }
 
     /**
@@ -60,9 +63,10 @@ public class Octree extends Hitter {
      *
      * @param index The index.
      * @param t The triangle.
+     * @param parent The parent node or <code>null</code> if root.
      */
-    public void addTriangle(final int index, final Triangle t) {
-      addTriangle(index, t, 0, null);
+    public void addTriangle(final int index, final Triangle t, final Node parent) {
+      addTriangle(index, t, 0, null, parent);
     }
 
     /**
@@ -72,13 +76,17 @@ public class Octree extends Hitter {
      * @param t The triangle.
      * @param boxIndex The index of the bounding box in the parent.
      * @param mid The middle point of the parent bounding box.
+     * @param parent The parent node or <code>null</code> if root.
      * @return Whether the triangle was added.
      */
-    private boolean addTriangle(
-        final int index, final Triangle t, final int boxIndex, final Vec4 mid) {
+    private boolean addTriangle(final int index, final Triangle t,
+        final int boxIndex, final Vec4 mid, final Node parent) {
       if(mid != null) {
         for(int axis = 0; axis < 3; ++axis) {
           final int rel = t.relToPlane(mid.get(axis), axis);
+          if(rel == 0 && parent != null) {
+            parent.hasSharedChildren = true;
+          }
           if(isMinNode(boxIndex, axis) ? rel > 0 : rel < 0) return false;
         }
       }
@@ -90,7 +98,7 @@ public class Octree extends Hitter {
       boolean wasAdded = false;
       final Vec4 center = box.getCenter();
       for(int i = 0; i < children.length; ++i) {
-        wasAdded = children[i].addTriangle(index, t, i, center) || wasAdded;
+        wasAdded = children[i].addTriangle(index, t, i, center, this) || wasAdded;
       }
       return wasAdded;
     }
@@ -111,7 +119,7 @@ public class Octree extends Hitter {
         final Node n = new Node(boxes[i], depth + 1);
         for(int t = b.nextSetBit(0); t >= 0; t = b.nextSetBit(t + 1)) {
           final int index = t + offset;
-          unsplit = n.addTriangle(index, ts.getTriangle(index), i, mid) && unsplit;
+          unsplit = n.addTriangle(index, ts.getTriangle(index), i, mid, this) && unsplit;
         }
         children[i] = n;
         n.optimize();
@@ -178,10 +186,10 @@ public class Octree extends Hitter {
         if(!hit.hasHit()) {
           continue;
         }
+        if(!hasSharedChildren) return hit;
         if(hit.getDistance() < best.getDistance() || !best.hasHit()) {
           best = hit;
         }
-        // return hit;
       }
       return best;
     }
@@ -294,7 +302,7 @@ public class Octree extends Hitter {
     }
     root = new Node(bbox, 0);
     for(int i = 0; i < ts.size(); ++i) {
-      root.addTriangle(i, ts.getTriangle(i));
+      root.addTriangle(i, ts.getTriangle(i), null);
     }
     root.splitNode();
     root.optimize();

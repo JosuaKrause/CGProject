@@ -41,9 +41,10 @@ public class OpenGLView {
    * @param cam The camera.
    * @param storage The triangle storage.
    * @param isRunning Whether a ray-tracing computation is currently running.
+   * @param requestRefresh Can be used to request an OpenGL refresh.
    */
-  public OpenGLView(final String name, final Camera cam,
-      final Triangles storage, final AtomicBoolean isRunning) {
+  public OpenGLView(final String name, final Camera cam, final Triangles storage,
+      final AtomicBoolean isRunning, final AtomicBoolean requestRefresh) {
     this.cam = Objects.requireNonNull(cam);
     this.storage = Objects.requireNonNull(storage);
     final AtomicBoolean k = kill = new AtomicBoolean(false);
@@ -70,12 +71,13 @@ public class OpenGLView {
         try {
           boolean moving = false;
           while(!Display.isCloseRequested() && !k.get()) {
-            if(!Display.isActive() || isRunning.get()) {
+            if((!Display.isActive() && !requestRefresh.get()) || isRunning.get()) {
               synchronized(isRunning) {
                 isRunning.wait(1000);
               }
               continue;
             }
+            requestRefresh.set(false);
             // interaction
             if(Mouse.isButtonDown(0)) {
               final int dx = Mouse.getDX();
