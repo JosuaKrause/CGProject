@@ -241,17 +241,20 @@ public final class Main {
         if(!isRunning.compareAndSet(false, true)) return;
         final String title = frame.getTitle();
         frame.setTitle(title + "*");
-        System.out.println("start");
-        final long nano = System.nanoTime();
-        final long[] tests = rs.shootRays();
-        System.out.println("end: took " + ((System.nanoTime() - nano) * 1e-6) + "ms");
-        comp.repaint();
-        System.out.println("Triangle tests: " + tests[0]);
-        System.out.println("Bounding Box tests: " + tests[1]);
-        frame.setTitle(title);
-        isRunning.set(false);
-        synchronized(isRunning) {
-          isRunning.notifyAll();
+        try {
+          System.out.println("start");
+          final long nano = System.nanoTime();
+          final long[] tests = rs.shootRays();
+          System.out.println("end: took " + ((System.nanoTime() - nano) * 1e-6) + "ms");
+          comp.repaint();
+          System.out.println("Triangle tests: " + tests[0]);
+          System.out.println("Bounding Box tests: " + tests[1]);
+        } finally {
+          frame.setTitle(title);
+          isRunning.set(false);
+          synchronized(isRunning) {
+            isRunning.notifyAll();
+          }
         }
       }
 
@@ -388,14 +391,21 @@ public final class Main {
         up = Vec4.Y_AXIS;
         break;
       case "edgecase": {
-        origin = new Vec4(10, 10, 15, true);
-        view = new Vec4(-0.43, -0.50, -0.75, false);
-        up = new Vec4(-0.22, 0.86, -0.45, false);
+        origin = new Vec4(3.9662765000084, 4.683126851778, 7.681118722745, true);
+        view = new Vec4(-0.336540091036, -0.4630411288692, -0.8199595600398, false);
+        up = new Vec4(-0.14784898151236, 0.8849330414311, -0.4416267551328, false);
         final AffineTransform4 aff1 = AffineTransform4.scale(.05, .05, .05);
-        final AffineTransform4 aff2 = AffineTransform4.scale(.2, .2, .2).concatenate(
-            AffineTransform4.translation(0, 15, 0));
         ts.setTriangles(new OBJReader("objs/teapot.obj"), aff1);
-        ts.setTriangles(new OBJReader("objs/lamp.obj"), aff2);
+        final int count = 7;
+        final AffineTransform4 aff2 = AffineTransform4.scale(.1, .1, .1).concatenate(
+            AffineTransform4.translation(0.5, 27, -1));
+        for(int i = 0; i < count; ++i) {
+          final AffineTransform4 r = aff2.concatenate(
+              AffineTransform4.rotateY(2.0 * Math.PI * i / count));
+          final AffineTransform4 a = r.concatenate(AffineTransform4.translation(3, -1, 0));
+          ts.setTriangles(new OBJReader("objs/lamp.obj"),
+              a.concatenate(AffineTransform4.scale(0.5, 0.5, 0.5)));
+        }
         rp.setView(origin, view, up);
         System.out.println(preset + ": " + ts.size() + " triangles loaded - took "
             + ((System.nanoTime() - startLoading) * 1e-6) + "ms");
