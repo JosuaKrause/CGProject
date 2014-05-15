@@ -26,7 +26,7 @@ view and the actual ray-tracing output.
 
 When the navigation view has keyboard focus you can
 move the camera with the `w`, `a`, `s`, `d`, `q`, and `e` keys.
-The viewing direction can also be changed my dragging
+The viewing direction can also be changed by dragging
 the mouse on the window.
 
 After choosing the desired scene you can focus the
